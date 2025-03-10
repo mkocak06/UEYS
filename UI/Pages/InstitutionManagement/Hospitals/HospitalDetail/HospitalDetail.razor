@@ -1,0 +1,52 @@
+﻿@using Shared.Types
+@using UI.Pages.InstitutionManagement.Hospitals.HospitalDetail.Tabs
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using UI.SharedComponents.Components.TabbedCard
+@page "/institution-management/hospitals/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar>
+    </Toolbar>
+    <Content>
+        @if (_loaded)
+        {
+            if (_hospital != null)
+            {
+                <TabControl>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.HospitalGetById}">
+                        <TabPage Text="@L["_Information", L["Institution of Education"]]">
+                            <HospitalOverview />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProgramGetList}">
+                        <TabPage Text="@L["Programs"]">
+                            <HospitalPrograms />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorGetList}">
+                        <TabPage Text="@L["Educators"]">
+                            <GridEducators ByHospitalId Id="_hospital.Id" />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentGetList}">
+                        <TabPage Text="@L["Specialization Students"]">
+                            <StudentsGrid HospitalId="_hospital.Id" />
+                        </TabPage>
+                    </PermissionWrapper>
+                </TabControl>
+            }
+            else
+            {
+                <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/institution-management/hospitals"></_404Page>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+
+        }
+
+    </Content>
+</AppContent>

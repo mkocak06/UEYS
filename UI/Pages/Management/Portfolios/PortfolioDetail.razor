@@ -1,0 +1,80 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/portfolio/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.PortfolioUpdate}">
+                <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                    <i class="fas fa-save"></i>@L["Save"]
+                </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="PortfolioValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["Expertise Branch"]</label>
+                                        <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                                           TItem="ExpertiseBranchResponseDTO"
+                                                           TValue="ExpertiseBranchResponseDTO"
+                                                           Value="_portfolio.ExpertiseBranch"
+                                                           ValueExpression="() => _portfolio.ExpertiseBranch"
+                                                           ValueChanged="OnChangeExpertiseBranch"
+                                                           EnableDropDown="true"
+                                                           MinimumLength="1"
+                                                           MaximumSuggestions="int.MaxValue">
+                                            <SelectedTemplate Context="expertiseBranch">
+                                                @expertiseBranch?.Name
+                                            </SelectedTemplate>
+                                            <HelpTemplate>
+                                                @L["Please enter at least 1 character to search."]
+                                            </HelpTemplate>
+                                            <NotFoundTemplate Context="searchText">
+                                                "@searchText" @L[" Could not find an item named."]
+                                            </NotFoundTemplate>
+                                            <ResultTemplate Context="expertiseBranch">
+                                                @expertiseBranch?.Name
+                                            </ResultTemplate>
+                                        </BlazoredTypeahead>
+                                        <ValidationMessage For="() => _portfolio.ExpertiseBranchId"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["_name", L["Portfolio"]]</label>
+                                        <InputText class="form-control" @bind-Value="_portfolio.Name" />
+                                        <ValidationMessage For="() => _portfolio.Name"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Participation Rate in Portfolio Index"]</label>
+                                        <InputNumber class="form-control" @bind-Value="_portfolio.Ratio" />
+                                        <ValidationMessage For="() => _portfolio.Ratio"></ValidationMessage>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/portfolios"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

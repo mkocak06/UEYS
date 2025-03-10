@@ -1,0 +1,53 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Types
+@using Shared.Extensions;
+@page "/management/study/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudyUpdate}">
+                <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                    <i class="fas fa-save"></i>@L["Save"]
+                </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="StudyValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["_name", L["Study"]]</label>
+                                        <InputText class="form-control" @bind-Value="_study.Name" />
+                                        <ValidationMessage For="() => _study.Name"></ValidationMessage>
+                                        <label>@L["Description"]</label>
+                                        <InputTextArea class="form-control" @bind-Value="_study.Description" />
+                                        <ValidationMessage For="()=>_study.Description"></ValidationMessage>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/studies"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

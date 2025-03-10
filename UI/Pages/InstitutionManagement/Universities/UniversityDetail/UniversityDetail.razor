@@ -1,0 +1,63 @@
+﻿@page "/institution-management/universities/{Id:long?}"
+@using Shared.Types
+@using UI.Pages.InstitutionManagement.Universities.UniversityDetail.Store
+@using UI.Pages.InstitutionManagement.Universities.UniversityDetail.Tabs
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        @if (Loaded)
+        {
+            if (SelectedUniversity != null)
+            {
+                <TabControl>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityGetById}">
+                        <TabPage Text="@L["_Information", L["Ministry / University"]]">
+                            <UniversityOverview />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityGetById}">
+                        <TabPage Text="@L["Educational Institutions of the Ministry / University"]">
+                            <UniversityHospitals />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityGetById}">
+                        <TabPage Text="@L["_Information", L["Affiliate Institution"]]">
+                            <AffiliationDetail />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProfessionGetList}">
+                        <TabPage Text="@L["Programs Provided Education at the Ministry / University"]">
+                            <UniversityPrograms />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramGetList}">
+                        <TabPage Text="@L["Protocol Program"]">
+                            <ProgramProtocol />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorGetList}">
+                        <TabPage Text="@L["Educators"]">
+                            <GridEducators ByUniversityId Id="SelectedUniversity.Id" />
+                        </TabPage>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentGetList}">
+                        <TabPage Text="@L["Specialization Students"]">
+                            <StudentsGrid UniversityId="SelectedUniversity.Id" />
+                        </TabPage>
+                    </PermissionWrapper>
+                </TabControl>
+            }
+            else
+            {
+                <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/institution-management/universities"></_404Page>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Content>
+</AppContent>
+

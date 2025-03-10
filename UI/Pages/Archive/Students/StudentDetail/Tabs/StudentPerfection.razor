@@ -1,0 +1,20 @@
+﻿﻿@using Shared.ResponseModels
+@using Shared.Types;
+@using UI.Pages.Archive.Students.StudentDetail.Tabs.PerformanceRating
+@using UI.Pages.Archive.Students.StudentDetail.Tabs.StudentPerfections
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <TabControl>
+        <TabPage Text="@L["Clinic Perfections"]">
+            <Perfections PerfectionType="PerfectionType.Clinical" IsEditing=true />
+        </TabPage>
+        <TabPage Text="@L["Interventional Perfections"]">
+            <Perfections PerfectionType="PerfectionType.Interventional" />
+        </TabPage>
+        <TabPage Text="@L["Other Perfections"]">
+            <PerformanceRatingDetail />
+        </TabPage>
+    </TabControl>
+</div>

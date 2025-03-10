@@ -1,0 +1,79 @@
+﻿@page "/verification/{code}"
+@code {
+    [Parameter]
+    public string Code { get; set; } = "Kod Bulunamadı";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doğrulama Kodu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e8f4fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            background-color: #2196F3;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .content {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .code {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2196F3;
+            background-color: #f0f0f0;
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #555;
+            margin-top: 30px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Hoş Geldiniz!</h2>
+        </div>
+        <div class="content">
+            <p>Hesabınızı doğrulamak için aşağıdaki kodu kullanın:</p>
+            <p class="code">@Code</p>
+        </div>
+        <div class="footer">
+            <p>Bu e-posta otomatik olarak oluşturulmuştur. Lütfen yanıtlamayın.</p>
+        </div>
+    </div>
+</body>
+</html>

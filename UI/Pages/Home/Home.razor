@@ -1,0 +1,170 @@
+﻿@page "/"
+@inherits FluxorComponent
+@using Shared.ResponseModels
+@using Shared.Types
+@using UI.SharedComponents.Dashboard
+@using UI.SharedComponents.AdvancedFilters
+
+
+<AppContent Title="@L["Anasayfa"]" IsFluid="true" BreadCrumbLinks="new List<BreadCrumbLink>()">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>() { PermissionEnum.HospitalExcelExport }">
+                <a @onclick="() => _excelModal.OpenModal()" type="button" class="btn btn-success font-weight-bolder font-size-sm mr-3">
+                    <i class="far fa-file-excel"></i> Kurum Detay Tablosu
+                </a>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+
+    <Content>
+        <div class="card card-custom">
+            @* <div class="card-header">
+                <div class="card-title">
+                    <div class="rounded ml-5 @(IsSelectedMapReport(0)?"btn btn-primary":"")">
+                        <SpinnerButton ButtonClass="btn btn-white btn-shadow-hover" SpinnerClass="spinner-right spinner-darker-primary" Spinning="_fetchingx" OnClick="async ()=>await GetReport(0)" Disabled="_fetching">
+                             @L["Panel"]
+
+                        </SpinnerButton>
+                    </div>
+                    <div class="rounded ml-5 @(IsSelectedMapReport(1)?"btn btn-primary":"")">
+                        <SpinnerButton ButtonClass="btn btn-white btn-shadow-hover" SpinnerClass="spinner-right spinner-darker-primary" Spinning="_fetching1" OnClick="async ()=>await GetReport(1)" Disabled="_fetching">
+                            @L["Institutions of Education"]
+                        </SpinnerButton>
+                    </div>
+                    <div class="rounded ml-5 @(IsSelectedMapReport(3)?"btn btn-primary":"")">
+                        <SpinnerButton ButtonClass="btn btn-white btn-shadow-hover" SpinnerClass="spinner-right spinner-darker-primary" Spinning="_fetching3" OnClick="async ()=>await GetReport(3)" Disabled="_fetching">
+                            @L["Universities"]
+                        </SpinnerButton>
+                    </div>
+                    <div class="rounded ml-5 @(IsSelectedMapReport(2)?"btn btn-primary":"")">
+                        <SpinnerButton ButtonClass="btn btn-white btn-shadow-hover" SpinnerClass="spinner-right spinner-darker-primary" Spinning="_fetching2" OnClick="()=>ChangeTab(2)" Disabled="_fetching">
+                            @L["Hospitals by Expertise Branch"]
+                        </SpinnerButton>
+                    </div>
+                    @if (_profile != null && !_profileLoading)
+                    {
+                        <div class="rounded ml-5 @(IsSelectedMapReport(4)?"btn btn-primary":"")">
+                            <SpinnerButton ButtonClass="btn btn-white btn-shadow-hover" SpinnerClass="spinner-right spinner-darker-primary" Spinning="_fetching4" OnClick="()=>ChangeTab(4)" Disabled="_fetching">
+                                @L["Detaylı Analiz"]
+                            </SpinnerButton>
+                        </div>
+                    }
+                    <div>
+                    <a @onclick="OpenCanvas" type="button" class="btn btn-outline-primary mr-3">
+                        @((MarkupString)GetFilterCountString())<i class="fas fa-filter"></i>@L["Search In Detail"]
+                    </a>
+                    </div>
+                </div>
+                <div class="card-toolbar">
+                    <FullScreenButton Active=FullScreenButton Disabled="_fetching" TargetId="toggleFSElement" />
+                </div>
+            </div> *@
+            <div class="card-body">
+                <div class="col-12 col-md-12" id="toggleFSElement">
+                    @if (IsSelectedMapReport(0))
+                    {
+                     
+                                <HomeV2></HomeV2>
+                      
+                    }
+               @*      else if (IsSelectedMapReport(2))
+                    {
+                        <div class="row">
+                            <div class="col-12 col-md-5">
+                                <div class="form-group">
+                                    <label>@L["Specialization Training Program"]</label>
+                                    <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                                       TItem="ExpertiseBranchResponseDTO"
+                                                       TValue="ExpertiseBranchResponseDTO"
+                                                       Value="_expertiseBranch"
+                                                       ValueExpression="() => _expertiseBranch"
+                                                       ValueChanged="OnChangeExpertiseBranch"
+                                                       EnableDropDown="true"
+                                                       MinimumLength="2"
+                                                       MaximumSuggestions="int.MaxValue">
+                                        <SelectedTemplate Context="expBrc">
+                                            @expBrc?.Name
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 1 character to search."]
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L["Could not find an item named"]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="expBrc">
+                                            @expBrc?.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                </div>
+                            </div>
+                            @if (_expertiseBranch is not null)
+                            {
+                                <div class="col-12 col-md-5">
+                                    <div class="form-group">
+                                        <label>@L["Current Authorization Category"]</label>
+                                        <BlazoredTypeahead SearchMethod="SearchAuthorizationCategory"
+                                                           TItem="AuthorizationCategoryResponseDTO"
+                                                           TValue="AuthorizationCategoryResponseDTO"
+                                                           Value="_authorizationCategory"
+                                                           ValueExpression="() => _authorizationCategory"
+                                                           ValueChanged="OnChangeAuthorizationCategory"
+                                                           EnableDropDown="true"
+                                                           MinimumLength="1"
+                                                           MaximumSuggestions="int.MaxValue"
+                                                           placeholder="Hepsi(yada aramak için en az 1 karakter girin)">
+                                            <SelectedTemplate Context="expBrc">
+                                                @expBrc?.Name (@expBrc?.Description)<div style="width:10px;height:10px;background-color:@expBrc?.ColorCode;"></div>
+                                            </SelectedTemplate>
+                                            <HelpTemplate>
+                                                @L["Please enter at least 1 character to search."]
+                                            </HelpTemplate>
+                                            <NotFoundTemplate Context="searchText">
+                                                "@searchText" @L["Could not find an item named"]
+                                            </NotFoundTemplate>
+                                            <ResultTemplate Context="expBrc">
+                                                @expBrc?.Name (@expBrc?.Description)<div style="width:10px;height:10px;background-color:@expBrc?.ColorCode;"></div>
+                                            </ResultTemplate>
+                                        </BlazoredTypeahead>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <div class="form-group d-flex flex-column">
+                                        <SpinnerButton Disabled="_fetching" Spinning="_fetching2" OnClick="async ()=>await HospitalsByExpertiseId()">
+                                            @L["Search"]
+                                        </SpinnerButton>
+                                        @if (_isResult)
+                                        {
+                                            <label class="badge badge-success py-1 mt-2">@L["Total"]: @responseCount</label>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                        <MultiMapView @ref="_bigMap" FullHeight=true Layers="MapLayers" />
+                    }
+                    else if (IsSelectedMapReport(1))
+                    {
+                        <MultiMapView @ref="_bigMap" FullHeight=true Layers="MapLayers" />
+                    }
+                    else if (IsSelectedMapReport(3))
+                    {
+                        <MultiMapView @ref="_bigMap" FullHeight=true Layers="MapLayers" />
+                    }
+                    else if (IsSelectedMapReport(4))
+                    {
+                        <HomeV2></HomeV2>
+                    } *@
+                </div>
+            </div>
+        </div>
+        @* <StatsWidget></StatsWidget> *@
+        @* <HPDashboard></HPDashboard>
+        <AdvancedSearchOffCanvas IsTabView><ProgramFilterForm/></AdvancedSearchOffCanvas> *@
+
+        <DetailedExcelExportModal @ref="_excelModal" />
+    </Content>
+</AppContent>
+
+

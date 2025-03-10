@@ -1,0 +1,30 @@
+﻿@using ApexCharts;
+@using Shared.ResponseModels.Educator;
+@inherits FluxorComponent
+@if (_chartLoaded)
+{
+    <div class="card card-custom card-stretch gutter-b bg-diagonal bg-diagonal-light-success">
+        <div class="card-body">
+            <div style="overflow-x:auto;overflow-y:auto">
+                <ApexChart @ref=_apexChart TItem="EducatorCountByProperty"
+                           Title="Üniversite Tipine Bağlı Eğitici Sayısı"
+                           Options="_options">
+                    <ApexPointSeries TItem="EducatorCountByProperty"
+                                     Items="educatorsCounts"
+                                     Name="Aktif Sayı"
+                                     XValue="@(e => {
+                                       string lcl = L[e.SeriesName];
+                                       return lcl;
+                                   })"
+                                     YAggregate="@(e => e.Sum(e => e.Count))"
+                                     SeriesType="SeriesType.Donut"
+                                     OrderByDescending="e=>e.Y" />
+                </ApexChart>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}

@@ -1,0 +1,69 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/portfolio/add-portfolio"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="PortfolioValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["Expertise Branch"]</label>
+                                    <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                                       TItem="ExpertiseBranchResponseDTO"
+                                                       TValue="ExpertiseBranchResponseDTO"
+                                                       Value="_portfolio.ExpertiseBranch"
+                                                       ValueExpression="() => _portfolio.ExpertiseBranch"
+                                                       ValueChanged="OnChangeExpertiseBranch"
+                                                       EnableDropDown="true"
+                                                       MinimumLength="1"
+                                                       MaximumSuggestions="int.MaxValue">
+                                        <SelectedTemplate Context="expertiseBranch">
+                                            @expertiseBranch?.Name
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 1 character to search."]
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L[" Could not find an item named."]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="expertiseBranch">
+                                            @expertiseBranch?.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                    <ValidationMessage For="() => _portfolio.ExpertiseBranchId"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["_name", L["Portfolio"]]</label>
+                                    <InputText @ref="_focusTarget" class="form-control" @bind-Value="_portfolio.Name" />
+                                    <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                    <ValidationMessage For="() => _portfolio.Name"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["Participation Rate in Portfolio Index"]</label>
+                                    <InputNumber class="form-control" @bind-Value="_portfolio.Ratio" />
+                                    <ValidationMessage For="() => _portfolio.Ratio"></ValidationMessage>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </EditForm>
+
+            </div>
+        </div>
+
+    </Content>
+</AppContent>

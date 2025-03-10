@@ -1,0 +1,22 @@
+﻿@using ApexCharts;
+@using Shared.ResponseModels.StatisticModels;
+@inherits FluxorComponent
+@if (_chartLoaded)
+{
+    <ApexChart @ref=_apexChart TItem="ActivePassiveResponseModel"
+               Height="500"
+               Width="500"
+               Title="Üst Kuruma Bağlı Program Sayısı"
+               Options="_options">
+        <ApexPointSeries TItem="ActivePassiveResponseModel"
+                         Items="programCountsByIns"
+                         Name="Bağlı Program Sayısı"
+                         XValue="@(e => {
+                                        string lcl = L[e.SeriesName];
+                                        return lcl;
+                                   })"
+                         YAggregate="@(e => e.Sum(e => e.ActiveRecordsCount))"
+                         SeriesType="SeriesType.Donut" />
+    </ApexChart>
+}
+

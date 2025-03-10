@@ -1,0 +1,213 @@
+﻿@using Shared.ResponseModels
+@using Shared.Types
+
+@if (_educators is not null)
+{
+    @if (AddEducator)
+    {
+
+        <div class="card-toolbar position-absolute top-0 right-0 mt-5 mr-5">
+            <div class="d-flex self-align-end">
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorAdd}">
+                    <SpinnerButton Spinning="false" Disabled="false" OnClick="() => NAvigateToAddingPage()">
+                        <i class="fas fa-add"></i>@L["add_new", L["Educator"]]
+                    </SpinnerButton>
+                </PermissionWrapper>
+            </div>
+        </div>
+    }
+
+    <Grid IsFilter="true" Items="_educators" class="table table-hover table-bordered" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => row.EducationOfficerProgramId == Id ? "table-danger font-weight-boldest":""'>
+        <GridColumn Sort="AcademicTitle.Name" TRowData="EducatorPaginateResponseDTO" Title="@L["Academic Title"]">
+            <ChildContent>
+                @context.AcademicTitle
+            </ChildContent>
+
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" value="@GetFilter(filter)" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="Name" TRowData="EducatorPaginateResponseDTO" Title="@L["Educator's Name Surname"]">
+            <ChildContent>
+                <a @onclick="() => OnEducatorDetailHandler(context)" role="button" class="btn-hover">  @context.Name</a>
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" value="@GetFilter(filter)" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="PrincipalBranchDutyPlace" TRowData="EducatorPaginateResponseDTO" Title="@L["Education Institution"]">
+            <ChildContent>
+                <span>
+                    @(context.PrincipalBranchDutyPlace ?? context.SubBranchDutyPlace)
+                </span>
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="PrincipalBranchName" TRowData="EducatorPaginateResponseDTO" Title="@L["Principle Branch"]">
+            <ChildContent>
+                <span>
+                    @(context.PrincipalBranchName)
+                </span>
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="SubBranchDutyPlace" TRowData="EducatorPaginateResponseDTO" Title="@L["Sub Branch"]">
+            <ChildContent>
+                <span>
+                    @context.SubBranchName
+                </span>
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="AdminTitle" TRowData="EducatorPaginateResponseDTO" Title="@L["Administrative Mission"]">
+            <ChildContent>
+                @if (context.EducatorAdministrativeTitles?.Count() > 0)
+                {
+                    <ul class="float-left">
+                        @foreach (var item in context.EducatorAdministrativeTitles)
+                        {
+                            <li class="mb-1 mr-1">
+                                @(item)
+                            </li>
+                        }
+                    </ul>
+                }
+            </ChildContent>
+        </GridColumn>
+        @if (ByProgramId)
+        {
+            <GridColumn class="min-w-100px align-middle" TRowData="EducatorPaginateResponseDTO" Title="@L["Transactions"]">
+                @if (context.EducationOfficerProgramId != Id)
+                {
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorUpdate}">
+                        <a @onclick="() => OnChangeAdminHandler(context)" class="btn btn-light-info btn-icon btn-sm mr-3" title="Birim Eğitim Sorumlusu Yap"><i class="fas fa-user-check"></i></a>
+                    </PermissionWrapper>
+                }
+                else
+                {
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorDocumentDownload}">
+                    <a @onclick="async () => await OnDownloadHandler(context.EducationOfficerId ?? -1)" class="btn btn-light-info btn-icon btn-sm mr-3"><i title=@L["Download"] class="fas fa-download"></i></a>
+                    </PermissionWrapper>
+                }
+
+                @*<a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm" title="Programdan Çıkar"><i class="fas fa-minus"></i></a>*@
+            </GridColumn>
+        }
+    </Grid>
+    @if (ByProgramId)
+    {
+        <p class="font-size-sm font-weight-light">*Kırmızı-koyu renkli satır "Birim Eğitim Sorumlusu"dur.</p>
+    }
+    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                DefaultPageSize="10" Loading="_loading">
+    </Pagination>
+
+
+    <UI.SharedComponents.DetailCards.EducatorViewer @ref="_selectedEducatorDetail" Educator="@_selectedEducator" Program="Program" Id="@Id" />
+
+
+    <MyModal @ref="_addDocumentModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await ChangeProgramManager())">
+        <Body>
+            <label><b>@L["Education Officer Assignment Letter"]</b></label>
+            <Dropzone @ref="dropzoneOfficer" EntityId="@(_educator?.Id??0)" DocumentType="@Shared.Types.DocumentTypes.EducationOfficerAssignmentLetter" />
+            @if (!string.IsNullOrEmpty(_officerValidationMessage))
+            {
+                <div class="validation-message">@_officerValidationMessage</div>
+            }
+        </Body>
+    </MyModal>
+    <MyModal @ref="FileModal" ShowFooter="true" ShowHeader="true">
+        <Title>Dosya Görüntüleme Ekranı</Title>
+        <Body>
+
+            <FileItem Documents="Documents" Loaded="true"></FileItem>
+
+        </Body>
+    </MyModal>
+}

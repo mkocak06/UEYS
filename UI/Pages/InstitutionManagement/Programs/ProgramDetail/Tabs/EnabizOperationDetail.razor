@@ -1,0 +1,206 @@
+﻿@using Shared.Extensions;
+@using Shared.ResponseModels
+@using Shared.ResponseModels.ENabizPortfolio
+@using Shared.Types;
+@inherits FluxorComponent
+@using ApexCharts;
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.PerfectionExportExcelList}">
+        <button class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left" : "btn btn-outline-success mr-3") @onclick="DownloadExcelFile">
+            <i class=@(_loadingFile ? "" : "fas fa-download")></i>@L["Export"]
+        </button>
+    </PermissionWrapper>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-chart text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Tedavi Bilgileri"]</h3>
+        </div>
+        <div class="card-toolbar">
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label>@L["Toplam İşlem Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.islem_sayisi" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Reçete Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.recete_sayisi" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Tahlil, Tetkik ve Radyoloji İşlemleri"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.tahlil_tetkik_ve_radyoloji_islemleri_sayisi" />
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label>@L["Muayene Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.muayene_sayisi" />
+                </div>
+                <div class="form-group">
+                    <label>@L["İlaç Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.ilac_sayisi" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Ameliyat ve Girişimsel İşlem Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.ameliyat_ve_girisimler_sayisi" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-chart text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Ameliyat Bilgileri"]</h3>
+        </div>
+        <div class="card-toolbar">
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label>@L["A Grubu Ameliyat Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.a_grubu_ameliyat_sayisi" />
+                </div>
+                <div class="form-group">
+                    <label>@L["C Grubu Ameliyat Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.c_grubu_ameliyat_sayisi" />
+                </div>
+                <div class="form-group">
+                    <label>@L["E Grubu Ameliyat Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.e_grubu_ameliyat_sayisi" />
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label>@L["B Grubu Ameliyat Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.b_grubu_ameliyat_sayisi" />
+                </div>
+                <div class="form-group">
+                    <label>@L["D Grubu Ameliyat Sayısı"]</label>
+                    <InputNumber class="form-control" disabled @bind-Value="_operations.d_grubu_ameliyat_sayisi" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (_chartData.Any())
+{
+    @* <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <ApexChart @ref=_apexChart TItem="AsistanHekimChartModel"
+                           Title="Aylık İşlem Bilgileri"
+                           Options="@options">
+
+                    <ApexPointSeries TItem="AsistanHekimChartModel"
+                                     Items="_chartData"
+                                     Name="İşlem Sayısı"
+                                     SeriesType="SeriesType.Line"
+                                     X@bind-Value="@(e => e.IslemTarihi)"
+                                     YAggregate="@(e => e.Sum(e => e.IslemSayisi))"
+                                     OrderByDescending="e=>e.Y" />
+
+                    <ApexPointSeries TItem="AsistanHekimChartModel"
+                                     Items="_chartData"
+                                     Name="Muayene Sayısı"
+                                     SeriesType="SeriesType.Line"
+                                     X@bind-Value="@(e => e.IslemTarihi)"
+                                     YAggregate="@(e => e.Sum(e => e.MuayeneSayisi))"
+                                     OrderByDescending="e=>e.Y"
+                                     ShowDataLabels />
+
+                    <ApexPointSeries TItem="AsistanHekimChartModel"
+                                     Items="_chartData"
+                                     Name="Ameliyat Sayısı"
+                                     SeriesType="SeriesType.Line"
+                                     X@bind-Value="@(e => e.IslemTarihi)"
+                                     YAggregate="@(e => e.Sum(e => e.AmeliyatSayisi))"
+                                     OrderByDescending="e=>e.Y"
+                                     ShowDataLabels />
+                </ApexChart>
+            </div>
+            <div class="col-12 col-md-6">
+                <ApexChart TItem="AsistanHekimChartModel"
+                           Title="Aylık İşlem Bilgileri">
+
+                    <ApexPointSeries TItem="AsistanHekimChartModel"
+                                     Items="_chartData"
+                                     Name="İşlem Sayısı"
+                                     X@bind-Value="@(e => e.IslemTarihi)"
+                                     YAggregate="@(e => e.Sum(e => e.IslemSayisi))"
+                                     OrderByDescending="e=>e.Y"
+                                     SeriesType="SeriesType.Bar"
+                                     Color="#008FFB" />
+
+                    <ApexPointSeries TItem="AsistanHekimChartModel"
+                                     Items="_chartData"
+                                     Name="Muayene Sayısı"
+                                     X@bind-Value="@(e => e.IslemTarihi)"
+                                     YAggregate="@(e => e.Sum(e => e.MuayeneSayisi))"
+                                     OrderByDescending="e=>e.Y"
+                                     SeriesType="SeriesType.Bar"
+                                     Color="#00E396" />
+
+                    <ApexPointSeries TItem="AsistanHekimChartModel"
+                                     Items="_chartData"
+                                     Name="Ameliyat Sayısı"
+                                     X@bind-Value="@(e => e.IslemTarihi)"
+                                     YAggregate="@(e => e.Sum(e => e.AmeliyatSayisi))"
+                                     OrderByDescending="e=>e.Y"
+                                     SeriesType="SeriesType.Bar"
+                                     Color="#FEB019" />
+                </ApexChart>
+            </div>
+        </div>
+    </div> *@
+
+    <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+        <div class="row">
+            <div class="col-12 col-md-6 mt-5">
+                <ApexChart TItem="ENabizPortfolioChartModel"
+                           Title="Klinik Bazlı Muayene Bilgileri"
+                           Options="@options">
+                    @foreach (var data in _chartData.GroupBy(x => x.KlinikAdi))
+                    {
+                        <ApexPointSeries TItem="ENabizPortfolioChartModel"
+                                         Items="data.OrderBy(e => e.IslemTarihiDate).ToList()"
+                                         Name="@data.Key"
+                                         SeriesType="SeriesType.Line"
+                                         XValue="@(e => e.IslemTarihi)"
+                                         YAggregate="@(e => e.Sum(e => e.MuayeneSayisi))" />
+                    }
+                </ApexChart>
+            </div>
+            <div class="col-12 col-md-6 mt-5">
+                <ApexChart TItem="ENabizPortfolioChartModel"
+                           Title="Klinik Bazlı İşlem Bilgileri"
+                           Options="@options1">
+                    @foreach (var data in _chartData.GroupBy(x => x.KlinikAdi).ToList())
+                    {
+                        <ApexPointSeries TItem="ENabizPortfolioChartModel"
+                                         Items="data.OrderBy(e => e.IslemTarihiDate).ToList()"
+                                         Name="@data.Key"
+                                         SeriesType="SeriesType.Line"
+                                         XValue="@(e => e.IslemTarihi)"
+                                         YAggregate="@(e => e.Sum(e => e.IslemSayisi))" />
+                    }
+                </ApexChart>
+            </div>
+        </div>
+    </div>
+}

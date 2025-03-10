@@ -1,0 +1,17 @@
+﻿@if (Value is null || (Value.HasValue && !Value.Value))
+{
+    <span class='label label-warning label-inline font-weight-lighter mr-2'>@L[NegativeString]</span>
+}
+else
+{
+    <span class='label label-primary label-inline font-weight-lighter mr-2'>@L[PositiveString]</span>
+}
+
+@code {
+    [Parameter]
+    public bool? Value { get; set; }
+    [Parameter]
+    public string PositiveString { get; set; } = "Yes";
+    [Parameter]
+    public string NegativeString { get; set; } = "No";
+}

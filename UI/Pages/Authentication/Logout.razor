@@ -1,0 +1,32 @@
+﻿@page "/logout"
+@layout LoginLayout
+<Spinner></Spinner>
+@code
+{
+    [Inject] IDispatcher Dispatcher { get; set; }
+    [Inject] IAuthenticationService AuthenticationService { get; set; }
+    [Inject] IJSRuntime JSRuntime { get; set; }
+    [Inject] ISweetAlert SweetAlert { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            string url = await AuthenticationService.SsoLogout();
+            if (url is not null)
+            {
+                await JSRuntime.InvokeVoidAsync("open", url, "_self");
+            }
+        }
+        catch (Exception)
+        {
+            SweetAlert.ToastAlert(SweetAlertIcon.error, $"Could not be logged out");
+        }
+        finally
+        {
+            NavigationManager.NavigateTo("./login");
+        }
+    }
+}

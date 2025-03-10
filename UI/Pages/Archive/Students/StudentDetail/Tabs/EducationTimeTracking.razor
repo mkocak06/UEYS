@@ -1,0 +1,388 @@
+﻿@using Shared.Extensions
+@using Shared.ResponseModels
+@using Shared.Types
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+ 
+</div>
+
+<div id="@WrapperId"></div>
+
+<div class="card card-custom">
+    <div class="card-body">
+        @if (_educationTrackings != null)
+        {
+            <Grid Items="_educationTrackings" class="table table-hover" RowClass='(row, index) => row.ProcessType.Value.GetProcessColorForTable()'>
+                <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Process Type"]">
+                    <ChildContent>
+                        <span>
+                            @L[context.ProcessType.Value.GetDescription()]
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Process Date"]">
+                    <ChildContent>
+                        <span>
+                            @context.ProcessDate?.ToShortDateString()
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Reason"]">
+                    <ChildContent>
+                        <span>
+                            @(L[context.ReasonType.Value.GetDescription()])  @(context.ReasonType == ReasonType.ExcusedTransfer && context.ExcusedType.HasValue ? "(" + L[context.ExcusedType.Value.GetDescription()] + ")" : "")
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Institution of Education"]">
+                    <ChildContent>
+                        <span>
+                            @(context.Program != null ? context.Program?.Name : "-")
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Assignment"]">
+                    <ChildContent>
+                        <span>
+                            @(context.AssignmentType != null ? context.AssignmentType == AssignmentType.UnderProtocolProgram && SelectedStudent.ProtocolOrComplement == ProgramType.Complement ? L["Under Complement Program"] : L[context.AssignmentType.Value.GetDescription()] : "-")
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Additional Days(Day)"]">
+                    <ChildContent>
+                        <span>
+                            @(context.AdditionalDays.HasValue ? context.AdditionalDays : "-")
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Description"]">
+                    <ChildContent>
+                        <span>
+                            @(context.Description ?? "-")
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="align-middle" TRowData="EducationTrackingResponseDTO" Title="@L["Transactions"]">
+                    @if (context.ProcessType != ProcessType.EstimatedFinish)
+                    {
+                        <a @onclick="async () => await OnDownloadHandler(context)" class="btn btn-light-info btn-icon btn-sm float-right "><i title=@L["Download"] class="fas fa-download"></i></a>
+                    }
+                </GridColumn>
+                
+            </Grid>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+<MyModal @ref="_educationTrackingUpdateModal" ShowFooter="false" ShowHeader="false">
+
+    <Body>
+        <EditForm EditContext="_ecUpdate">
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["Process Type"]</label>
+                        <InputSelect @bind-Value="_educationTrackingForUpdate.ProcessType" class="form-control" disabled>
+                            @foreach (ProcessType processType in Enum.GetValues(typeof(ProcessType)).Cast<ProcessType>().Except(new ProcessType[] { ProcessType.EstimatedFinish }))
+                            {
+                                <option value="@processType">@L[processType.GetDescription()] </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Reason"]</label>
+                        <InputSelect @bind-Value="_educationTrackingForUpdate.ReasonType" class="form-control" disabled>
+                            @if (_educationTrackingForUpdate.ProcessType != null)
+                            {
+                                <option value="@_educationTrackingForUpdate.ReasonType">@L[_educationTrackingForUpdate.ReasonType.Value.GetDescription()] </option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>_educationTracking.ReasonType"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Description"]</label>
+                        <InputTextArea class="form-control" @bind-Value="_educationTrackingForUpdate.Description" />
+                        <ValidationMessage For="()=>_educationTrackingForUpdate.Description"></ValidationMessage>
+
+                    </div>
+                    @if (_educationTrackingForUpdate.ProcessType == ProcessType.TimeIncreasing || _educationTrackingForUpdate.ProcessType == ProcessType.TimeDecreasing)
+                    {
+                        <div class="form-group">
+                            <label>@L["Additional Days(Day)"] </label>
+                            <InputNumber class="form-control" @bind-Value="_educationTrackingForUpdate.AdditionalDays" />
+                        </div>
+                    }
+                    @if (_educationTrackingForUpdate.ReasonType == ReasonType.LeavingTheInstitutionDueToAssignment)
+                    {
+                        <div class="form-group">
+                            <label>@L["Additional Days(Day)"]</label>
+                            <InputNumber class="form-control" @bind-Value="_educationTrackingForUpdate.AdditionalDays" Disabled="true" />
+                        </div>
+                    }
+                    @if (_educationTrackingForUpdate.ReasonType == ReasonType.ExcusedTransfer && _educationTrackingForUpdate.ExcusedType != null)
+                    {
+                        <div class="form-group">
+                            <label>@L["Reason for Excuse"]</label>
+                            <InputSelect @bind-Value="_educationTrackingForUpdate.ExcusedType" class="form-control">
+                                @foreach (ExcusedType excusedType in Enum.GetValues(typeof(ExcusedType)))
+                                {
+                                    <option selected="@(excusedType==_educationTrackingForUpdate.ExcusedType)" value="@excusedType">@L[excusedType.GetDescription()] </option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="()=>_educationTrackingForUpdate.ReasonType"></ValidationMessage>
+                        </div>
+                    }
+                    @if (_minDateLimit != null || _maxDateLimit != null)
+                    {
+                        <div class="form-group">
+                            <label>@L["Process Date"]</label>
+                            <InputDate class="form-control" min="@_minDateLimit?.Date" max="@_maxDateLimit?.Date" @bind-Value="_educationTrackingForUpdate.ProcessDate" TValue="DateTime?" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label>@L["Process Date"]</label>
+                            <InputDate class="form-control" @bind-Value="_educationTrackingForUpdate.ProcessDate" TValue="DateTime?" />
+                        </div>
+                    }
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId="@(_educationTrackingForUpdate.Id.HasValue ? (long)_educationTrackingForUpdate.Id : 0)" DocumentType="DocumentTypes.EducationTimeTracking"></Dropzone>
+                        @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                        {
+                            <div class="validation-message">@_documentValidatorMessage</div>
+                        }
+                    </div>
+                    @if (_educationTrackingForUpdate.Documents != null && _educationTrackingForUpdate.Documents.Count > 0)
+                    {
+                        <FileItem Documents="_educationTrackingForUpdate.Documents" Loaded="true" IsEditing="true"></FileItem>
+                    }
+                </div>
+                <button @onclick="UpdateEducationTracking" class="btn btn-clean btn-primary"> @L["Save"] </button>
+            </div>
+
+        </EditForm>
+    </Body>
+
+</MyModal>
+<MyModal @ref="_educationTrackingAddModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ec">
+            <FluentValidator TValidator="EducationTrackingValidator" />
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["Process Type"]</label>
+                        <InputSelect Value="_educationTracking.ProcessType" TValue="ProcessType?" ValueExpression="()=>_educationTracking.ProcessType" ValueChanged="(ProcessType? e)=> OnChangeSelect(e)" class="form-control">
+                            <option value="" selected>@L["Select"]</option>
+                            @if (SelectedStudent.Status == StudentStatus.Abroad)
+                            {
+                                <option value="@ProcessType.Assignment">@L[ProcessType.Assignment.GetDescription()] </option>
+                            }
+                            else if (SelectedStudent.Status == StudentStatus.TransferDueToNegativeOpinion)
+                            {
+                                <option value="@ProcessType.Transfer">@L[ProcessType.Transfer.GetDescription()] </option>
+                            }
+                            else if (SelectedStudent.Status == StudentStatus.EndOfEducationDueToNegativeOpinion)
+                            {
+                                <option value="@ProcessType.Finish">@L[ProcessType.Finish.GetDescription()] </option>
+                            }
+                            else if(SelectedStudent.Status == StudentStatus.Rotation || SelectedStudent.ProtocolProgramId != null)
+                            {
+                                <option value="@ProcessType.TimeIncreasing">@L[ProcessType.TimeIncreasing.GetDescription()] </option>
+                            }
+                            else
+                            {
+                                @foreach (ProcessType processType in Enum.GetValues(typeof(ProcessType)).Cast<ProcessType>().Except(new ProcessType[] { ProcessType.EstimatedFinish, ProcessType.Information, ProcessType.Graduate }))
+                                {
+                                    <option value="@processType">@L[processType.GetDescription()] </option>
+                                }
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>_educationTracking.ProcessType"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Reason"]</label>
+                        <InputSelect Value="_educationTracking.ReasonType" TValue="ReasonType?" ValueExpression="()=>_educationTracking.ReasonType" ValueChanged="(ReasonType? e)=> OnChangeReasonAsync(e)" class="form-control" disabled="@(_educationTracking.ProcessType==null)">
+                            <option value="" selected>@L["Select"]</option>
+                            @if (_educationTracking.ProcessType != null)
+                            {
+                                if (SelectedStudent.Status == StudentStatus.Abroad)
+                                {
+                                    <option value="@ReasonType.CompletionOfAssignmentAbroad">@L[ReasonType.CompletionOfAssignmentAbroad.GetDescription()] </option>
+                                }
+                                else if (SelectedStudent.Status == StudentStatus.TransferDueToNegativeOpinion)
+                                {
+                                    <option value="@ReasonType.ExcusedTransfer">@L[ReasonType.ExcusedTransfer.GetDescription()] </option>
+                                }
+                                else if (SelectedStudent.Status == StudentStatus.EndOfEducationDueToNegativeOpinion)
+                                {
+                                    <option value="@ReasonType.EndOfEducationDuetoNegativeOpinion">@L[ReasonType.EndOfEducationDuetoNegativeOpinion.GetDescription()] </option>
+                                }
+                                else
+                                {
+                                    if (_educationTracking.ProcessType == ProcessType.Assignment)
+                                    {
+                                        if (_educationTrackings.Any(x => x.ProcessDate == null))
+                                        {
+                                            <option value="" disabled>@L["Enter the process date of the assignment/education record for which the process date is not entered."] </option>
+                                        }
+                                        else
+                                        {
+                                            if (SelectedStudent.Status == StudentStatus.Assigned)
+                                            {
+                                                <option value="@ReasonType.CompletionOfAssignment">@L[ReasonType.CompletionOfAssignment.GetDescription()] </option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@ReasonType.LeavingTheInstitutionDueToAssignment">@L[ReasonType.LeavingTheInstitutionDueToAssignment.GetDescription()] </option>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @foreach (var item in _educationTracking.ProcessType.Value.GetReasonTypes(SelectedStudent.Status.Value))
+                                        {
+                                            <option value="@item">@L[item.GetDescription()] </option>
+                                        }
+                                    }
+                                }
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>_educationTracking.ReasonType"></ValidationMessage>
+                    </div>
+                    @if (_educationTracking.ReasonType == ReasonType.LeavingTheInstitutionDueToAssignment)
+                    {
+                        <div class="form-group">
+                            <label>@L["Assignment Type"]</label>
+                            <InputSelect @bind-Value="_educationTracking.AssignmentType" class="form-control">
+                                <option value="" selected>@L["Select"]</option>
+                                @if (_educationTracking.ReasonType != null)
+                                {
+                                    @foreach (AssignmentType assignmentType in Enum.GetValues(typeof(AssignmentType)))
+                                    {
+                                        <option value="@assignmentType">@L[assignmentType.GetDescription()] </option>
+                                    }
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="()=>_educationTracking.AssignmentType"></ValidationMessage>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label>@L["Description"]</label>
+                        <InputTextArea class="form-control" @bind-Value="_educationTracking.Description" />
+                        <ValidationMessage For="()=>_educationTracking.Description"></ValidationMessage>
+
+                    </div>
+                    @if (_educationTracking.ProcessType == ProcessType.TimeIncreasing || _educationTracking.ProcessType == ProcessType.TimeDecreasing || _educationTracking.ReasonType == ReasonType.LeavingTheInstitutionDueToAssignment)
+                    {
+                        <div class="form-group">
+                            <label>@L["Additional Days(Day)"]</label>
+                            <input type="text" inputmode="numeric" class="form-control" @bind-value="_educationTracking.AdditionalDays" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" maxlength="4" />
+
+                            <ValidationMessage For="()=>_educationTracking.AdditionalDays"></ValidationMessage>
+                        </div>
+                    }
+                    @if (_educationTracking.ReasonType == ReasonType.ExcusedTransfer || _educationTracking.ReasonType == ReasonType.UnexcusedTransfer || _educationTracking.ReasonType == ReasonType.BranchChange_End || (_educationTracking.ReasonType == ReasonType.LeavingTheInstitutionDueToAssignment && _educationTracking.AssignmentType != AssignmentType.EducationAbroad) || _educationTracking.ReasonType == ReasonType.CompletionOfAssignment || _educationTracking.ReasonType == ReasonType.KKTCHalfTimed)
+                    {
+                        <div class="form-group">
+                            <label>@L["Expertise Training Program"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchPrograms" class="@GetProgramClass()"
+                                               placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                           TItem="ProgramResponseDTO"
+                                           TValue="ProgramResponseDTO"
+                                           Value="_newProgram"
+                                           ValueExpression="() => _newProgram"
+                                           ValueChanged="OnChangeProgram"
+                                           EnableDropDown="false"
+                                           DisableClear="true"
+                                           MinimumLength="3"
+                                           MaximumSuggestions=int.MaxValue>
+                                <SelectedTemplate Context="program">
+                                    @program.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 3 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="program">
+                                    @program.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                            @if (!string.IsNullOrEmpty(_validationMessage))
+                            {
+                                <div class="validation-message">@_validationMessage</div>
+                            }
+                            @if (!string.IsNullOrEmpty(_curriculumMessage))
+                            {
+                                <div class="validation-message">@_curriculumMessage</div>
+                            }
+                        </div>
+
+                        @if (_educationTracking.ReasonType == ReasonType.ExcusedTransfer)
+                        {
+                            <div class="form-group">
+                                <label>@L["Reason for Excuse"]</label>
+                                <InputSelect @bind-Value="_educationTracking.ExcusedType" class="form-control" disabled="@(_educationTracking.ReasonType==null)">
+                                    <option value="" selected>@L["Select"]</option>
+                                    @if (SelectedStudent.Status == StudentStatus.TransferDueToNegativeOpinion)
+                                    {
+                                        <option value="@ExcusedType.NegativeOpinion">@L[ExcusedType.NegativeOpinion.GetDescription()] </option>
+                                    }
+                                    else
+                                    {
+                                        @foreach (ExcusedType excusedType in Enum.GetValues(typeof(ExcusedType)))
+                                        {
+                                            <option value="@excusedType">@L[excusedType.GetDescription()] </option>
+                                        }
+                                    }
+
+                                </InputSelect>
+                                <ValidationMessage For="()=>_educationTracking.ExcusedType"></ValidationMessage>
+                            </div>
+                        }
+
+                    }
+                    <div class="form-group">
+                        <label>@L["Process Date"]</label>
+                        @if (_educationTracking.ReasonType == ReasonType.CompletionOfAssignment || _educationTracking.ReasonType == ReasonType.CompletionOfAssignmentAbroad)
+                        {
+                            OnSelectCompletionOfAssignment();
+                            <InputDate max="@_assignmentDateLimit?.ToString("yyyy-MM-dd")" Value="_educationTracking.ProcessDate" ValueChanged="(DateTime? e) => OnChangeProcessDate(e)" class="form-control"></InputDate>
+                        }
+                        else
+                        {
+                            <InputDate Value="_educationTracking.ProcessDate" ValueChanged="(DateTime? e) => OnChangeProcessDate(e)" class="form-control"></InputDate>
+                        }
+                        <ValidationMessage For="()=>_educationTracking.ProcessDate"></ValidationMessage>
+
+                    </div>
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId=0 DocumentType="@Shared.Types.DocumentTypes.EducationTimeTracking" />
+                        @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                        {
+                            <div class="validation-message">@_documentValidatorMessage</div>
+                        }
+                    </div>
+                </div>
+                <button @onclick="AddEducationTracking" class="btn btn-clean btn-primary"> @L["Save"] </button>
+            </div>
+
+        </EditForm>
+    </Body>
+
+</MyModal>
+
+<MyModal @ref="FileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+
+        <FileItem Documents="Documents" Loaded="true"></FileItem>
+
+    </Body>
+</MyModal>

@@ -1,0 +1,59 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Types
+@using Shared.Extensions;
+@page "/management/announcement/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AnnouncementUpdate}">
+                <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                    <i class="fas fa-save"></i>@L["Save"]
+                </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="AnnouncementValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["Announcement Title"]</label>
+                                        <InputText class="form-control" @bind-Value="_announcement.Title" />
+                                        <ValidationMessage For="() => _announcement.Title"></ValidationMessage>
+                                        <label>@L["Explanation"]</label>
+                                        <InputTextArea class="form-control" @bind-Value="_announcement.Explanation" />
+                                        <ValidationMessage For="()=>_announcement.Explanation"></ValidationMessage>
+                                    </div>
+                                </EditForm>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                    <div class="form-group">
+                                        <label>@L["Publish Date"]</label>
+                                        <InputDate class="form-control" @bind-Value="_announcement.PublishDate" disabled />
+                                    </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/announcements"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

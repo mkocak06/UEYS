@@ -1,0 +1,137 @@
+﻿@using Shared.FilterModels.Base
+@using Shared.Types
+@inherits FluxorComponent
+@typeparam TRowData
+
+<style>
+    .sort-th {
+        cursor: pointer;
+    }
+
+    .fa {
+        float: right;
+    }
+</style>
+
+@*
+    <CascadingValue> allows descendant components (defined in ChildContent) to receive the specified value.
+    Child components need to declare a cascading parameter with the same type as "Value" (i.e. Grid<TRowData>).
+    This allows GridColumn to get the Grid instance by using a CascadingParameter
+
+        [CascadingParameter]public Grid<TRowData> OwnerGrid { get; set; }
+
+    IsFixed="true" indicates that "Value" will not change. This is a
+    performance optimization that allows the framework to skip setting up
+    change notifications.
+*@
+<CascadingValue IsFixed="false" Value="this">@ChildContent</CascadingValue>
+
+@* Render the table *@
+<div class="table-responsive" style="@(Height != null ? ($"height: {Height}") : "")"> @*TODO Burası kalkacak*@
+    <table @attributes="@TableAttributes">
+        <thead class="thead-light">
+        <tr>
+            @foreach (var column in _columns)
+            {
+                @column.HeaderTemplate
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @if (_columns.Any(x => x.FilterTemplate != null))
+        {
+            <tr class="bg-white">
+                @foreach (var column in _columns)
+                {
+                    <td>
+                        @if (column.FilterTemplate != null)
+                        {
+                            @column.FilterTemplate(column?.Sort ?? string.Empty)
+                        }
+                    </td>
+                }
+            </tr>
+        }
+
+        @{
+            if (Items != null)
+            {
+                var index = 0;
+                foreach (var item in Items)
+                {
+                        @* Use @key to help the diff algorithm when updating the collection *@
+                    <tr @key="item.GetHashCode()" class="@(RowClass?.Invoke(item, index++))" @onclick="()=>RowClickHandler(item)">
+                        @foreach (var column in _columns)
+                        {
+                            @column.CellTemplate(item)
+                        }
+                    </tr>
+                }
+                if (Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="@_columns.Count">@L["There is no record belong to this field"]</td>
+                    </tr>
+                }
+            }
+        }
+        </tbody>
+    </table>
+</div>
+
+@code {
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> TableAttributes { get; set; }
+
+    [Parameter]
+    public ICollection<TRowData> Items { get; set; }
+
+    // This fragment should contains all the GridColumn
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public Func<TRowData, int, string> RowClass { get; set; }
+
+    [Parameter]
+    public Sort Sort { get; set; }
+
+    [Parameter]
+    public string Height { get; set; }
+
+    [Parameter]
+    public Action<Sort> OnSortChanged { get; set; }
+
+    [Parameter]
+    public Action<TRowData> OnRowClicked { get; set; }
+
+    [Parameter]
+    public bool IsFilter { get; set; } = true;
+
+    private readonly List<GridColumn<TRowData>> _columns = new List<GridColumn<TRowData>>();
+
+    // GridColumn uses this method to add a column
+    internal void AddColumn(GridColumn<TRowData> column)
+    {
+        _columns.Add(column);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // The first render will instantiate the GridColumn defined in the ChildContent.
+            // GridColumn calls AddColumn during its initialization. This means that until
+            // the first render is completed, the columns collection is empty.
+            // Calling StateHasChanged() will re-render the component, so the second time it will know the columns
+            StateHasChanged();
+        }
+    }
+
+    private void RowClickHandler(TRowData rowData)
+    {
+        OnRowClicked?.Invoke(rowData);
+    }
+
+}

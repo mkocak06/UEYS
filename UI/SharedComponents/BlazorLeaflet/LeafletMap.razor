@@ -1,0 +1,28 @@
+﻿@using System.Threading.Tasks
+@using Microsoft.AspNetCore.Components
+@inject IJSRuntime _jsRuntime
+@implements IDisposable
+
+<div id="@Map.Id" style="width: 100%; height: 100%;"></div>
+
+@code {
+    [Parameter] public Map Map { get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LeafletInterops.Create(_jsRuntime, Map);
+            Map.RaiseOnInitialized();
+        }
+    }
+    public void SetMapOnModal(Guid modalId)
+    {
+        LeafletInterops.SetMapOnModal(_jsRuntime, Map.Id, modalId);
+    }
+    void IDisposable.Dispose()
+    {
+        LeafletInterops.Destroy(_jsRuntime, Map.Id);
+    }
+}

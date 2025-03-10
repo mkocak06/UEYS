@@ -1,0 +1,153 @@
+﻿@page "/version2"
+@inherits FluxorComponent
+@using Shared.ResponseModels
+@using Shared.Types
+@using UI.SharedComponents.Dashboard
+@using UI.SharedComponents.AdvancedFilters
+@using ApexCharts;
+
+<style>
+    .heatmap {
+        display: flex;
+        flex-wrap: wrap;
+        width: 250px;
+        margin: 20px auto;
+    }
+
+    .cell {
+        width: calc(100% / 4);
+        height: 30px;
+        border: 1px solid #ccc;
+        position: relative;
+    }
+
+        .cell span {
+            position: absolute;
+            font-size: x-small;
+        }
+
+    .heatmap .cell:first-child span {
+        top: 0;
+        left: -10%;
+        transform: translateY(-100%);
+    }
+
+    .heatmap .cell:last-child span {
+        top: 0;
+        left: 100%;
+        transform: translateY(-100%);
+    }
+</style>
+
+
+<AnnouncementCard></AnnouncementCard>
+
+<div class="card card-custom">
+    <div class="card-header">
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.DashboardGetMap}">
+            <DashboardProgramFilters></DashboardProgramFilters>
+        </PermissionWrapper>
+    </div>
+    <div class="card-body">
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.DashboardGetMap}">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card card-custom card-stretch gutter-b">
+                        <div class="card-body zindex-5">
+                            <UI.SharedComponents.Dashboard.TurkeyMap.TurkeyMap PlateListColorInfo="colorOrderList" OnCitySelect="SelectCity" />
+                        </div>
+                        <div class="heatmap">
+                            <div class="cell" style="background-color: #3fc1c0;">
+                                <span>0</span>
+                            </div>
+                            <div class="cell" style="background-color: #00b2ca;">
+                            </div>
+                            <div class="cell" style="background-color: #0f80aa;">
+                            </div>
+                            <div class="cell" style="background-color: #1d4e89;">
+                                <span>100(%)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </PermissionWrapper>
+        <div class="row">
+            <div class="col-md-4">
+                <ProgramReportsByUniversity />
+            </div>
+            <div class="col-md-4">
+                <ProgramsCountByAuthorizationCategory />
+            </div>
+            <div class="col-md-4">
+                <ProgramCountByInsProfession />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <EducatorCountByUniversity />
+            </div>
+            <div class="col-md-4">
+                <EducatorChart />
+            </div>
+            <div class="col-md-4">
+                <EducatorCountByInsProfession />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <StudentChart />
+            </div>
+            <div class="col-md-4">
+                <StudentByExamTypeChart />
+            </div>
+            <div class="col-md-4">
+                <StudentCountByInsProfession />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <UniversityReports />
+            </div>
+            <div class="col-md-4">
+                <AffiliationReports />
+            </div>
+            <div class="col-md-4">
+                <UniversityHospitalByInstitutionReports />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <CountsByParentInstitutionChart />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-custom card-stretch gutter-b bg-diagonal">
+                    <div class="card-header zindex-5">
+                        <div class="card-title">
+                            @L["_Information", L["Kontenjan"]]
+                        </div>
+                        <div class="card-toolbar">
+                            <button class="btn btn-danger font-weight-bold mr-2" @onclick="() => _chartView = !_chartView">
+                                <i class="fas fa-search"></i>@(_chartView ? L["Grafiği Gizle"] : L["Grafiği Göster"])
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (_chartView)
+                        {
+                            <StudentQuotaChart />
+                        }
+                        else
+                        {
+                            <StudentQuotaReports />
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* <AdvancedSearchOffCanvas IsTabView><ProgramFilterForm /></AdvancedSearchOffCanvas> *@

@@ -1,0 +1,291 @@
+﻿@using Shared.ResponseModels
+@inherits FluxorComponent
+
+@* <div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-pin text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["_Information", L["Affiliation"]]</h3>
+        </div>
+    </div> 
+
+     @if (!_loadingAffiliaton)
+    {
+        @if (_affiliation != null)
+        {
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+
+                        <div class="form-group">
+                            <label>@L["Afiliye Olunan Hastane"]</label>
+                            <input class="form-control" type="text" value="@_affiliation.Hospital.Name" disabled>
+
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["Afiliye Olunan Üniversite"]</label>
+                            <input class="form-control" type="text" value="@_affiliation.Faculty.University.Name" disabled>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <span class="label label-inline">
+                @L["There is no record belong to this field"]
+            </span>
+        }
+    }
+    else
+    {
+        <span class="label label-inline">
+            <Spinner></Spinner>
+        </span>
+
+    }  
+</div> *@
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-pin text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Protocol Programs"]</h3>
+        </div>
+    </div>
+
+    @if (!_loadingProtocol)
+    {
+        @if (_protocolProg != null)
+        {
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["Protocol Date"]</label>
+                            <input class="form-control" type="text" value="@_protocolProg?.DecisionDate?.ToString("dd.MM.yyyy")" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["Protocol Program No"]</label>
+                            <input class="form-control" type="text" value="@_protocolProg.ProtocolNo" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <span class="label label-inline">
+                @L["There is no record belong to this field"]
+            </span>
+        }
+    }
+    else
+    {
+        <span class="label label-inline">
+            <Spinner></Spinner>
+        </span>
+
+    }
+
+
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-pin text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Complementary Programs"]</h3>
+        </div>
+    </div>
+
+    @if (!_loadingComplemantary)
+    {
+        @if (_complemantaryProg != null)
+        {
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["Protocol Date"]</label>
+                            <input class="form-control" type="text" value="@_complemantaryProg?.DecisionDate?.ToString("dd.MM.yyyy")" disabled>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["Protocol Program No"]</label>
+                            <input class="form-control" type="text" value="@_complemantaryProg.ProtocolNo" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <span class="label label-inline">
+                @L["There is no record belong to this field"]
+            </span>
+        }
+    }
+    else
+    {
+        <span class="label label-inline">
+            <Spinner></Spinner>
+        </span>
+
+
+    }
+
+
+</div>
+
+@*<div class="row">
+    <div class="col-12 col-md-6">
+        @if (_protocolProgram.ChildPrograms != null && _protocolProgram.ChildPrograms.Any())
+        {
+            <Grid IsFilter="false" Items="_protocolProgram.ChildPrograms" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn TRowData="ProgramResponseDTO" Title="@L["_name", L["Program"]]">
+                    @context.ExpertiseBranch?.Name
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="ProgramResponseDTO" Title="#">
+                    <a @onclick="() => OnRemoveProgram(context)" class="btn btn-light-primary btn-icon btn-sm"><i class="flaticon2-delete"></i></a>
+                </GridColumn>
+            </Grid>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="text-center font-weight-bolder font-size-lg w-100 mb-5">@L["There is no sub program record for this program"]</div>
+            </div>
+        }
+        <div class="text-center font-weight-bolder font-size-lg w-100">
+            <button class="btn btn-primary" @onclick="OnOpenProgramListModal">@L["Add Dependent Program"]</button>
+        </div>
+    </div>*@
+@*<div class="col-12 col-md-6">
+        @if (_protocolProgram.AuthorizationDetails != null && _protocolProgram.AuthorizationDetails.Any())
+        {
+            <Grid IsFilter="false" Items="_protocolProgram.AuthorizationDetails" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["_Date",L["Authorization"]]">
+                    @context.AuthorizationDate
+                </GridColumn>
+                <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["_Date",L["End"]]">
+                    @context.AuthorizationEndDate
+                </GridColumn>
+                <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["_Date", L["Visit"], string.Empty]">
+                    @context.VisitDate
+                </GridColumn>
+                <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Decision Number"]">
+                    @context.AuthorizationDecisionNo
+                </GridColumn>
+                <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Category"]">
+                    @context.AuthorizationCategory.Name (@context.AuthorizationCategory.Description)
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="AuthorizationDetailResponseDTO" Title="#">
+                    <button @onclick="() => OnRemoveAuthDetail(context)" class="btn btn-icon btn-outline-danger btn-sm">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </GridColumn>
+            </Grid>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="text-center font-weight-bolder font-size-lg w-100 mb-5">@L["There is no authorization record for this protocol"]</div>
+            </div>
+        }
+        <div class="text-center font-weight-bolder font-size-lg w-100">
+            <button class="btn btn-primary" @onclick="OnOpenAuthDetailModal">@L["Add Authorization Detail"]</button>
+        </div>
+    </div>*@
+@*</div>*@
+
+@*<MyModal @ref="_programListModal" Size="MyModal.ModalSize.Large" ShowFooter="false" ShowHeader="false">
+    <Body>
+    @if (_programs != null)
+    {
+        <Grid IsFilter="false" Items="_programs" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+            <GridColumn TRowData="ProgramResponseDTO" Title="@L["_name", L["Program"]]">
+                @context.ExpertiseBranch?.Name
+            </GridColumn>
+            <GridColumn TRowData="ProgramResponseDTO" Title="@L["Hospital"]">
+                @context.Hospital?.Name
+            </GridColumn>
+            <GridColumn class="min-w-100px align-middle" TRowData="ProgramResponseDTO" Title="#">
+                <a @onclick="() => OnAddProgram(context)" class="btn btn-light-primary btn-icon btn-sm @(IsAddedSubProgram(context) ? "disabled" : "")"><i class="flaticon2-plus"></i></a>
+            </GridColumn>
+        </Grid>
+        <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                    DefaultPageSize="10" Loading="_loading">
+        </Pagination>
+    }
+    else
+    {
+        <Spinner></Spinner>
+    }
+    </Body>
+</MyModal>*@
+@*<MyModal @ref="_authorizationDetailModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+    <EditForm EditContext="_authorizationEc">
+        <div id="form-exams-list">
+            <div id="authorization-form">
+                <div class="form-group">
+                    <label>@L["_Date", L["Authorization"], string.Empty]</label>
+                    <BootstrapDatePicker @ref="_dp1" class="form-control" @bind-BindingValue="_authorizationDetail.AuthorizationDate"></BootstrapDatePicker>
+                </div>
+                <div class="form-group">
+                    <label>@L["_Date", L["Authorization"], L["Finish"]]</label>
+                    <BootstrapDatePicker @ref="_dp2" class="form-control" @bind-BindingValue="_authorizationDetail.AuthorizationEndDate"></BootstrapDatePicker>
+                </div>
+                <div class="form-group">
+                    <label>@L["_Date", L["Visit"], string.Empty]</label>
+                    <BootstrapDatePicker @ref="_dp3" class="form-control" @bind-BindingValue="_authorizationDetail.VisitDate"></BootstrapDatePicker>
+                </div>
+                <div class="form-group">
+                    <label>@L["Authorization Decision Number"]</label>
+                    <InputText type="text" class="form-control" @bind-Value="_authorizationDetail.AuthorizationDecisionNo"/>
+                </div>
+                <div class="form-group">
+                    <label>@L["Authorization Category"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchAuthorizationCategories"
+                                       TItem="AuthorizationCategoryResponseDTO"
+                                       TValue="AuthorizationCategoryResponseDTO"
+                                       Value="_authorizationDetail.AuthorizationCategory"
+                                       ValueExpression="() => _authorizationDetail.AuthorizationCategory"
+                                       ValueChanged="OnChangeAuthorizationCategory"
+                                       EnableDropDown="true"
+                                       MinimumLength="1">
+                        <SelectedTemplate Context="autCat">
+                            @autCat.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="autCat">
+                            @autCat.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+        </div>
+        <button @onclick="OnAddAuthDetail" class="btn btn-clean btn-primary"> @L["Add"] </button>
+    </EditForm>
+    </Body>
+</MyModal>*@

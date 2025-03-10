@@ -1,0 +1,86 @@
+﻿@using Shared.ResponseModels.ProtocolProgram;
+@using Shared.ResponseModels;
+<MyModal @ref="_dependentProgramViewerModal" Size="MyModal.ModalSize.XLarge" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="fa fa-cog text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@L["_Information", L["Protocol Program"]]</h3>
+                </div>
+            </div>
+            <div class="card-body pt-2">
+
+                @if (StudentDependentPrograms is not null)
+                {
+                    <Grid Items="StudentDependentPrograms.DependentPrograms" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.ProgramName" Title="@L["Program"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.Duration" Title="@L["Duration (Month)"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["Number of Days Remaining if the Training is Left Before Ending"]">
+                            <ChildContent>
+                                @(context.IsUnCompleted != true ? "" : context.RemainingDays)
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["Start Date"]">
+                            <ChildContent>
+                                @context.StartDate?.ToShortDateString()
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["End Date"]">
+                            <ChildContent>
+                                @context.EndDate?.ToShortDateString()
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn class="min-w-100px align-middle" TRowData="StudentDependentProgramPaginateDTO" Title="@L["Status"]">
+                            @if (context.IsCompleted == true)
+                            {
+                                <a class="btn btn-light-success disabled">
+                                    <i class="fas fa-check-circle"></i> @L["Completed"]
+                                </a>
+                            }
+                            else if (context.IsActive == true)
+                            {
+                                <a class="btn btn-light-danger disabled">
+                                    <span class="label pulse pulse-danger" style="background-color:transparent;">
+                                        <span class="position-relative"><span class="label label-xl label-dot label-danger"></span></span>
+                                        <span class="pulse-ring"></span>
+                                    </span>
+                                    @L["Active Dependent Program"]
+                                </a>
+                            }
+                            else if(context.IsUnCompleted == true)
+                            {
+                                <a class="btn btn-light-danger disabled">
+                                    <i class="fas fa-times-circle"></i> @L["Uncompleted"]
+                                </a>
+                            }
+                        </GridColumn>
+                    </Grid>
+                }
+                else
+                {
+                    @L["No data to display"]
+                }
+            </div>
+        </div>
+    </Body>
+</MyModal>
+
+@code {
+    [Parameter]
+    public StudentDependentProgramsDTO StudentDependentPrograms { get; set; }
+
+    private MyModal _dependentProgramViewerModal;
+
+    public void OpenModal()
+    {
+        _dependentProgramViewerModal.OpenModal();
+    }
+
+    public void CloseModal()
+    {
+        _dependentProgramViewerModal.CloseModal();
+    }
+}

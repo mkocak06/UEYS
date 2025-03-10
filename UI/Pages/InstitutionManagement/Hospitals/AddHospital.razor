@@ -1,0 +1,200 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/hospitals/add-hospital"
+@inherits FluxorComponent
+
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <div class="row">
+                        <FluentValidator TValidator="HospitalValidator"></FluentValidator>
+
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["_name", L["Institution of Education"]]</label>
+                                <InputText @ref="_focusTarget" class="form-control" @bind-Value="_hospital.Name" />
+                                <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                <ValidationMessage For="() => _hospital.Name"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Address"]</label>
+                                <InputTextArea class="form-control" @bind-Value="_hospital.Address"/>
+                                <ValidationMessage For="() => _hospital.Address"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Telephone Number"]</label>
+                       <InputMask @ref="_inputMask"  Value="@_hospital.Phone" ValueExpression="()=>_hospital.Phone" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(PhoneNoChanged)" class="form-control" type="text" data-mask="(999) 999-9999"  />
+                                <ValidationMessage For="() => _hospital.Phone"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Email"]</label>
+                                <InputText class="form-control" @bind-Value="_hospital.Email" />
+                                <ValidationMessage For="() => _hospital.Email"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Web Address"]</label>
+                                <InputText class="form-control" @bind-Value="_hospital.WebAddress" />
+                                <ValidationMessage For="() => _hospital.WebAddress"></ValidationMessage>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["Province"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                                   TItem="ProvinceResponseDTO"
+                                                   TValue="ProvinceResponseDTO"
+                                                   Value="_hospital.Province"
+                                                   ValueExpression="() => _hospital.Province"
+                                                   ValueChanged="OnChangeProvince"
+                                                   MaximumSuggestions="85"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                    <SelectedTemplate Context="province">
+                                        @province.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="province">
+                                        @province.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => _hospital.Province" />
+                            </div>
+                             <div class="form-group">
+                                <label>@L["Latitude"]</label> 
+                                <Input class="form-control" value="@_hospital.Latitude" @onchange=" OnChangeLatitude"/>
+                                <ValidationMessage For="() => _hospital.Latitude"></ValidationMessage>
+                            </div>
+                             <div class="form-group">
+                                <label>@L["Longitude"]</label>
+                                <Input class="form-control" value="@_hospital.Longitude" @onchange=" OnChangeLongitude" />
+                                <ValidationMessage For="() => _hospital.Longitude"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Parent Institution"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchInstitutions"
+                                                   TItem="InstitutionResponseDTO"
+                                                   TValue="InstitutionResponseDTO"
+                                                   Value="_hospital.Institution"
+                                                   ValueExpression="() => _hospital.Institution"
+                                                   ValueChanged="OnChangeInstitution"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                    <SelectedTemplate Context="ins">
+                                        @ins.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="ins">
+                                        @ins.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => _hospital.InstitutionId"></ValidationMessage>
+                            </div>
+                                <div class="form-group">
+                                    <label>@L["Ministry / University"]</label>
+                                    <BlazoredTypeahead SearchMethod="SearchUniversities"
+                                                   TItem="UniversityResponseDTO"
+                                                   TValue="UniversityResponseDTO"
+                                                   Value="_university"
+                                                   ValueExpression="() => _university"
+                                                   ValueChanged="OnChangeUniversity"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions="int.MaxValue">
+                                        <SelectedTemplate Context="university">
+                                            @university.Name
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 1 character to search."]
+
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L["Could not find an item named"]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="university">
+                                            @university.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["Educational Institution / Faculty"]</label>
+                                    <BlazoredTypeahead SearchMethod="SearchFaculties"
+                                                   TItem="FacultyResponseDTO"
+                                                   TValue="FacultyResponseDTO"
+                                                   Value="_faculty"
+                                                   ValueExpression="() => _faculty"
+                                                   ValueChanged="OnChangeFaculty"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   Disabled=@( _university == null)
+                                                   MaximumSuggestions="int.MaxValue">
+                                        <SelectedTemplate Context="faculty">
+                                            @faculty.Name
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 1 character to search."]
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L["Could not find an item named"]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="faculty">
+                                            @faculty.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                    <ValidationMessage For="() => _hospital.FacultyId" />
+
+                                </div>
+                            <div class="form-group">
+                                <label>@L["Manager"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchUsers"
+                                                   TItem="UserAccountDetailInfoResponseDTO"
+                                                   TValue="UserAccountDetailInfoResponseDTO"
+                                                   Value="_hospital.Manager"
+                                                   ValueExpression="() => _hospital.Manager"
+                                                   ValueChanged="OnChangeManager"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions=999>
+                                    <SelectedTemplate Context="user">
+                                        @user.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least one character to search"]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        @searchText @L["Not found"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="user">
+                                        @user.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Location"]</label>
+                                <SingleMapView @ref="_singleMapView" EditMode="true" Lat="@(_hospital.Latitude ?? 0)" Lng="@(_hospital.Longitude ?? 0)" OnLocationChanged="OnChangeLocation"></SingleMapView>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>

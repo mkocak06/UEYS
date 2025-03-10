@@ -1,0 +1,30 @@
+﻿@using ApexCharts;
+@using Shared.ResponseModels.StatisticModels;
+@inherits FluxorComponent
+@if (_chartLoaded)
+{
+        <div class="card card-custom card-stretch gutter-b bg-diagonal bg-diagonal-light-success">
+            <div class="card-body">
+    <div style="overflow-x:auto;overflow-y:auto">
+                <ApexChart @ref=_apexChart TItem="ActivePassiveResponseModel"
+                           Title="Uzmanlık Alanına Bağlı Program Sayısı"
+                           Options="_options">
+                    <ApexPointSeries TItem="ActivePassiveResponseModel"
+                                     Items="educationFieldCounts"
+                                     Name="Aktif Sayı"
+                                     XValue="@(e => {
+                                        string lcl = L[e.SeriesName];
+                                        return lcl;
+                                   })"
+                                     YAggregate="@(e => e.Sum(e => e.ActiveRecordsCount))"
+                                     SeriesType="SeriesType.Donut" />
+                </ApexChart>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}
+

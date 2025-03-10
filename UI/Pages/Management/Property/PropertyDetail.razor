@@ -1,0 +1,65 @@
+﻿@using Shared.Types;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Extensions;
+@using Shared.Validations;
+@page "/management/properties/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="PropertyValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["_name", L["Property"]]</label>
+                                        <InputText class="form-control" @bind-Value="_property.Name" />
+                                        <ValidationMessage For="() => _property.Name"></ValidationMessage>
+                                        <label>@L["_Detail", L["Property"]]</label>
+                                        <InputSelect @bind-Value="_property.PropertyType" class="form-control">
+                                            @foreach (PropertyType propertyType in Enum.GetValues(typeof(PropertyType)))
+                                            {
+                                                <option value="@propertyType">@L[propertyType.GetDescription()] </option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For="() => _property.PropertyType"></ValidationMessage>
+                                        <label>@L["Perfection"]</label>
+                                        <InputSelect @bind-Value="_property.PerfectionType" class="form-control">
+                                            @foreach (PerfectionType perfectionType in Enum.GetValues(typeof(PerfectionType)))
+                                            {
+                                                <option value="@perfectionType">@L[perfectionType.GetDescription()] </option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For="() => _property.PerfectionType"></ValidationMessage>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/properties"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

@@ -1,0 +1,79 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/protocol-programs/add-protocol-program"
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" ButtonClass="btn-success mr-4" OnClick="() => { dropzone.ResetStatus(); UploaderModal.OpenModal(); }">
+                <i class="fas fa-upload"></i>@L["File Upload"]
+            </SpinnerButton>
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="flaticon2-fast-next"></i>@L["Save and Next"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-12">
+                        <EditForm EditContext="_ec">
+                            <FluentValidator TValidator="ProtocolProgramValidator"/>
+                            <div class="form-group">
+                                <h6>@L["Expertise Training Program"]</h6>
+                                <BlazoredTypeahead SearchMethod="SearchPrograms"
+                                                   placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                                   TItem="ProgramResponseDTO"
+                                                   TValue="ProgramResponseDTO"
+                                                   Value="_protocolProgram.ParentProgram"
+                                                   ValueExpression="() => _protocolProgram.ParentProgram"
+                                                   ValueChanged="OnChangeProgram"
+                                                   EnableDropDown="false"
+                                                   MinimumLength="3"
+                                                   MaximumSuggestions=int.MaxValue>
+                                    <SelectedTemplate Context="program">
+                                        @program.Hospital?.Province?.Name @program.Faculty?.University?.Name @program.ExpertiseBranch?.Profession?.Name @program.Hospital?.Name @program.ExpertiseBranch?.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 3 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="program">
+                                        @program.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="()=>_protocolProgram.ParentProgram"/>
+                            </div>
+                            <div class="form-group">
+                                <h6>@L["Protocol Program No"]</h6>
+                                <InputText class="form-control" @bind-Value="_protocolProgram.ProtocolNo" placeholder="Protokol numarasını giriniz.." />
+                                <ValidationMessage For="()=>_protocolProgram.ProtocolNo"/>
+                            </div>
+                            <div class="form-group">
+                                <h6>@L["Decision Date"]</h6>
+                                <InputDate class="form-control" @bind-Value="_protocolProgram.DecisionDate" TValue="DateTime?" />
+                                <ValidationMessage For="()=>_protocolProgram.DecisionDate" />
+                            </div>
+                            <div class="form-group">
+                                <h6>@L["Decision Number"]</h6>
+                                <InputText class="form-control" @bind-Value="_protocolProgram.DecisionNo" placeholder="Karar numarasını giriniz.." />
+                                <ValidationMessage For="()=>_protocolProgram.DecisionNo" />
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <FileItem Documents="responseDocuments" Loaded="_fileLoaded" IsEditing="true"></FileItem>
+    </Content>
+</AppContent>
+<MyModal @ref="UploaderModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <Dropzone @ref="dropzone" EntityId=0 DocumentType="@Shared.Types.DocumentTypes.ProtocolProgram" />
+    </Body>
+</MyModal>

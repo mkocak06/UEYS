@@ -1,0 +1,239 @@
+﻿@using Shared.ResponseModels.StatisticModels;
+@using ApexCharts;
+
+<div class="row mt-5">
+
+    <div class="col-md-6">
+        <!--begin::Stats Widget 2-->
+        <div class="card card-custom card-stretch gutter-b wave wave-animate-slow wave-primary">
+            @if (programCounts != null)
+            {
+                @if (programCounts.Any())
+                {
+                    <div class="card-header border-0 pt-6">
+
+                        <h3 class="card-title">
+                            <span class="card-label font-weight-bolder font-size-h4 text-dark-75">@L["Programs"]</span>
+                        </h3>
+                    </div>
+                    <!--begin::Body-->
+                    <div class="card-body d-flex align-items-center justify-content-between pt-7 flex-wrap">
+                        <!--begin::Visuals-->
+                        <div class="align-items-center justify-content-between">
+
+                            <!--begin::Chart-->
+                            <div class="position-relative">
+
+                                <ApexChart TItem="ActivePassiveResponseModel" Height="400" Width="500" Options="_options3">
+
+                                    <ApexPointSeries TItem="ActivePassiveResponseModel"
+                                                     Items="programCounts"
+                                                     SeriesType="SeriesType.RadialBar"
+                                                     Name="Program Sayısı"
+                                                     XValue="@(e => L[e.SeriesName])"
+                                                     YValue="@(e=>e.ActiveRecordsCount)"
+                                                     OrderBy="e=>e.Y" />
+                                </ApexChart>
+
+
+                            </div>
+                            <!--end::Chart-->
+                        </div>
+                        @*<div class="font-weight-bolder font-size-h5 text-muted">Toplam Program Sayısı: @programCounts.Sum(x=>x.ActiveRecordsCount) </div>*@
+                        <!--end::Visuals-->
+                    </div>
+                    <!--end::Body-->
+                }
+                else
+                {
+                    <div class="card-body">
+                        Kayıtlı program yoktur.
+                    </div>
+                }
+            }
+            else
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; max-height: 250px;" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                    <g transform="rotate(180 50 50)">
+                        <rect x="15" y="15" width="10" height="40" fill="#ebebeb">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.4s"></animate>
+                        </rect>
+                        <rect x="35" y="15" width="10" height="40" fill="#f0f0f0">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.2s"></animate>
+                        </rect>
+                        <rect x="55" y="15" width="10" height="40" fill="#ebebeb">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.6s"></animate>
+                        </rect>
+                        <rect x="75" y="15" width="10" height="40" fill="#f0f0f0">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-1s"></animate>
+                        </rect>
+                    </g>
+                </svg>
+            }
+        </div>
+        <!--end::Stats Widget 2-->
+    </div>
+    <div class="col-md-6">
+        <!--begin::Stats Widget 2-->
+        <div class="card card-custom card-stretch gutter-b wave wave-animate-slow wave-success">
+            @if (activePassiveResponses != null)
+            {
+
+                @if (activePassiveResponses.Any())
+                {
+                    <div class="card-header border-0 pt-6">
+
+                        <h3 class="card-title">
+                            <span class="card-label font-weight-bolder font-size-h4 text-dark-75">@L["Educators and Students"]</span>
+                        </h3>
+                    </div>
+
+                    <!--begin::Body-->
+                    <div class="card-body d-flex align-items-center justify-content-between pt-7 flex-wrap">
+                        <!--begin::Visuals-->
+                        <div class="align-items-center justify-content-between">
+
+                            <!--begin::Chart-->
+                            <div class="position-relative">
+
+
+                                <ApexChart TItem="ActivePassiveResponseModel" Height="300"
+                                           Width="500" Options="_options2">
+
+                                    <ApexPointSeries TItem="ActivePassiveResponseModel"
+                                                     Items="activePassiveResponses"
+                                                     Name="Aktif Sayı"
+                                                     XValue="@(e => {
+                                                                 string lcl = L[e.SeriesName];                   
+                                                                return lcl;
+                                                    } )"
+                                                     YAggregate="@(e => e.Sum(e => e.ActiveRecordsCount))"
+                                                     SeriesType="SeriesType.Bar" />
+
+                                    <ApexPointSeries TItem="ActivePassiveResponseModel"
+                                                     Items="activePassiveResponses"
+                                                     Name="Pasif Sayı"
+                                                     XValue="@(e =>{
+                                                                 string lcl = L[e.SeriesName];
+                                                                return lcl;
+                                                    } )"
+                                                     YAggregate="@(e => e.Sum(e => e.PassiveRecordsCount))"
+                                                     SeriesType="SeriesType.Bar" />
+                                </ApexChart>
+
+
+                            </div>
+                            <div class="font-weight-bolder font-size-h5 text-muted">Toplam Aktif Sayı: @activePassiveResponses.Sum(x=>x.ActiveRecordsCount) </div>
+                            <div class="font-weight-bolder font-size-h5 text-muted">Toplam Pasif Sayı: @activePassiveResponses.Sum(x=>x.PassiveRecordsCount) </div>
+                            <!--end::Chart-->
+                        </div>
+                        <!--end::Visuals-->
+                    </div>
+                }
+                else
+                {
+                    <div class="card-body">
+                        Kayıtlı veri bulunamadı.
+                    </div>
+                }
+            }
+            else
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; max-height: 250px;" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                    <g transform="rotate(180 50 50)">
+                        <rect x="15" y="15" width="10" height="40" fill="#ebebeb">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.4s"></animate>
+                        </rect>
+                        <rect x="35" y="15" width="10" height="40" fill="#f0f0f0">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.2s"></animate>
+                        </rect>
+                        <rect x="55" y="15" width="10" height="40" fill="#ebebeb">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.6s"></animate>
+                        </rect>
+                        <rect x="75" y="15" width="10" height="40" fill="#f0f0f0">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-1s"></animate>
+                        </rect>
+                    </g>
+                </svg>
+            }
+            <!--end::Body-->
+        </div>
+        <!--end::Stats Widget 2-->
+    </div>
+
+
+</div>
+<div class="row">
+    <div class="col-xl-6">
+        <!--begin::Stats Widget 2-->
+        <div class="card card-custom card-stretch gutter-b wave wave-animate-slow wave-danger">
+            @if (studentsCountByMonth != null)
+            {
+                @if (studentsCountByMonth.Any())
+                {
+                    <div class="card-header border-0 pt-6">
+
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label font-weight-bolder font-size-h4 text-dark-75">@L["Number of New Students Added (Last 6 Months)"]</span>
+                            <span class="text-muted mt-3 font-weight-bold font-size-lg">Aylık Ortalama @($"{studentsCountByMonth.Average(x => x.Count):0.##}") Öğrenci</span>
+                        </h3>
+                    </div>
+
+                    <!--begin::Body-->
+                    <div class="card-body d-flex align-items-center justify-content-between pt-7 flex-wrap">
+                        <!--begin::Visuals-->
+                        <div class="align-items-center justify-content-between">
+
+                            <!--begin::Chart-->
+                            <div class="position-relative">
+
+
+                                <ApexChart TItem="CountsByMonthsResponse"
+                                           Height="300"
+                                           Width="500"
+                                           Options="_options" FormatYAxisLabel="GetYAxisLabel">
+                                    <ApexPointSeries TItem="CountsByMonthsResponse"
+                                                     Items="studentsCountByMonth"
+                                                     Name="Öğrenci Sayısı"
+                                                     XValue="@(e => GetMonthName(e.Month))"
+                                                     YValue="@(e=> e.Count)"
+                                                     SeriesType="SeriesType.Line" />
+                                </ApexChart>
+                            </div>
+                            <div class="font-weight-bolder font-size-h5 text-muted">Son 6 aydaki Yeni Öğrenci Sayısı: @studentsCountByMonth.Sum(x=>x.Count) </div>
+                            <!--end::Chart-->
+                        </div>
+                        <!--end::Visuals-->
+                    </div>
+                }
+                else
+                {
+                    <div class="card-body">
+                        Son 6 ayda öğrenci kaydı bulunmamaktadır.
+                    </div>
+                }
+            }
+            else
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; max-height: 250px;" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                    <g transform="rotate(180 50 50)">
+                        <rect x="15" y="15" width="10" height="40" fill="#ebebeb">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.4s"></animate>
+                        </rect>
+                        <rect x="35" y="15" width="10" height="40" fill="#f0f0f0">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.2s"></animate>
+                        </rect>
+                        <rect x="55" y="15" width="10" height="40" fill="#ebebeb">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-0.6s"></animate>
+                        </rect>
+                        <rect x="75" y="15" width="10" height="40" fill="#f0f0f0">
+                            <animate attributeName="height" values="50;70;30;50" keyTimes="0;0.33;0.66;1" dur="1s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1" begin="-1s"></animate>
+                        </rect>
+                    </g>
+                </svg>
+            }
+            <!--end::Body-->
+        </div>
+        <!--end::Stats Widget 2-->
+    </div>
+</div>

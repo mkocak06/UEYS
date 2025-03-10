@@ -1,0 +1,1012 @@
+﻿@using Shared.Extensions;
+@using Shared.ResponseModels
+@using Shared.Types;
+@using Radzen
+@using Radzen.Blazor
+@inherits FluxorComponent
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fa fa-cog text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Rotation Goals"]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        @if (!_loadingRotations)
+        {
+            @if (_rotations != null)
+            {
+                <Grid Items="_rotations.Select(x=>x.Rotation).OrderBy(x=>x.IsRequired).ToList()" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                    <GridColumn TRowData="RotationResponseDTO" Expression="c => c.ExpertiseBranch.Name" Title="@L["Rotation Branch"]">
+                    </GridColumn>
+                    <GridColumn TRowData="RotationResponseDTO" Expression="c => c.Duration" Title="@L["Rotation Time (Day)"]">
+                    </GridColumn>
+                    <GridColumn TRowData="RotationResponseDTO" Title="@L["Obligatory/Optional"]">
+                        <BoolLabel PositiveString="Compulsory" NegativeString="Selective" Value="context.IsRequired" />
+                    </GridColumn>
+                    <GridColumn class="min-w-100px align-middle" TRowData="RotationResponseDTO" Title="@L["Transactions"]">
+                        @if (_completedStudentRotations.Any(x => x.Rotation.ExpertiseBranchId == context.ExpertiseBranchId && x.IsSuccessful == true))
+                        {
+                            <a class="btn btn-light-success disabled">
+                                <i class="fas fa-check-circle"></i> @L["Successful"]@(_completedStudentRotations.Any(x => x.Rotation.ExpertiseBranchId == context.ExpertiseBranchId && x.IsSuccessful == true && x.ProcessDateForExemption != null) ? " (" + L["Exempt"] + ")" : "")
+                            </a>
+                        }
+                        else if (_activeStudentRotations?.Count > 0)
+                        {
+                            if (_activeStudentRotations.Any(x => x.Rotation.ExpertiseBranchId == context.ExpertiseBranchId))
+                            {
+                                <a class="btn btn-light-danger disabled">
+                                    <span class="label pulse pulse-danger" style="background-color:transparent;">
+                                        <span class="position-relative"><span class="label label-xl label-dot label-danger"></span></span>
+                                        <span class="pulse-ring"></span>
+                                    </span>
+                                    @L["On Rotation"]
+                                </a>
+                            }
+                        }
+                        else if (_completedStudentRotations.Any(x => x.Rotation.ExpertiseBranchId == context.ExpertiseBranchId && x.IsSuccessful == null && x.ProcessDateForExemption != null))
+                        {
+                            <a class="btn btn-light-primary disabled">
+                                <i class="fas fa-check-circle"></i>@L["Exempt"]
+                            </a>
+                        }
+                        else
+                        {
+                            if (_uncompletedStudentRotations.Any(x => x.Rotation.ExpertiseBranchId == context.ExpertiseBranchId && x.IsUncompleted == true))
+                            {
+                                <a class="btn btn-light-danger disabled mr-5">
+                                    <i class="fas fa-times-circle"></i> @L["Uncompleted"]@(_uncompletedStudentRotations.Any(x => x.Rotation.ExpertiseBranchId == context.ExpertiseBranchId && x.IsSuccessful == true && x.ProcessDateForExemption != null) ? " (" + L["Exempt"] + ")" : "")
+                                </a>
+                            }
+                            else
+                            {
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationAdd}">
+                                    <button @onclick="() => OnAddPastStudentRotationModal(context)" class="btn btn-light-primary mr-5" title="@L["Add Past Rotation"]">
+                                        <i class="fas fa-check"></i>
+                                        @L["Add Past Rotation"]
+                                    </button>
+                                </PermissionWrapper>
+                            }
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationAdd}">
+                                <button @onclick="() => OnAddStudentRotationModal(context)" class="btn btn-light-primary mr-5" title="@L["Send To Rotation"]">
+                                    <i class="fas fa-check"></i>
+                                    @L["Send To Rotation"]
+                                </button>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationAdd}">
+                                <button @onclick="() => OnAddStudentRotationExemptModal(context)" class="btn btn-light-primary" title="@L["Exempt"]">
+                                    <i class="fas fa-check"></i>
+                                    @L["Exempt"]
+                                </button>
+                            </PermissionWrapper>
+                        }
+                    </GridColumn>
+                </Grid>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fa fa-cog text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Active Rotation"]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        @if (!_loadingRotations)
+        {
+            @if (_activeStudentRotations != null)
+            {
+                <RadzenDataGrid @ref="activeRotationGrid" TItem="StudentRotationResponseDTO" EmptyText="@L["There is no record belong to this field"]" AllowColumnResize="true" ColumnWidth="100px" AllowPaging="true" PageSize="5" Data="_activeStudentRotations" ExpandMode="DataGridExpandMode.Single" AllowSorting="true">
+                    <Columns>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Property="Rotation.ExpertiseBranch.Name" Title="@L["Expertise Branch"]"></RadzenDataGridColumn>
+
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["_name", L["Program"]]">
+                            <Template Context="rt">
+                                <p style="white-space:pre-wrap">@rt.Program?.Name</p>
+                            </Template>
+
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["Start Date"]">
+                            <Template Context="rt">
+                                <p style="white-space:pre-wrap">@rt.BeginDate?.ToShortDateString()</p>
+                            </Template>
+
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["Transactions"]">
+                            <Template Context="rt">
+
+                                <a @onclick="() => OnStudentRotationDetail(rt)" class="btn btn-light-success btn-icon btn-sm"><i class="far fa-edit"></i></a>
+                                <SpinnerButton OnClick="async () => await OnRemoveActiveStudentRotationHandler(rt)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="_saving" Disabled="_saving">
+                                    <i class="fas fa-minus"></i>
+                                </SpinnerButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+
+                    </Columns>
+                    <Template Context="activeRotationContext">
+                        <RadzenTabs>
+                            <Tabs>
+                                <RadzenTabsItem Text="@L["Perfections"]">
+                                    <RadzenDataGrid @ref="activestudentRotationPerfectionGrid" EmptyText="@L["There is no record belong to this field"]" Data="@(_rotations.FirstOrDefault(x=>x.RotationId == activeRotationContext.RotationId).Perfections)" TItem="PerfectionResponseDTO">
+
+                                        <Columns>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Perfection Type"]">
+                                                <Template Context="p">
+                                                    @L[p.PerfectionType.GetDescription()]
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Name"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">@p.PName?.Name</p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Level"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @foreach (var item in p.LevelList)
+                                                        {
+                                                        <li>@item.Name</li>
+                                                        }
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Process Date"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(activeRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.ProcessDate?.ToShortDateString() ?? "-")
+
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Evaluator Educator"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(activeRotationContext?.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.Educator?.User?.Name ?? "-")
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Status"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @if (activeRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.IsSuccessful == true)
+                                                        {
+                                                            <a class="btn btn-light-success disabled">
+                                                                <i class="fas fa-check-circle"></i>@L["Successful"]
+                                                            </a>
+                                                        }
+                                                        else if (activeRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.IsSuccessful == false)
+                                                        {
+                                                            <span class="label label-lg font-weight-bold label-light-danger label-inline">
+                                                                @L["Unsuccessful"]
+                                                            </span>
+                                                        }
+                                                        else if (activeRotationContext?.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.IsSuccessful == null)
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="PerfectionResponseDTO" Title="@L["Transactions"]">
+                                                <Template Context="rt">
+                                                    @if (activeRotationContext.StudentRotationPerfections.Any(x => x.PerfectionId == rt.Id))
+                                                    {
+                                                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectionUpdate}">
+                                                            <a @onclick="async () => await OnStudentRotationPerfectionDetail(activeRotationContext.StudentRotationPerfections.FirstOrDefault(x => x.PerfectionId == rt.Id))" class="btn btn-light-success btn-icon btn-sm"><i class="far fa-edit"></i></a>
+                                                        </PermissionWrapper>
+
+                                                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectionDelete}">
+                                                            <SpinnerButton OnClick="async () => await OnRemoveActiveStudentRotationPerfectionHandler(activeRotationContext.StudentRotationPerfections.FirstOrDefault(x => x.PerfectionId == rt.Id))" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="_srpDeleteSaving" Disabled="_srpDeleteSaving">
+                                                                <i class="fas fa-minus"></i>
+                                                            </SpinnerButton>
+                                                        </PermissionWrapper>
+                                                    }
+                                                    else
+                                                    {
+                                                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectionAdd}">
+                                                            <a @onclick="() => OnStudentRotationPerfectionAdd(rt, activeRotationContext)" class="btn btn-light-info btn-icon btn-sm"><i class="fas fa-plus"></i></a>
+                                                        </PermissionWrapper>
+                                                    }
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                        </Columns>
+                                    </RadzenDataGrid>
+                                </RadzenTabsItem>
+                            </Tabs>
+                        </RadzenTabs>
+                    </Template>
+                </RadzenDataGrid>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+@if (SelectedStudent.Status != StudentStatus.Rotation)
+{
+    <div class="card card-custom gutter-b shadow-xs border border-2">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="card-icon">
+                    <i class="fa fa-cog text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["Uncompleted Rotations"]</h3>
+            </div>
+        </div>
+        <div class="card-body pt-2">
+            @if (!_loadingRotations)
+            {
+                @if (_uncompletedStudentRotations != null)
+                {
+                    <RadzenDataGrid @ref="uncompletedRotationGrid" TItem="StudentRotationResponseDTO" EmptyText="@L["There is no record belong to this field"]" AllowColumnResize="true" ColumnWidth="100px" AllowPaging="true" PageSize="5" Data="_uncompletedStudentRotations" ExpandMode="DataGridExpandMode.Single" AllowSorting="true">
+                        <Columns>
+                            <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Property="Rotation.ExpertiseBranch.Name" Title="@L["Expertise Branch"]"></RadzenDataGridColumn>
+                            <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["_name", L["Program"]]">
+                                <Template Context="rt">
+                                    <p style="white-space:pre-wrap">@rt.Program?.Name</p>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["Start Date"]">
+                                <Template Context="rt">
+                                    <p style="white-space:pre-wrap">@rt.BeginDate?.ToShortDateString()</p>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["End Date"]">
+                                <Template Context="rt">
+                                    <p style="white-space:pre-wrap">@rt.EndDate?.ToShortDateString()</p>
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Property="RemainingDays" Title="@L["Remaining Days"]"></RadzenDataGridColumn>
+                            <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["Transactions"]">
+                                <Template Context="rt">
+                                    <SpinnerButton ButtonClass="btn btn-light-success btn-icon btn-sm ml-2" OnClick="() => OnUploadHandler(rt)">
+                                        <i class="fas fa-upload"></i>
+                                    </SpinnerButton>
+                                    @*TODO: Burdaki download hangi yetkiye bağlanmalı, yetki veritabanında ekli değil*@
+                                    <a @onclick="async () => await OnDownloadHandler(rt)" class="btn btn-light-info btn-icon btn-sm ml-2 "><i title=@L["Download"] class="fas fa-download"></i></a>
+                                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationDeletePast}">
+                                        <a @onclick="async () => await OnRemoveUnCompletedStudentRotationHandler(rt)" class="btn btn-light-danger btn-icon btn-sm"><i title=@L["Remove"] class="fas fa-trash-alt"></i></a>
+                                    </PermissionWrapper>
+
+                                </Template>
+                            </RadzenDataGridColumn>
+                        </Columns>
+                        <Template Context="uncompletedRotationContext">
+                            <RadzenTabs>
+                                <Tabs>
+                                    <RadzenTabsItem Text="@L["Perfections"]">
+                                        <RadzenDataGrid @ref="uncompletedStudentRotationPerfectionGrid" EmptyText="@L["There is no record belong to this field"]" Data="@(_rotations.FirstOrDefault(x=>x.RotationId == uncompletedRotationContext.RotationId).Perfections)" TItem="PerfectionResponseDTO">
+                                            <Columns>
+                                                <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Perfection Type"]">
+                                                    <Template Context="p">
+                                                        @L[p.PerfectionType.GetDescription()]
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                                <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Name"]">
+                                                    <Template Context="p">
+                                                        <p style="white-space:pre-wrap">@p.PName?.Name</p>
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                                <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Level"]">
+                                                    <Template Context="p">
+                                                        <p style="white-space:pre-wrap">
+                                                            @foreach (var item in p.LevelList)
+                                                            {
+                                                            <li>@item.Name</li>
+                                                            }
+
+                                                        </p>
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                                <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Process Date"]">
+                                                    <Template Context="p">
+                                                        <p style="white-space:pre-wrap">
+
+                                                            @(uncompletedRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.ProcessDate?.ToShortDateString() ?? "-")
+
+
+                                                        </p>
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                                <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Evaluator Educator"]">
+                                                    <Template Context="p">
+                                                        <p style="white-space:pre-wrap">
+
+                                                            @(uncompletedRotationContext?.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.Educator?.User?.Name ?? "-")
+
+                                                        </p>
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                                <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Status"]">
+                                                    <Template Context="p">
+                                                        <p style="white-space:pre-wrap">
+
+                                                            @if (uncompletedRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.IsSuccessful == true)
+                                                            {
+                                                                <a class="btn btn-light-success disabled">
+                                                                    <i class="fas fa-check-circle"></i>@L["Successful"]
+                                                                </a>
+                                                            }
+                                                            else if (uncompletedRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.IsSuccessful == false)
+                                                            {
+                                                                <span class="label label-lg font-weight-bold label-light-danger label-inline">
+                                                                    @L["Unsuccessful"]
+
+                                                                </span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>-</span>
+                                                            }
+                                                        </p>
+                                                    </Template>
+                                                </RadzenDataGridColumn>
+                                            </Columns>
+                                        </RadzenDataGrid>
+                                    </RadzenTabsItem>
+                                </Tabs>
+                            </RadzenTabs>
+                        </Template>
+                    </RadzenDataGrid>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            }
+        </div>
+    </div>
+}
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fa fa-cog text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Completed Rotations"]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        @if (!_loadingRotations)
+        {
+            @if (_completedStudentRotations != null)
+            {
+                <RadzenDataGrid TItem="StudentRotationResponseDTO" EmptyText="@L["There is no record belong to this field"]" Data="@_completedStudentRotations?.OrderBy(x=>x.BeginDate)" class="table table-hover table-bordered">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Property="Rotation.ExpertiseBranch.Name" Title="@L["Rotation Branch"]" />
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Property="Program.Name" Title="@L["_name", L["Program"]]" />
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["_name", L["Educator"]]">
+                            <Template Context="context">
+                                <span class="white-space:pre-wrap">
+                                    @(context.Educator?.User?.Name ?? context.EducatorName)
+                                </span>
+                            </Template>
+                        </RadzenDataGridColumn><RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["Begin and End Date"]">
+                            <Template Context="context">
+                                <span class="white-space:pre-wrap">
+                                    @context.BeginDate?.ToLocalTime().ToString("dd/MM/yyyy") - @context.EndDate?.ToLocalTime().ToString("dd/MM/yyyy")
+                                </span>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Width="250px" TextAlign="TextAlign.Center" Title="@L["Transactions"]">
+                            <Template Context="context">
+                                @if (context.IsSuccessful == true)
+                                {
+                                    <a class="btn btn-light-success disabled">
+                                        <i class="fas fa-check-circle"></i>@L["Successful"]@(context.ProcessDateForExemption != null ? " (" + L["Exempt"] + ")" : "")
+                                    </a>
+                                }
+                                else if (context.IsSuccessful == false)
+                                {
+                                    <a class="btn btn-light-danger disabled">
+                                        <i class="fas fa-times-circle"></i>@L["Unsuccessful"]
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-light-primary disabled">
+                                        <i class="fas fa-check-circle"></i>@L["Exempt"]
+                                    </a>
+
+                                }
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationDeletePast}">
+                                    <SpinnerButton OnClick="async () => await OnRemoveCompletedStudentRotationHandler(context)" ButtonClass="btn btn-light-danger btn-icon btn-sm ml-2" Title="@L["Remove"]" Spinning="_saving" Disabled="_saving">
+                                        <i class="fas fa-minus"></i>
+                                    </SpinnerButton>
+                                </PermissionWrapper>
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationDocumentUpload}">
+                                    <SpinnerButton ButtonClass="btn btn-light-success btn-icon btn-sm ml-2" OnClick="() => OnUploadHandler(context)">
+                                        <i class="fas fa-upload"></i>
+                                    </SpinnerButton>
+                                </PermissionWrapper>
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationDocumentDownload}">
+                                    <a @onclick="async () => await OnDownloadHandler(context)" class="btn btn-light-info btn-icon btn-sm ml-2 "><i title=@L["Download"] class="fas fa-download"></i></a>
+                                </PermissionWrapper>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                    <Template Context="completeRotationContext">
+                        <RadzenTabs>
+                            <Tabs>
+                                <RadzenTabsItem Text="@L["Perfections"]">
+                                    <RadzenDataGrid @ref="rotationPerfectionGrid" EmptyText="@L["There is no record belong to this field"]" Data="@(completeRotationContext.StudentRotationPerfections)" TItem="StudentRotationPerfectionResponseDTO">
+                                        <Columns>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Perfection Type"]">
+                                                <Template Context="p">
+                                                    @L[p.Perfection.PerfectionType.GetDescription()]
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Name"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">@p.Perfection.PName?.Name</p>
+
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Level"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @foreach (var item in p.Perfection.LevelList)
+                                                        {
+                                                        <li>@item.Name</li>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Process Date"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @(p.ProcessDate?.ToShortDateString() ?? "-")
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Evaluator Educator"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @(p.Educator?.User?.Name ?? "-")
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Status"]">
+                                                <Template Context="rt">
+                                                    <p style="white-space:pre-wrap">
+                                                        @if (rt.IsSuccessful == true)
+                                                        {
+                                                            <a class="btn btn-light-success disabled">
+                                                                <i class="fas fa-check-circle"></i>@L["Successful"]
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="label label-lg font-weight-bold label-light-danger label-inline">
+                                                                @L["Unsuccessful"]
+                                                            </a>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                        </Columns>
+                                    </RadzenDataGrid>
+                                </RadzenTabsItem>
+                            </Tabs>
+                        </RadzenTabs>
+                    </Template>
+                </RadzenDataGrid>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fa fa-cog text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Former Rotations"]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        @if (!_loadingformerRotations)
+        {
+            @if (_formerStudentRotations != null)
+            {
+                <RadzenDataGrid TItem="StudentRotationResponseDTO" EmptyText="@L["There is no record belong to this field"]" Data="@_formerStudentRotations" class="table table-hover table-bordered">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Property="Rotation.ExpertiseBranch.Name" Title="@L["Rotation Branch"]" />
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Property="Rotation.Duration" Title="@L["Rotation Time (Day)"]">
+                            <Template Context="f">
+                                <p style="white-space:pre-wrap"> @f.Rotation.Duration</p>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["Is Required"]">
+                            <Template Context="f">
+                                <BoolLabel PositiveString="Yes" NegativeString="No" Value="@f.Rotation.IsRequired" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["Begin and End Date"]">
+                            <Template Context="f">
+                                <span class="font-size-lg font-weight-bold">
+                                    @f.BeginDate?.ToShortDateString() - @f.EndDate?.ToShortDateString()
+                                </span>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                    <Template Context="formerRotationContext">
+                        <RadzenTabs>
+                            <Tabs>
+                                <RadzenTabsItem Text="@L["Perfections"]">
+                                    <RadzenDataGrid @ref="rotationPerfectionGrid" EmptyText="@L["There is no record belong to this field"]" Data="@(formerRotationContext.StudentRotationPerfections)" TItem="StudentRotationPerfectionResponseDTO">
+                                        <Columns>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Perfection Type"]">
+                                                <Template Context="p">
+                                                    @L[p.Perfection.PerfectionType.GetDescription()]
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Name"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">@p.Perfection.PName?.Name</p>
+
+                                                </Template>
+
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Level"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @foreach (var item in p.Perfection.LevelList)
+                                                        {
+                                                        <li>@item.Name</li>
+                                                        }
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Process Date"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(p.ProcessDate?.ToShortDateString() ?? "-")
+
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Evaluator Educator"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(p.Educator?.User?.Name ?? "-")
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Status"]">
+                                                <Template Context="rt">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @if (rt.IsSuccessful.Value)
+                                                        {
+                                                            <a class="btn btn-light-success disabled">
+                                                                <i class="fas fa-check-circle"></i>@L["Successful"]
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="label label-lg font-weight-bold label-light-danger label-inline">
+                                                                @L["Unsuccessful"]
+                                                            </a>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                        </Columns>
+                                    </RadzenDataGrid>
+                                </RadzenTabsItem>
+                            </Tabs>
+                        </RadzenTabs>
+                    </Template>
+                </RadzenDataGrid>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+<MyModal @ref="_sendStudentRotationModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="@_ec">
+            <FluentValidator TValidator="StudentRotationValidator"></FluentValidator>
+            <div class="form-group">
+                <label>@L["Start Date"]</label>
+                <div class="form-group">
+                    <InputDate class="form-control" Value="_studentRotation.BeginDate" ValueExpression="()=>_studentRotation.BeginDate" ValueChanged="(DateTime? e)=>OnChangeBeginDate(e)"></InputDate>
+                    <ValidationMessage For="() =>_studentRotation.BeginDate"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Expertise Training Program"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchPrograms" class="@GetProgramClass()"
+                                       placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                       TItem="ProgramResponseDTO"
+                                       TValue="ProgramResponseDTO"
+                                       Value="_newProgram"
+                                       ValueExpression="() => _newProgram"
+                                       ValueChanged="OnChangeProgram"
+                                       EnableDropDown="false"
+                                       DisableClear="true"
+                                       MinimumLength="3"
+                                       MaximumSuggestions=int.MaxValue>
+                        <SelectedTemplate Context="program">
+                            @program.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 3 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="program">
+                            @program.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+                <div class="form-group">
+                    <Dropzone @ref="dropzone" EntityId="@(_studentRotation.Id ?? 0)" DocumentType="DocumentTypes.StudentRotation"></Dropzone>
+                </div>
+            </div>
+        </EditForm>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationUpdate}">
+            <SpinnerButton OnClick="async () => await AddStudentRotation()" ButtonClass="btn btn-clean btn-primary" Spinning="_saving" Disabled="_saving">
+                @L["Send To Rotation"]
+            </SpinnerButton>
+        </PermissionWrapper>
+    </Body>
+</MyModal>
+<MyModal @ref="_exemptStudentRotationModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm Model="@_studentRotation">
+            <FluentValidator TValidator="StudentRotationValidator"></FluentValidator>
+            <div class="form-group">
+                <label>@L["Process Date"]</label>
+                <div class="form-group">
+                    <InputDate class="form-control" @bind-Value="_studentRotation.ProcessDateForExemption"></InputDate>
+                    <ValidationMessage For="() =>_studentRotation.ProcessDateForExemption"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <Dropzone @ref="dropzoneExemptRotation" EntityId="0" DocumentType="DocumentTypes.StudentRotation"></Dropzone>
+                    @if (!string.IsNullOrEmpty(_processDateValidatorMessage))
+                    {
+                        <div class="validation-message">@_processDateValidatorMessage</div>
+                    }
+                </div>
+            </div>
+            <SpinnerButton OnClick="async () => await AddExemptStudentRotation()" ButtonClass="btn btn-clean btn-primary form-control" Spinning="_saving" Disabled="_saving">
+                @L["Exempt"]
+            </SpinnerButton>
+        </EditForm>
+    </Body>
+</MyModal>
+<MyModal @ref="_studentRotationDetailModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecStudentRotation">
+            @if (_loaded)
+            {
+                <FluentValidator TValidator="FinishStudentRotationValidator"></FluentValidator>
+                <div class="form-group">
+                    <label>@L["Start Date"]</label>
+                    <div class="form-group">
+                        <input class="form-control" type="text" value="@_studentRotationUpdateModel.BeginDate?.ToShortDateString()" disabled>
+                    </div>
+                    <label>@L["Expertise Training Program"]</label>
+                    <div class="form-group">
+                        <input class="form-control" type="text" value="@_studentRotationUpdateModel.Program.Name" disabled>
+                    </div>
+                    <label>@L["End Date"]</label>
+                    <div class="form-group">
+                        <InputDate class="form-control" @bind-Value="_studentRotationUpdateModel.EndDate" TValue="DateTime?" />
+                        <ValidationMessage For="() =>_studentRotationUpdateModel.EndDate"></ValidationMessage>
+                        @if (!string.IsNullOrEmpty(_endDateMinLimitValidatorMessage))
+                        {
+                            <div class="validation-message">@_endDateMinLimitValidatorMessage</div>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Evaluator Educator"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchUpdatedEducators"
+                                           TItem="EducatorResponseDTO"
+                                           TValue="EducatorResponseDTO"
+                                           Value="_updatedEducator"
+                                           ValueExpression="() => _updatedEducator"
+                                           ValueChanged="OnChangeUpdatedEducator"
+                                           EnableDropDown="true"
+                                           MinimumLength="2"
+                                           MaximumSuggestions="int.MaxValue"
+                                           Disabled="_updatedProgram == null">
+                            <SelectedTemplate Context="educator">
+                                @educator.User?.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="educator">
+                                @educator.User?.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() =>_studentRotationUpdateModel.EducatorId"></ValidationMessage>
+                    </div>
+                    <label>@L["Successful / Unsuccessful"]</label>
+                    <div class="d-flex justify-content-center form-group">
+                        @if (_studentRotationUpdateModel?.StudentRotationPerfections?.Count < _rotations?.FirstOrDefault(x => x.RotationId == _studentRotationUpdateModel?.RotationId)?.Perfections?.Count)
+                        {
+                            <a class="btn btn-light-warning disabled">
+                                <span class="label pulse pulse-warning" style="background-color:transparent;">
+                                    <span class="position-relative"><span class="label label-xl label-dot label-warning"></span></span>
+                                    <span class="pulse-ring"></span>
+                                </span>
+                                @L["In Progress"] <span class="font-weight-lighter">(Yetkinliklerin girilmesi bekleniyor..)</span>
+                            </a>
+                        }
+                        else if (_studentRotationUpdateModel?.StudentRotationPerfections?.Any(x => x.IsSuccessful == false) == true)
+                        {
+                            <a class="btn btn-light-danger disabled font-weight-bolder">
+                                <i class="fas fa-times-circle"></i> @L["Unsuccessful"]
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-light-success disabled font-weight-bolder">
+                                <i class="fas fa-check-circle"></i> @L["Successful"]
+                            </a>
+                        }
+                    </div>
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId="_studentRotationUpdateModel.Id.Value" DocumentType="DocumentTypes.StudentRotation"></Dropzone>
+                    </div>
+                    @if (_studentRotationUpdateModel.Documents?.Count > 0)
+                    {
+                        <FileItem Documents="_studentRotationUpdateModel.Documents" Loaded="true" IsEditing="true"></FileItem>
+                    }
+                </div>
+            }
+            <SpinnerButton OnClick="async () => await FinishStudentRotation(false)" Disabled=@(_studentRotationUpdateModel.EndDate < _studentRotationUpdateModel.BeginDate?.AddDays(Convert.ToInt32(_studentRotationUpdateModel.Rotation.Duration)) || _studentRotationUpdateModel?.StudentRotationPerfections?.Count < _rotations?.FirstOrDefault(x => x.RotationId == _studentRotationUpdateModel?.RotationId)?.Perfections?.Count || _saving) ButtonClass="btn btn-clean btn-primary form-control" Spinning="_saving">
+                @L["Finish Rotation"]
+            </SpinnerButton>
+            <SpinnerButton OnClick="async () => await FinishStudentRotation(true)" Disabled=@((_studentRotationUpdateModel.EndDate >= _studentRotationUpdateModel.BeginDate?.AddDays(Convert.ToInt32(_studentRotationUpdateModel.Rotation.Duration)) && _studentRotationUpdateModel?.StudentRotationPerfections?.Count == _rotations?.FirstOrDefault(x => x.RotationId == _studentRotationUpdateModel?.RotationId)?.Perfections?.Count) || _saving) ButtonClass="btn btn-clean btn-primary form-control" Spinning="_saving">
+                @L["Left without Completing Rotation"]
+            </SpinnerButton>
+            @*<button @onclick="()=>FinishStudentRotation(false)" class="btn btn-clean btn-primary" disabled="@(_studentRotationUpdateModel?.StudentRotationPerfections?.Count < _rotations?.FirstOrDefault(x => x.RotationId == _studentRotationUpdateModel?.RotationId)?.Perfections?.Count )">@L["Finish Rotation"]</button>
+            <button @onclick="()=>FinishStudentRotation(true)" class="btn btn-clean btn-primary" disabled="@(_studentRotationUpdateModel?.StudentRotationPerfections?.Count == _rotations?.FirstOrDefault(x => x.RotationId == _studentRotationUpdateModel?.RotationId)?.Perfections?.Count )">@L["Left without Completing Rotation"]</button>*@
+        </EditForm>
+    </Body>
+</MyModal>
+<MyModal @ref="_studentRotationPerfectionDetailModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecStudentRotationPerfection">
+            <FluentValidator TValidator="StudentRotationPerfectionValidator"></FluentValidator>
+            @if (_studentRotationPerfection != null)
+            {
+                <div class="form-group">
+                    <label>@L["Process Date"]</label>
+                    <div class="form-group">
+                        <InputDate class="form-control" @bind-Value="@_studentRotationPerfection.ProcessDate" />
+                        <ValidationMessage For="() =>_studentRotationPerfection.ProcessDate"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Evaluator Educator"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchSRPEducators"
+                                           TItem="EducatorResponseDTO"
+                                           TValue="EducatorResponseDTO"
+                                           Value="_studentRotationPerfection?.Educator"
+                                           ValueExpression="() => _studentRotationPerfection.Educator"
+                                           ValueChanged="OnChangeSRPEducator"
+                                           EnableDropDown="true"
+                                           MinimumLength="2"
+                                           MaximumSuggestions="int.MaxValue">
+                            <SelectedTemplate Context="educator">
+                                @educator.User.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="educator">
+                                @educator.User.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() =>_studentRotationPerfection.EducatorId"></ValidationMessage>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-3 col-form-label">@L["Successful"]/@L["Unsuccessful"]</label>
+                        <div class="col-9 col-form-label">
+                            <div class="radio-inline">
+                                <InputRadioGroup @bind-Value="_studentRotationPerfection.IsSuccessful">
+                                    <label class="radio radio-success">
+                                        <InputRadio Value="true"></InputRadio>
+                                        <span></span>@L["Successful"]
+                                    </label>
+                                    <label class="radio radio-danger">
+                                        <InputRadio Value="false"></InputRadio>
+                                        <span></span>@L["Unsuccessful"]
+                                    </label>
+                                </InputRadioGroup>
+                                <ValidationMessage For="() =>_studentRotationPerfection.IsSuccessful"></ValidationMessage>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (_studentRotationPerfection.Id > 0)
+            {
+                <button @onclick="UpdateStudentRotationPerfection" class="form-control btn btn-clean btn-primary"> @L["Update"]</button>
+
+            }
+            else
+            {
+                <button @onclick="SaveStudentRotationPerfection" class="form-control btn btn-clean btn-primary"> @L["Save"]</button>
+            }
+        </EditForm>
+    </Body>
+</MyModal>
+<MyModal @ref="_fileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+        <FileItem Documents="responseDocuments" Loaded="true"></FileItem>
+    </Body>
+</MyModal>
+<MyModal @ref="UploaderModal" ShowHeader="true" ShowFooter="true" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone(dropzone))">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        @if (_studentRotation != null && _studentRotation?.Id > 0)
+        {
+            <Dropzone @ref="dropzone" EntityId="_studentRotation.Id.Value" DocumentType="DocumentTypes.StudentRotation"></Dropzone>
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="_addPastRotationModal" Size="MyModal.ModalSize.Large" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="@_ecPastStudentRotation">
+            <FluentValidator TValidator="StudentPastRotationValidator"></FluentValidator>
+            <div class="form-group">
+                <label>@L["Start Date"]</label>
+                <div class="form-group">
+                    <InputDate class="form-control" Value="_studentRotation.BeginDate" ValueExpression="()=>_studentRotation.BeginDate" ValueChanged="(DateTime? e)=>OnChangeBeginDate(e)"></InputDate>
+                    <ValidationMessage For="() =>_studentRotation.BeginDate"></ValidationMessage>
+                </div>
+                <label>@L["End Date"]</label>
+                <div class="form-group">
+                    <InputDate class="form-control" disabled @bind-Value="_studentRotation.EndDate" TValue="DateTime?" />
+                    <ValidationMessage For="() =>_studentRotation.EndDate"></ValidationMessage>
+                </div>
+                <h5 class="card-title">
+                    Dönem İçindeki Süre Uzatmalar
+                </h5>
+                <Grid Items="_educationTrackings" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                    <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Process Type"]">
+                        <ChildContent Context="ett">
+                            @L[ett.ProcessType.Value.GetDescription()]
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Reason"]">
+                        <ChildContent Context="ett">
+                            @(L[ett.ReasonType.Value.GetDescription()])
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Institution of Education"]">
+                        <ChildContent Context="ett">
+                            @(ett.Program != null ? ett.Program?.Name : "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Assignment"]">
+                        <ChildContent Context="ett">
+                            @(ett.AssignmentType != null ? L[ett.AssignmentType.Value.GetDescription()] : "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Additional Days(Day)"]">
+                        <ChildContent Context="ett">
+                            @(ett.AdditionalDays.HasValue ? ett.AdditionalDays : "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Process Date"]">
+                        <ChildContent Context="ett">
+                            @ett.ProcessDate?.ToShortDateString()
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="EducationTrackingResponseDTO" Title="@L["Description"]">
+                        <ChildContent Context="ett">
+                            @(ett.Description ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                </Grid>
+
+                <div class="form-group">
+                    <label>@L["Expertise Training Program"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchPrograms" class="@GetProgramClass()"
+                                       placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                       TItem="ProgramResponseDTO"
+                                       TValue="ProgramResponseDTO"
+                                       Value="_studentRotation.Program"
+                                       ValueExpression="() => _studentRotation.Program"
+                                       ValueChanged="OnChangePastRotationProgram"
+                                       EnableDropDown="false"
+                                       DisableClear="true"
+                                       MinimumLength="3"
+                                       MaximumSuggestions=int.MaxValue>
+                        <SelectedTemplate Context="program">
+                            @program.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 3 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="program">
+                            @program.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                    <ValidationMessage For="() =>_studentRotation.ProgramId"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Educator's Name Surname"]</label>
+                    <InputText class="form-control" @bind-Value="_studentRotation.EducatorName" />
+                    <ValidationMessage For="() => _studentRotation.EducatorName"></ValidationMessage>
+                </div>
+                <div class="form-group row">
+                    <div class="radio-inline col-12">
+                        <InputRadioGroup @bind-Value="_studentRotation.IsSuccessful">
+                            <label class="radio radio-success">
+                                <InputRadio Value="true"></InputRadio>
+                                <span></span>@L["Successful"]
+                            </label>
+                            <label class="radio radio-danger">
+                                <InputRadio Value="false"></InputRadio>
+                                <span></span>@L["Unsuccessful"]
+                            </label>
+                        </InputRadioGroup>
+                        <ValidationMessage For="()=>_studentRotation.IsSuccessful" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <Dropzone @ref="dropzone" EntityId="@(_studentRotation.Id ?? 0)" DocumentType="DocumentTypes.StudentRotation"></Dropzone>
+                    @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                    {
+                        <div class="validation-message">@_documentValidatorMessage</div>
+                    }
+                </div>
+            </div>
+        </EditForm>
+        <button @onclick="AddPastStudentRotation" disabled="@_saving" class="btn btn-clean btn-primary"> @L["Save"]</button>
+    </Body>
+</MyModal>

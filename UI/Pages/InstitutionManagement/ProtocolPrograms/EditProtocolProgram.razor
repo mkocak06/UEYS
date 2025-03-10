@@ -1,0 +1,649 @@
+﻿@page "/institution-management/protocol-programs/{Id:long?}"
+@using System.Globalization;
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Radzen
+@using Radzen.Blazor
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            @if (_protocolProgram.CancelingProtocolNo == null)
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramDocumentUpload}">
+                    <SpinnerButton Spinning="_saving" Disabled="_saving" ButtonClass="btn-success mr-4" OnClick="() => { dropzone.ResetStatus(); UploaderModal.OpenModal(); }">
+                        <i class="fas fa-upload"></i>@L["File Upload"]
+                    </SpinnerButton>
+                </PermissionWrapper>
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramUpdate}">
+                    <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                        <i class="fas fa-save"></i>@L["Update"]
+                    </SpinnerButton>
+                </PermissionWrapper>
+            }
+        </div>
+    </Toolbar>
+    <Content>
+        @if (!_loading)
+        {
+            <EditForm EditContext="_ec">
+                <FluentValidator TValidator="ProtocolProgramValidator" />
+                @if (_protocolProgram != null)
+                {
+                    <div class="card card-custom">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-12 col-lg-12">
+                                    <div class="form-group">
+                                        <h6>@L["Protocol Program No"]</h6>
+                                        <InputText class="form-control" @bind-Value="_protocolProgram.ProtocolNo" />
+                                        <ValidationMessage For="()=>_protocolProgram.ProtocolNo" />
+                                    </div>
+                                    <div class="form-group">
+
+                                        <h6>@L["Expertise Training Program"]</h6>
+                                        <BlazoredTypeahead SearchMethod="SearchPrograms"
+                                                           placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                                           TItem="ProgramResponseDTO"
+                                                           TValue="ProgramResponseDTO"
+                                                           Value="_protocolProgram.ParentProgram"
+                                                           ValueExpression="() => _protocolProgram.ParentProgram"
+                                                           ValueChanged="OnChangeProgram"
+                                                           EnableDropDown="false"
+                                                           MinimumLength="3"
+                                                           MaximumSuggestions=int.MaxValue
+                                                           Disabled="_protocolProgram.RelatedDependentPrograms.Any(x=>x.Id != null)">
+                                            <SelectedTemplate Context="program">
+                                                @program?.Name
+                                            </SelectedTemplate>
+                                            <HelpTemplate>
+                                                @L["Please enter at least 3 character to search."]
+                                            </HelpTemplate>
+                                            <NotFoundTemplate Context="searchText">
+                                                "@searchText" @L["Could not find an item named"]
+                                            </NotFoundTemplate>
+                                            <ResultTemplate Context="program">
+                                                @program?.Name
+                                            </ResultTemplate>
+                                        </BlazoredTypeahead>
+                                        <ValidationMessage For="()=>_protocolProgram.ParentProgram" />
+                                    </div>
+                                    <div class="form-group">
+                                        <h6>@L["Decision Date"]</h6>
+                                        <InputDate class="form-control" @bind-Value="_protocolProgram.DecisionDate" TValue="DateTime?" />
+                                        <ValidationMessage For="()=>_protocolProgram.DecisionDate" />
+                                    </div>
+                                    <div class="form-group">
+                                        <h6>@L["Decision Number"]</h6>
+                                        <InputText class="form-control" @bind-Value="_protocolProgram.DecisionNo" />
+                                        <ValidationMessage For="()=>_protocolProgram.DecisionNo" />
+                                    </div>
+                                    <div class="form-group">
+                                        <h6>@L["Program Yöneticisi"]</h6>
+
+                                        <span class="label label-xl font-weight-boldest label-rounded label-light-danger label-inline ">
+                                            @((MarkupString)GetManagerName())
+
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-custom mt-10">
+                        <div class="card-header">
+                            <div class="card-toolbar">
+                                @if (_protocolProgram.CancelingProtocolNo == null)
+                                {
+                                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramUpdate}">
+                                        @if (_protocolProgram.RelatedDependentPrograms.Count == 0)
+                                        {
+                                            <a @onclick="()=>AddToRDP()" class="btn btn-sm btn-success font-weight-bold">
+                                                <i class="fas fa-plus"></i>@L["add_new", L["Protocol"]]
+                                            </a>
+                                        }
+                                        else if (_protocolProgram.RelatedDependentPrograms.Any(x => x.ChildPrograms.Count >= _protocolProgram.ParentProgram.ExpertiseBranch.ProtocolProgramCount) && _protocolProgram.RelatedDependentPrograms.Any(x => x.Id == null) == false)
+                                        {
+                                            <a @onclick="()=>AddToRDP()" class="btn btn-sm btn-success font-weight-bold">
+                                                <i class="fas fa-plus"></i>@L["Add Protocol Revision"]
+                                            </a>
+                                        }
+                                    </PermissionWrapper>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @if (!_ppLoading)
+                                {
+                                    if (_protocolProgram.RelatedDependentPrograms?.Count > 0)
+                                    {
+
+                                        @foreach (var rdp in _protocolProgram.RelatedDependentPrograms.OrderByDescending(x => x.IsActive))
+                                        {
+                                            <div class="card card-custom card-border" style="@(rdp.IsActive?"border-color:#17a2b8!important;":"border-color:#343a40!important")">
+                                                <div class="card-header @(rdp.IsActive?"ribbon ribbon-top":"")">
+                                                    @if (rdp.IsActive)
+                                                    {
+                                                        <div class="ribbon-target bg-info" style="top: -2px; right: 20px;">@L["Active"] </div>
+
+                                                    }
+
+                                                    <div class="card-title">
+                                                        @if (rdp.Revision == 0)
+                                                        {
+                                                            <h3 class="card-label">
+                                                                @_protocolProgram.ProtocolNo @CultureInfo.CurrentCulture.TextInfo.ToTitleCase(_protocolProgram.ParentProgram.ExpertiseBranch?.Name?.ToLower() ?? "")
+                                                            </h3>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h3 class="card-label">
+                                                                @_protocolProgram.ProtocolNo @CultureInfo.CurrentCulture.TextInfo.ToTitleCase(_protocolProgram.ParentProgram.ExpertiseBranch?.Name?.ToLower() ?? "") @L["Revision"] @rdp.Revision
+                                                            </h3>
+                                                        }
+                                                    </div>
+                                                    <div class="card-toolbar">
+                                                        @if (_protocolProgram.CancelingProtocolNo == null)
+                                                        {
+                                                            @if (rdp.IsActive != true)
+                                                            {
+                                                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramUpdate}">
+                                                                    <a @onclick="()=>OnDeleteRelatedDependentProgramHandler(rdp)" class="btn btn-sm btn-danger font-weight-bold mr-4">
+                                                                        <i class="fas fa-minus"></i>
+                                                                        @L["_Delete", L["Revision"]]
+                                                                    </a>
+                                                                    <a @onclick="()=>OnActiveRelatedDependentProgramHandler(rdp)" class="btn btn-sm btn-info font-weight-bold">
+                                                                        <i class="fas fa-check"></i>
+                                                                        @L["Active"]
+                                                                    </a>
+                                                                </PermissionWrapper>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="col-12 col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-12 col-lg-6">
+                                                                <div class="form-group">
+                                                                    <h6>@L["Decision Date"]</h6>
+                                                                    <InputDate class="form-control" @bind-Value="rdp.DecisionDate" TValue="DateTime?" />
+                                                                    <ValidationMessage For="()=>rdp.DecisionDate" />
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <Dropzone @ref="dropzoneRDP[(int)rdp?.Revision]" EntityId=0 DocumentType="@Shared.Types.DocumentTypes.RelatedDependentProgram" />
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-6">
+                                                                <div class="form-group">
+                                                                    <h6>@L["Decision Number"]</h6>
+                                                                    <InputText class="form-control" @bind-Value="rdp.DecisionNo" />
+                                                                    <ValidationMessage For="()=>rdp.DecisionNo" />
+                                                                </div>
+                                                                @if (rdp?.Documents?.Count > 0)
+                                                                {
+                                                                    <FileItem Documents="rdp.Documents" Loaded="true" IsEditing="@(_protocolProgram.CancelingProtocolNo == null ? true : false)"></FileItem>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <RadzenDataGrid @key="rdp.Revision.ToString()" @ref="grid[rdp.Revision.ToString()]" EmptyText="@L["There is no record belong to this field"]" AllowColumnResize="true" TItem="DependentProgramResponseDTO" ColumnWidth="100px" AllowPaging="true" PageSize="6" Data="rdp.ChildPrograms.OrderBy(x=>x.Unit)" RowRender="@RowRender" ExpandMode="DataGridExpandMode.Single" RowExpand="RowExpand" AllowSorting="true">
+                                                            <Columns>
+                                                                <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="DependentProgramResponseDTO" Property="Program.Hospital.Province.Name" Title="@L["Province"]"></RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="DependentProgramResponseDTO" Title="@L["Institution of Education"]">
+                                                                    <Template Context="dp">
+                                                                        <p style="white-space:pre-wrap">@dp.Program?.Hospital?.Name</p>
+                                                                    </Template>
+                                                                </RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TextAlign="TextAlign.Center" Width="auto" TItem="DependentProgramResponseDTO" Property="Program.ExpertiseBranch.Name" Title="@L["Expertise Training Program"]"></RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TextAlign="TextAlign.Center" Width="auto" TItem="DependentProgramResponseDTO" Property="Duration" Title="@L["Duration (Month)"]"></RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TextAlign="TextAlign.Center" Width="auto" TItem="DependentProgramResponseDTO" Property="Unit" Title="@L["Unit"]"></RadzenDataGridColumn>
+                                                                <RadzenDataGridColumn TextAlign="TextAlign.Center" Width="auto" TItem="DependentProgramResponseDTO" Title="@L["Transactions"]">
+                                                                    <Template Context="dp">
+                                                                        @if (_protocolProgram.CancelingProtocolNo == null)
+                                                                        {
+                                                                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityUpdate}">
+                                                                                <a @onclick="async ()=> await OpenEducatorModal(dp)" class="btn btn-light-primary btn-icon btn-sm" title="@L["Add Educator"]">
+                                                                                    <i class="fas fa-user-plus"></i>
+                                                                                </a>
+                                                                                <a @onclick="() => OnUpdateDependentProgramHandler(rdp,dp)" class="btn btn-light-success btn-icon btn-sm" title="@L["Edit"]">
+                                                                                    <i class="fas fa-edit"></i>
+                                                                                </a>
+                                                                                <a @onclick="() => OnDeleteDependentProgramHandlerAsync(rdp,dp)" class="btn btn-light-danger btn-icon btn-sm" title="@L["Delete"]">
+                                                                                    <i class="fas fa-trash-alt"></i>
+                                                                                </a>
+                                                                            </PermissionWrapper>
+                                                                        }
+                                                                    </Template>
+                                                                </RadzenDataGridColumn>
+
+                                                            </Columns>
+                                                            <Template Context="childProgram">
+
+                                                                <RadzenTabs>
+                                                                    <Tabs>
+                                                                        <RadzenTabsItem Text="@L["Educators"]">
+                                                                            <RadzenDataGrid @ref="gridEducators" EmptyText="@L["There is no record belong to this field"]" Data="@childProgram.EducatorDependentPrograms" RowRender="@RowRenderForEducator" TItem="EducatorDependentProgramResponseDTO">
+
+                                                                                <Columns>
+                                                                                    <RadzenDataGridColumn TItem="EducatorDependentProgramResponseDTO" Property="Educator.StaffTitleName" Title="Kadro Ünvanı"></RadzenDataGridColumn>
+                                                                                    <RadzenDataGridColumn TItem="EducatorDependentProgramResponseDTO" Property="Educator.AcademicTitleName" Title="Eğitici Unvanı"></RadzenDataGridColumn>
+                                                                                    <RadzenDataGridColumn TItem="EducatorDependentProgramResponseDTO" Property="Educator.User.Name" Title="Eğitici Adı"></RadzenDataGridColumn>
+                                                                                    <RadzenDataGridColumn TItem="EducatorDependentProgramResponseDTO" Property="Educator.User.Phone" Title="Telefon"></RadzenDataGridColumn>
+                                                                                    <RadzenDataGridColumn TItem="EducatorDependentProgramResponseDTO" Title="Yönetici">
+
+                                                                                        <Template Context="edp">
+                                                                                            @(edp.IsProgramManager == true ? "Evet" : "Hayır")
+                                                                                        </Template>
+
+                                                                                    </RadzenDataGridColumn>
+
+                                                                                    <RadzenDataGridColumn TItem="EducatorDependentProgramResponseDTO" Title="@L["Transactions"]">
+                                                                                        <Template Context="edp">
+                                                                                            @if (_protocolProgram.CancelingProtocolNo == null)
+                                                                                            {
+                                                                                                @if (edp.Id > 0)
+                                                                                                {
+                                                                                                    <SpinnerButton OnClick="async () => await OnRemoveChildEducatorHandler(edp.Educator, childProgram)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="_saving" Disabled="_saving">
+                                                                                                        <i class="fas fa-minus"></i>
+                                                                                                    </SpinnerButton>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <SpinnerButton OnClick="() => OnRemoveList(edp, childProgram)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                                                                                                        <i class="fas fa-minus"></i>
+                                                                                                    </SpinnerButton>
+                                                                                                }
+                                                                                            }
+                                                                                        </Template>
+                                                                                    </RadzenDataGridColumn>
+                                                                                </Columns>
+                                                                            </RadzenDataGrid>
+                                                                        </RadzenTabsItem>
+                                                                    </Tabs>
+                                                                </RadzenTabs>
+                                                            </Template>
+
+                                                        </RadzenDataGrid>
+                                                        @if (_protocolProgram.CancelingProtocolNo == null)
+                                                        {
+                                                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramUpdate}">
+                                                                <div class="text-center my-5">
+                                                                    <button @onclick="()=>OnOpenProgramListModal(rdp)" class="btn btn-outline-primary">@L["add_new", L["Dependent Program"]]</button>
+                                                                </div>
+                                                            </PermissionWrapper>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="separator separator-solid mb-5"></div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <cite class="ml-3">Protokol bulunamadı.</cite>
+                                    }
+                                }
+                                else
+                                {
+                                    <Spinner />
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="separator separator-solid mb-5"></div>
+                    <FileItem Documents="_documents" Loaded="!_loading" IsEditing="@(_protocolProgram.CancelingProtocolNo == null ? true : false)"></FileItem>
+                }
+                else
+                {
+                    <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/institution-management/protocol-programs"></_404Page>
+                }
+            </EditForm>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Content>
+</AppContent>
+<MyModal @ref="_programListModal" Size="MyModal.ModalSize.Large" ShowFooter="false" ShowHeader="false">
+    <Body>
+        @if (_programPaginationModel != null)
+        {
+            <Grid IsFilter="true" Items="_programPaginationModel.Items" class="table table-hover table-bordered text-center" Sort="_filterProgram.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                <GridColumn Sort="Hospital.Province.Name" Context="program" TRowData="ProgramResponseDTO" Title="@L["Province of Education"]">
+                    <ChildContent>
+                        @program.Hospital?.Province?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Faculty.University.Name" Context="program" TRowData="ProgramResponseDTO" Title="@L["Educational Institution / Faculty"]">
+                    <ChildContent>
+                        @program.Faculty?.University?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="ExpertiseBranch.Profession.Name" Context="program" TRowData="ProgramResponseDTO" Title=@L["_List", L["Education Field"]]>
+                    <ChildContent>
+                        @program.ExpertiseBranch?.Profession?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="program" Sort="Hospital.Name" TRowData="ProgramResponseDTO" Title="@L["Institution of Education"]">
+                    <ChildContent>
+                        @program.Hospital?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="program" Sort="ExpertiseBranch.Name" TRowData="ProgramResponseDTO" Title="@L["Specialization Training Program"]">
+                    <ChildContent>
+                        @program.ExpertiseBranch?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="program" class="min-w-100px align-middle" TRowData="ProgramResponseDTO" Title="@L["Transactions"]">
+                    @if (IsValidProgram(program))
+                    {
+                        <a @onclick="() => OnAddDependentProgramHandler(program)" class="btn btn-light-primary btn-icon btn-sm">
+                            <i class="fas fa-check-circle"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-light-warning btn-sm btn-icon disabled">
+                            <i class="fas fa-check-circle"></i>
+                        </a>
+                    }
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandlerPrograms" Count="_programPaginationModel.TotalItemCount" Page="_programPaginationModel.Page"
+                        DefaultPageSize="10" Loading="_programsLoading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="_educatorListModal" Size="MyModal.ModalSize.XLarge" ShowFooter="false" ShowHeader="false">
+    <Body>
+        @if (_educatorPaginationModel != null)
+        {
+            <Grid Items="_educatorPaginationModel.Items" class="table table-hover table-bordered text-center" Sort="_filterEducator.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                <GridColumn Context="educator" Sort="AcademicTitle" TRowData="EducatorPaginateResponseDTO" Title="@L["Academic Title"]">
+                    <ChildContent>
+                        @educator.AcademicTitle
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnEducatorChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFilteredEducator(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="StaffTitle" TRowData="EducatorPaginateResponseDTO" Title="@L["Staff Title"]">
+                    <ChildContent>
+                        @educator.StaffTitle
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnEducatorChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFilteredEducator(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="Name" TRowData="EducatorPaginateResponseDTO" Title="@L["Educator Name"]">
+                    <ChildContent>
+                        @educator.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnEducatorChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFilteredEducator(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="Phone" TRowData="EducatorPaginateResponseDTO" Title="@L["Educator Phone"]">
+                    <ChildContent>
+                        @educator.Phone
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnEducatorChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFilteredEducator(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn TRowData="EducatorPaginateResponseDTO" Title="@L["Principal Branch Duty Place"]">
+                    <ChildContent>
+                        <span>
+                            @context.PrincipalBranchDutyPlace
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducatorPaginateResponseDTO" Title="@L["Sub Branch Duty Place"]">
+                    <ChildContent>
+                        <span>
+                            @context.SubBranchDutyPlace
+                        </span>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn Context="educator" TRowData="EducatorPaginateResponseDTO" Title="@L["Expertise Branches"]">
+                    <ChildContent>
+                        @foreach (var item in educator.ExpertiseBranches)
+                        {
+                            <div>
+                                <span class="label label-outline-primary label-pill label-inline mr-2 mb-2 cursor-pointer h-auto">@item</span>
+                            </div>
+                        }
+
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn Context="educator" TRowData="EducatorPaginateResponseDTO" Title="@L["Add Educator"]">
+                    @if (!IsValıdEducator(educator))
+                    {
+                        <SpinnerButton OnClick="async () => await OnAddEducatorDependentProgramHandler(educator)" ButtonClass="btn btn-light-primary btn-icon btn-sm" Title="@L["Add"]" Spinning="_saving" Disabled="_saving">
+                            <i class="fas fa-plus"></i>
+                        </SpinnerButton>
+                    }
+                    else
+                    {
+                        <SpinnerButton OnClick="async () => await OnRemoveEducatorDependentProgramHandler(educator)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="_saving" Disabled="_saving">
+                            <i class="fas fa-minus"></i>
+                        </SpinnerButton>
+                    }
+                </GridColumn>
+
+            </Grid>
+            @if (_educatorPaginationModel.Items.Count == 0)
+            {
+                <div class="d-flex justify-content-center align-items-center">
+
+                    <button @onclick="()=>{_educatorListModal.CloseModal(); GoToAddEducator();}" class="btn btn-primary"> @L["add_new", L["Educator"]]</button>
+                </div>
+            }
+            <Pagination Action="PaginationHandlerEducator" Count="_educatorPaginationModel.TotalItemCount" Page="_educatorPaginationModel.Page"
+                        DefaultPageSize="10" Loading="_programsLoading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="_detailModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_detailEc">
+            <FluentValidator TValidator="DependentProgramValidator" />
+            <div id="form-exams-list">
+                <div id="authorization-form">
+                    <div class="form-group">
+                        <label>@L["Duration (Month)"]</label>
+                        <input type="text" inputmode="numeric" class="form-control" @bind-value="_dependentProgram.Duration" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" maxlength="4" />
+                        <ValidationMessage For="()=>_dependentProgram.Duration" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Unit"]</label>
+                        <input type="text" class="form-control" @bind-value="_dependentProgram.Unit" maxlength="1" />
+                        <ValidationMessage For="()=>_dependentProgram.Unit" />
+                    </div>
+                </div>
+            </div>
+            <button @onclick="AddDetail" class="btn btn-clean btn-primary"> @L["Save"]</button>
+        </EditForm>
+    </Body>
+</MyModal>
+<MyModal @ref="UploaderModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <Dropzone @ref="dropzone" EntityId="@_protocolProgram.Id" DocumentType="@Shared.Types.DocumentTypes.ProtocolProgram" />
+    </Body>
+</MyModal>

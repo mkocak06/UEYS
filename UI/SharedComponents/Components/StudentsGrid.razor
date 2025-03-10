@@ -1,0 +1,46 @@
+﻿﻿@using Shared.ResponseModels
+@using Shared.Types;
+@using UI.SharedComponents.Components.Students
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <TabControl>
+        <TabPage Text="@L["Students"]">
+            <Students IsMainProgram="IsMainProgram" ProgramId="ProgramId" HospitalId="HospitalId" UniversityId="UniversityId" />
+        </TabPage>
+        @if (ProgramId != 0)
+        {
+            <TabPage Text="@L["Students Who Come To Rotation"]">
+                <ComeToRotation ProgramId="ProgramId" HospitalId="HospitalId" UniversityId="UniversityId" />
+            </TabPage>
+            <TabPage Text="@L["Students Who Go To Rotation"]">
+                <GoToRotation IsMainProgram="IsMainProgram" ProgramId="ProgramId" HospitalId="HospitalId" UniversityId="UniversityId" />
+            </TabPage>
+            @if (IsDependentProgram == true)
+            {
+                if (ProtocolOrComplement == ProgramType.Protocol)
+                {
+                    <TabPage Text="@L["Students Who Come Under Protocol"]">
+                        <ComeToProtocol ProgramId="ProgramId" HospitalId="HospitalId" UniversityId="UniversityId" />
+                    </TabPage>
+                }
+                else if (ProtocolOrComplement == ProgramType.Complement)
+                {
+                    if (IsMainProgram == false)
+                    {
+                        <TabPage Text="@L["Students Who Come Under Complement Protocol"]">
+                            <ComeToProtocol ProgramId="ProgramId" HospitalId="HospitalId" UniversityId="UniversityId" />
+                        </TabPage>
+                    }
+                    else
+                    {
+                        <TabPage Text="@L["Students Who Go Under Complement Protocol"]">
+                            <GoToProtocol ProgramId="ProgramId" HospitalId="HospitalId" UniversityId="UniversityId" />
+                        </TabPage>
+                    }
+                }
+            }
+        }
+    </TabControl>
+</div>

@@ -1,0 +1,39 @@
+﻿@page "/educator/educators/{Id:long?}"
+@using UI.Pages.User.Educator.Tabs
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        @*  @if (Loaded)
+        {
+        if (Loaded)
+        {
+        if (SelectedEducator != null)
+        {*@
+
+        <TabControl>
+            <TabPage Text="@L["_Information", L["Educator"]]">
+                <EducatorOverview />
+            </TabPage>
+            @*<TabPage Text="@L["_Information", L["Expertise Training Program"]]">
+            <ProgramInformation IsEditing=_editing />
+            </TabPage>*@
+            <TabPage Text="@L["Çalışma Hayatı"]">
+                <EducatorWorkingLife />
+            </TabPage>
+        </TabControl>
+        @* }
+        else
+        {
+        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/educator/educators"></_404Page>
+        }
+        }
+        else
+        {
+        <Spinner></Spinner>
+        }
+        } *@
+    </Content>
+</AppContent>
+

@@ -1,0 +1,550 @@
+﻿@using Radzen.Blazor
+@using Shared.ResponseModels
+@using Shared.Types
+@using Shared.Extensions;
+@using System.Linq;
+
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">
+                @L["Specialist Training Exit Examination"]
+            </h3>
+        </div>
+      
+    </div>
+    <div class="card-body">
+        
+        @if (_exitExams != null)
+        {
+            <Grid Items="_exitExams" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+
+                <GridColumn class="align-middle" TRowData="ExitExamResponseDTO" Title="@L["Exam Date"]">
+                    <ChildContent>
+                        @context.ExamDate?.ToShortDateString()
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="align-middle" TRowData="ExitExamResponseDTO" Title="@L["Exam Place"]">
+                    <ChildContent>
+                        @context.Hospital?.Name
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="align-middle" TRowData="ExitExamResponseDTO" Title="@L["Practice and Ability Exam Note"]">
+                    <ChildContent>
+                        @(context.PracticeExamNote == null ? "-" : context.PracticeExamNote)
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="align-middle" TRowData="ExitExamResponseDTO" Title="@L["Vocational Knowledge Exam Note"]">
+                    <ChildContent>
+                        @(context.AbilityExamNote == null ? "-" : context.AbilityExamNote)
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="align-middle" TRowData="ExitExamResponseDTO" Title="@L["The Person Recorded The Entry"]">
+                    <ChildContent>
+                        @context.Secretary?.Name
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="align-middle" TRowData="ExitExamResponseDTO" Title="@L["Result"]">
+                    <ChildContent>
+                        @if (context.ExamStatus == ExitExamResultType.Concluded)
+                        {
+                            @if (context.PracticeExamNote != null && context.AbilityExamNote != null)
+                            {
+                                if (context.PracticeExamNote >= 60 && context.AbilityExamNote >= 60)
+                                {
+                                    <a class="btn btn-light-success disabled">
+                                        <i class="fas fa-check-circle"></i>@L["Successful"]
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="label label-lg font-weight-bold label-light-danger label-inline">
+                                        @L["Failed"]
+
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                @L["-"]
+                            }
+                        }
+                        else if (context.ExamStatus == ExitExamResultType.NotConcluded)
+                        {
+                            <span class="label label-lg font-weight-bold label-light-dark label-inline">
+                                @L["Exam Not Concluded"]
+                            </span>
+                        }
+
+                    </ChildContent>
+                </GridColumn>
+                
+            </Grid>
+            <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                    DefaultPageSize="10" Loading="_loading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+<MyModal @ref="_exitExamModal" ShowFooter="false" ShowHeader="false" Size="MyModal.ModalSize.Large">
+    <Body>
+        <div class="card card-custom">
+            <div class="card-header ribbon ribbon-clip ribbon-right">
+                <div class="ribbon-target" style="top: 12px;">
+                    <span class="ribbon-inner bg-warning"></span>@L["Verileri Giren"]: &nbsp; @_user.Name
+                </div>
+                <h3 class="card-title">
+                    @("Uzmanlık Eğitimi Bitirme Sınavı")
+                </h3>
+            </div>
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="ExitExamValidator" />
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>@L["Exam Date"]</label>
+                                <input type="date" class="form-control" @bind="_exitExam.ExamDate"/>
+                                <ValidationMessage For="()=>_exitExam.ExamDate"></ValidationMessage>
+                            </div>
+                            <div class="col-md-6">
+                                <label>@L["Exam Place"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchHospitals"
+                                                   TItem="HospitalResponseDTO"
+                                                   TValue="HospitalResponseDTO"
+                                                   Value="_exitExam.Hospital"
+                                                   ValueExpression="() => _exitExam.Hospital"
+                                                   ValueChanged="OnChangeHospital"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions="int.MaxValue">
+                                    <SelectedTemplate Context="hospital">
+                                        @hospital.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="hospital">
+                                        @hospital.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="()=>_exitExam.HospitalId"></ValidationMessage>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>@L["Sınav Durumu"]</label>
+                                <InputSelect Value="_exitExam.ExamStatus" TValue="ExitExamResultType?" ValueExpression="()=>_exitExam.ExamStatus" ValueChanged="(ExitExamResultType? e)=>OnChangeExamResultForAdd(e)" class="form-control">
+                                    <option selected value="">@L["Please Select"]..</option>
+                                    @foreach (ExitExamResultType item in Enum.GetValues(typeof(ExitExamResultType)))
+                                    {
+                                        <option value="@item">@item.GetDescription()</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="()=>_exitExam.ExamStatus"></ValidationMessage>
+                            </div>
+                            <div class="col-md-8">
+                                <label>@L["Description"]</label>
+                                <InputTextArea @bind-Value="_exitExam.Description" class="form-control" placeholder="@L["Description"]" />
+                                <ValidationMessage For="()=>_exitExam.Description"></ValidationMessage>
+                            </div>
+                        </div>
+                    </div>
+                    @if (_exitExam.ExamStatus == ExitExamResultType.Concluded)
+                    {
+                        <div class="form-group">
+                            <label>@L["Practice and Ability Exam Note"]</label>
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    <InputNumber @bind-Value="@_exitExam.PracticeExamNote" class="form-control" placeholder="Sınav Notu" />
+                                </div>
+                                <div class="col-8">
+                                    <div class="nouislider-drag-danger"></div>
+
+                                    <input type="range" min="0" max="100" step="1" @bind-value="@_exitExam.PracticeExamNote" @bind-value:event="oninput" class="form-control-range"></input>
+
+                                </div>
+                            </div>
+                            <ValidationMessage For="()=>_exitExam.PracticeExamNote"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Vocational Knowledge Exam Note"]</label>
+                            <div class="row align-items-center">
+                                <div class="col-4">
+                                    <InputNumber @bind-Value="@_exitExam.AbilityExamNote" class="form-control" placeholder="Sınav Notu" />
+                                </div>
+                                <div class="col-8">
+                                    <div class="nouislider-drag-danger"></div>
+
+                                    <input type="range" min="0" max="100" step="1" @bind-value="@_exitExam.AbilityExamNote" @bind-value:event="oninput" class="form-control-range"></input>
+
+                                </div>
+                            </div>
+                            <ValidationMessage For="()=>_exitExam.AbilityExamNote"></ValidationMessage>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId=@(_exitExam.EducationTrackingId??0) DocumentType="@DocumentTypes.EducationTimeTracking" />
+                        @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                        {
+                            <div class="validation-message">@_documentValidatorMessage</div>
+                        }
+                    </div>
+                    @if (_exitExam.Documents != null && _exitExam.Documents.Count > 0)
+                    {
+                        <FileItem Documents="_exitExam.Documents" Loaded="true"></FileItem>
+                    }
+                    <div class="card card-custom">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3 class="card-label">Asil ve Yedek Juri Üyeleri</h3>
+                            </div>
+                            <div class="card-toolbar">
+                                <ul class="nav nav-light-success nav-bold nav-pills">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" data-toggle="tab" href="#kt_tab_pane_4_1_add">
+                                            <span class="nav-icon"><i class="flaticon2-chat-1"></i></span>
+                                            <span class="nav-text">@L["Core"]</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" data-toggle="tab" href="#kt_tab_pane_4_2_add">
+                                            <span class="nav-icon"><i class="flaticon2-drop"></i></span>
+                                            <span class="nav-text">@L["Alternate"]</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="kt_tab_pane_4_1_add" role="tabpanel" aria-labelledby="kt_tab_pane_4_1">
+                                    <Grid Items="_exitExam.Juries?.Where(x=>x.JuryType==JuryType.Core).ToList()" class="table table-hover table-bordered text-center" Sort="_filterJury.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                                        <GridColumn Context="jury" class="align-middle" TRowData="JuryResponseDTO" Title="Asil/Yedek">
+                                            <ChildContent>
+                                                <span class="label label-xl label-light-danger label-pill label-inline">
+
+                                                    @L[jury.JuryType.GetDescription()]
+                                                </span>
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Name"]">
+                                            <ChildContent>
+                                                @jury.Educator?.User?.Name
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Expertise Branches"]">
+                                            <ChildContent>
+                                                @foreach (var item in jury.Educator?.EducatorExpertiseBranches)
+                                                {
+                                                    <span class="label label-info label-inline mr-2">@(item.ExpertiseBranch.Name ?? "-")</span>
+                                                }
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn Context="jury" class="min-w-100px align-middle" TRowData="JuryResponseDTO" Title="@L["Transactions"]">
+                                            <SpinnerButton OnClick="() => OnRemoveAddingJury(jury)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                                                <i class="fas fa-minus"></i>
+                                            </SpinnerButton>
+                                        </GridColumn>
+                                    </Grid>
+                                    @if (_exitExam.Juries?.Where(x => x.JuryType == JuryType.Core).ToList().Count != 5)
+                                    {
+                                        <SpinnerButton Disabled="false" Spinning="false" OnClick="async()=>{_selectedJuryType=JuryType.Core; StateHasChanged(); _juryAddingModal.OpenModal();}" ButtonClass="btn-primary">@L["Asil Üye Ekle"]</SpinnerButton>
+                                    }
+
+                                </div>
+                                <div class="tab-pane fade" id="kt_tab_pane_4_2_add" role="tabpanel" aria-labelledby="kt_tab_pane_4_2">
+                                    <Grid Items="_exitExam.Juries?.Where(x=>x.JuryType==JuryType.Alternate).ToList()" class="table table-hover table-bordered text-center" Sort="_filterJury.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                                        <GridColumn Context="jury" class="align-middle" TRowData="JuryResponseDTO" Title="Asil/Yedek">
+                                            <ChildContent>
+                                                <span class="label label-xl label-light-warning label-pill label-inline">
+                                                    @L[jury.JuryType.GetDescription()]
+                                                </span>
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Name"]">
+                                            <ChildContent>
+                                                @jury.Educator?.User?.Name
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Expertise Branches"]">
+                                            <ChildContent>
+                                                @foreach (var item in jury.Educator?.EducatorExpertiseBranches)
+                                                {
+                                                    <span class="label label-info label-inline mr-2">@(item.ExpertiseBranch?.Name ?? "-")</span>
+                                                }
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn Context="jury" class="min-w-100px align-middle" TRowData="JuryResponseDTO" Title="@L["Transactions"]">
+                                            <SpinnerButton OnClick="() => OnRemoveAddingJury(jury)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                                                <i class="fas fa-minus"></i>
+                                            </SpinnerButton>
+                                        </GridColumn>
+                                    </Grid>
+
+
+
+                                    @if (_exitExam.Juries?.Where(x => x.JuryType == JuryType.Alternate).ToList().Count != 2)
+                                    {
+                                        <SpinnerButton Disabled="_juryLoading" Spinning="_juryLoading" OnClick="async()=>{_selectedJuryType=JuryType.Alternate; StateHasChanged(); _juryAddingModal.OpenModal(); }" ButtonClass="btn-primary">@L["Yedek Üye Ekle"]</SpinnerButton>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ValidationMessage For="()=>_exitExam.Juries"></ValidationMessage>
+                </EditForm>
+            </div>
+            @if (_exitExam.Id.HasValue && _exitExam.Id.Value > 0)
+            {
+                <button @onclick="UpdateExitExam" class="btn btn-clean btn-primary form-control"> @L["Save"] </button>
+            }
+            else
+            {
+                <button @onclick="AddExitExam" class="btn btn-clean btn-primary form-control"> @L["Save"] </button>
+            }
+        </div>
+    </Body>
+
+</MyModal>
+
+<MyModal @ref="_juryAddingModal" ShowHeader="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        @if (_juryPaginationModel.Items != null && _juryPaginationModel.Items?.Count > 0)
+        {
+            <Grid Items="_juryPaginationModel.Items" class="table table-hover table-bordered text-center" Sort="_filterJury.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                <GridColumn Context="educator" Sort="User.IdentityNo" TRowData="EducatorResponseDTO" Title="@L["T.R. Identity Number"]">
+                    <ChildContent>
+                        @educator.User?.IdentityNo
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="AcademicTitle.Name" TRowData="EducatorResponseDTO" Title="@L["Academic Title"]">
+                    <ChildContent>
+                        @educator.AcademicTitle?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="EducatorPrograms" TRowData="EducatorResponseDTO" Title="@L["Place of Education"]">
+                    <ChildContent>
+
+                        @(educator.EducatorPrograms?.FirstOrDefault(x => x.DutyEndDate == null)?.Program?.Hospital?.Name ?? "-")
+
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="EducatorExpertiseBranches" Context="educator" TRowData="EducatorResponseDTO" Title="@L["Expertise Branches"]">
+                    <ChildContent>
+                        <ol>
+                            @foreach (var item in educator.EducatorExpertiseBranches)
+                            {
+                                <li>@(item.ExpertiseBranch.Name ?? "-")</li>
+                            }
+                        </ol>
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="User.Name" TRowData="EducatorResponseDTO" Title="@L["Educator Name"]">
+                    <ChildContent>
+                        @educator.User?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="User.Phone" TRowData="EducatorResponseDTO" Title="@L["Educator Phone"]">
+                    <ChildContent>
+                        @educator.User?.Phone
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Context="educator" Sort="User.Email" TRowData="EducatorResponseDTO" Title="@L["Email"]">
+                    <ChildContent>
+                        @educator.User?.Email
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                
+            </Grid>
+
+            <Pagination Action="PaginationHandlerEducator" Count="_juryPaginationModel.TotalItemCount" Page="_juryPaginationModel.Page"
+                    DefaultPageSize="10" Loading="_juryLoading">
+            </Pagination>
+        }
+        else
+        {
+           
+                @L["There is no record belong to this field"]
+                    
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="FileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+
+        <FileItem Documents="responseDocuments" Loaded="true"></FileItem>
+
+    </Body>
+</MyModal>
+<MyModal @ref="FilePreviewModal" ShowFooter="true" ShowHeader="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        <div class="card card-custom gutter-b">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">
+                        Uzmanlık Eğitimi Bitirme Sınavı Tutanağı
+                    </h3>
+                </div>
+                <div class="card-toolbar">
+                    <button @onclick="async ()=> await DownloadFile()" class="btn btn-light-success">
+                        <i class="fas fa-download"></i>@L["Download"]
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="embed-responsive embed-responsive-4by3">
+                    <iframe src="/files/b_sinavi_tutanagi.pdf" width="476px" height="288px" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </Body>
+</MyModal>

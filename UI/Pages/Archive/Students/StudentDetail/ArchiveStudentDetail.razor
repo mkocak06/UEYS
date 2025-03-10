@@ -1,0 +1,77 @@
+﻿@page "/archive/students/{Id:long?}"
+@using Shared.Types;
+@using UI.Pages.Archive.Students.StudentDetail.Tabs
+@using UI.Pages.Archive.Students.StudentDetail.Tabs.OpinionForm
+@using UI.Pages.Archive.Students.StudentDetail.Tabs.PerformanceRating
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        @if (_editing)
+        {
+            if (Loaded)
+            {
+                if (SelectedStudent != null)
+                {
+
+                    <TabControl>
+                        @if (!SelectedStudent.Theses.Any(x => x.ThesisDefences.Any(x => x.DefenceOrder == 2 && x.Result == Shared.Types.DefenceResultType.Failed)))
+                        {
+                            <TabPage Text="@L["_Information", L["Specialization Student"]]">
+                                <StudentOverview IsEditing=_editing />
+                            </TabPage>
+                            <TabPage Text="@L["Education Time Tracking"]">
+                                <EducationTimeTracking />
+                            </TabPage>
+                            @*@if (SelectedStudent.IsProtocolProgram == true)
+            {
+            <TabPage Text="@L["_Information", L["Protocol Program"]]">
+            <ProtocolProgram />
+            </TabPage>
+            }*@
+                            <TabPage Text="@L["_Information", L["Rotation"]]">
+                                <StudentRotation />
+                            </TabPage>
+                            <TabPage Text="@L["_Information", L["Basic Perfection"]]">
+                                <StudentPerfection />
+                            </TabPage>
+
+                            <TabPage Text="@L["_Information", L["Opinion"]]">
+                                <OpinionForms />
+                            </TabPage>
+                        }
+                        @if (SelectedStudent.OriginalProgram.ExpertiseBranch.IsPrincipal == true)
+                        {
+                            <TabPage Text="@L["_Information", L["Thesis"]]">
+                                <StudentThesis />
+                            </TabPage>
+                        }
+                        @if (!SelectedStudent.Theses.Any(x => x.ThesisDefences.Any(x => x.DefenceOrder == 2 && x.Result == Shared.Types.DefenceResultType.Failed)))
+                        {
+                            <TabPage Text="@L["Scientific Studies"]">
+                                <ScientificStudies />
+                            </TabPage>
+                            <TabPage Text="@L["Specialist Training Exit Examination"]">
+                                <ExitExams />
+                            </TabPage>
+                            <TabPage Text="@L["E-Report"]">
+                                <EReport />
+                            </TabPage>
+                        }
+
+                    </TabControl>
+                }
+                else
+                {
+                    <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/student/students"></_404Page>
+                }
+            }
+            else
+            {
+                <Spinner></Spinner>
+            }
+        }
+    </Content>
+</AppContent>
+

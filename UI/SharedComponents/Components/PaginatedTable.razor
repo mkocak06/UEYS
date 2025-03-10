@@ -1,0 +1,56 @@
+﻿@using Shared.ResponseModels
+@typeparam TItem
+
+<table class="table table-hover table-bordered mb-6">
+	<thead class="thead-light">
+	<tr>
+		@foreach (var paginatedTableColumn in PaginatedTableColumns)
+		{
+			@paginatedTableColumn
+		}
+		<th scope="col">@L["Province of Education"]</th>
+		<th scope="col">@L["Program Affiliated Upper Institution"]</th>
+		<th scope="col">@L["_name", L["University"]]</th>
+		<th scope="col">@L["Educational Institution / Faculty"]</th>
+		<th scope="col">@L["Institution of Education"]</th>
+		<th scope="col">@L["Expertise Branch"]</th>
+		<th scope="col">@L["Authorization Category"]</th>
+		<th scope="col">@L["_Date", L["Authorization"],L["End"]]</th>
+		<th scope="col">@L["Number of Students"]</th>
+		<th scope="col">@L["Last 6 Months Remaining"]</th>
+		<th scope="col">@L["Number of Educators"]</th>
+	</tr>
+	</thead>
+	<tbody>
+	@if (PaginatedList != null)
+	{
+		if (PaginatedList.Items.Any())
+		{
+			foreach (var paginatedListItem in PaginatedList.Items)
+			{
+				<tr>
+					<td>@paginatedListItem.</td>
+					<td>Stone</td>
+					<td>
+						<span class="label label-inline label-light-primary font-weight-bold">Pending</span>
+					</td>
+				</tr>
+			}
+		}
+		else
+		{
+			<div>@L["No Records Found"]</div>
+		}
+	}
+	else
+	{
+		<Spinner></Spinner>
+	}
+	</tbody>
+</table>
+
+@code {
+    [Parameter] public long Test { get; set; }
+    [Parameter] public PaginationModel<TItem> PaginatedList { get; set; }
+    [Parameter] public List<RenderFragment<PaginatedTableColumn>> PaginatedTableColumns { get; set; }
+}

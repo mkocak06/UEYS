@@ -1,0 +1,33 @@
+﻿<div class="d-flex align-items-start flex-wrap">
+    @if (Options != null)
+    {
+        foreach (var option in Options)
+        {
+            <div class="p-3 mb-3 mr-3 rounded cursor-pointer @(Value == option ? "bg-success text-white" : "bg-light ")" @onclick="() => { Value = option; _showTextBox = false; StateHasChanged(); }">@option</div>
+        }
+        <div class="p-3 mb-3 mr-3 rounded cursor-pointer @(Options.All(x=> x != Value) ? "bg-success text-white" : "bg-light")" @onclick='() => { Value = ""; _showTextBox = true; StateHasChanged(); }'>@L["Other"]</div>
+    }
+</div>
+@if (Options?.All(x=> x != Value) == true)
+{
+    <textarea class="form-control"  @bind="Value" @bind:event="oninput"></textarea>
+}
+
+@code {
+
+    [Parameter]
+    public string Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(Value);
+        }
+    }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public List<string> Options { get; set; }
+    private string _value;
+    private bool _showTextBox;
+}

@@ -1,0 +1,49 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/institution/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent  IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.InstitutionUpdate}">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="InstitutionValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["_name", L["Parent Institution"]]</label>
+                                        <InputText class="form-control" @bind-Value="_institution.Name" />
+                                        <ValidationMessage For="() => _institution.Name"></ValidationMessage>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/institutions"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

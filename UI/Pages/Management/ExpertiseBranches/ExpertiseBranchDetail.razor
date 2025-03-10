@@ -1,0 +1,158 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/expertise/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ExpertiseBranchUpdate}">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <EditForm EditContext="_ec">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <FluentValidator TValidator="ExpertiseBranchValidator"></FluentValidator>
+                                    <div class="form-group ">
+                                        <label>@L["_name", L["Expertise Training Program"]]</label>
+                                        <InputText class="form-control" @bind-Value="_branch.Name"/>
+                                        <ValidationMessage For="() => _branch.Name"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label>@L["Expertise Branch"]</label>
+                                        <BlazoredTypeahead SearchMethod="SearchFaculties"
+                                                   TItem="ProfessionResponseDTO"
+                                                   TValue="ProfessionResponseDTO"
+                                                   Value="_branch?.Profession"
+                                                   ValueExpression="() => _branch.Profession"
+                                                   ValueChanged="OnChangeFaculty"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                            <SelectedTemplate Context="faculty">
+                                                @faculty.Name
+                                            </SelectedTemplate>
+                                            <HelpTemplate>
+                                                @L["Please enter at least 1 character to search."]
+                                            </HelpTemplate>
+                                            <NotFoundTemplate Context="searchText">
+                                                "@searchText" @L["Could not find an item named"]
+                                            </NotFoundTemplate>
+                                            <ResultTemplate Context="faculty">
+                                                @faculty.Name
+                                            </ResultTemplate>
+                                        </BlazoredTypeahead>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label>@L["Contribution Rate of Portfolio Index to Assistant Capacity Index by Branch"]</label>
+                                        <InputNumber Value="_branch.PortfolioIndexRateToCapacityIndex" ValueExpression="()=>_branch.PortfolioIndexRateToCapacityIndex" TValue="int?" ValueChanged="OnChangePortfolioIndex" class="form-control" />
+                                        <ValidationMessage For="() => _branch.PortfolioIndexRateToCapacityIndex"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label>@L["Contribution Rate of Educator Index to Assistant Capacity Index by Branch"]</label>
+                                        <InputNumber Value="_branch.EducatorIndexRateToCapacityIndex" ValueExpression="()=>_branch.EducatorIndexRateToCapacityIndex" TValue="int?" ValueChanged="OnChangeEducatorIndex" class="form-control" />
+                                        <ValidationMessage For="() => _branch.EducatorIndexRateToCapacityIndex"></ValidationMessage>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label>@L["Principal Branch"]/ @L["Sub Branch"]</label>
+                                        <div class="radio-inline">
+                                            <label class="radio radio-lg">
+                                                <input type="radio" checked="@(_branch.IsPrincipal == true)" @onchange="OnChangeIsPrincipalBranch" name="radios3_1" />
+                                                <span></span>
+                                                @L["Principal Branch"]
+                                            </label>
+                                            <label class="radio radio-lg">
+                                                <input type="radio" checked="@(_branch.IsPrincipal == false)" @onchange="OnChangeIsPrincipalBranch" name="radios3_1" />
+                                                <span></span>
+                                                @L["Sub Branch"]
+                                            </label>
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+
+                                        <div class="separator separator-dashed separator-success my-5"></div>
+                                        @if (_branch.IsPrincipal == true)
+                                        {
+                                            <label>@L["Sub Branches"]</label>
+                                            <BlazoredTypeahead SearchMethod="SearchSubExpertiseBranches"
+                                                   Values="_subBranches"
+                                                   ValuesExpression="() => _subBranches"
+                                                   ValuesChanged="(IList<ExpertiseBranchResponseDTO> values)=>OnChangeSubBranches(values)"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   placeholder="@L["Search by {0}",L["Sub Branch"]]">
+                                                <SelectedTemplate Context="branch">
+                                                    @branch.Name
+                                                </SelectedTemplate>
+                                                <HelpTemplate>
+                                                    @L["Please enter at least 1 character to search."]
+                                                </HelpTemplate>
+                                                <NotFoundTemplate Context="searchText">
+                                                    "@searchText" @L["Could not find an item named"]
+                                                </NotFoundTemplate>
+                                                <ResultTemplate Context="branch">
+                                                    @branch.Name
+                                                </ResultTemplate>
+                                            </BlazoredTypeahead>
+                                        }
+                                        else
+                                        {
+                                            <label>@L["Principal Branch"]</label>
+                                            <BlazoredTypeahead SearchMethod="SearchExpertiseBranchesForPrincipales"
+                                                   Values="_principalBranches"
+                                                   ValuesExpression="() => _principalBranches"
+                                                   ValuesChanged="(IList<ExpertiseBranchResponseDTO> values)=>OnChangePrincipalBranches(values)"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   placeholder="@L["Search by {0}",L["Principal Branch"]]">
+                                                <SelectedTemplate Context="branch">
+                                                    @branch.Name
+                                                </SelectedTemplate>
+                                                <HelpTemplate>
+                                                    @L["Please enter at least 1 character to search."]
+                                                </HelpTemplate>
+                                                <NotFoundTemplate Context="searchText">
+                                                    "@searchText" @L["Could not find an item named"]
+                                                </NotFoundTemplate>
+                                                <ResultTemplate Context="branch">
+                                                    @branch.Name
+                                                </ResultTemplate>
+                                            </BlazoredTypeahead>
+                                        }
+                                    </div>
+                                    <div class="form-group ">
+                                        <label>@L["Explanation"]</label>
+                                        <InputTextArea class="form-control" @bind-Value="_branch.Details" />
+                                        <ValidationMessage For="() => _branch.Details"></ValidationMessage>
+                                    </div>
+                                </div>
+                            </div>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/expertisebranches"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

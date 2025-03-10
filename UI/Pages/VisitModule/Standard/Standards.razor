@@ -1,0 +1,255 @@
+﻿@page "/visit-module/standards"
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StandardAdd}">
+                <button @onclick=OpenModalForAdd class="btn btn-outline-primary">@L["add_new", L["Standard"]]</button>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_standards != null)
+                {
+                    <Grid IsFilter="false" Items="_standards" class="table table-hover table-bordered " Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                        <GridColumn Sort="Code" TRowData="StandardResponseDTO" Expression="c => c.Code" Title="@L["Standard Code"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Name" TRowData="StandardResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Standard"]]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="StandardCategory.Name" TRowData="StandardResponseDTO" Expression="c => c.StandardCategory.Name" Title="@L["_name", L["Category"]]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="StandardCategory.CategoryCode" TRowData="StandardResponseDTO" Expression="c => c.StandardCategory.CategoryCode" Title="@L["Category Code"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Curriculum.ExpertiseBranch.Name" TRowData="StandardResponseDTO" Expression="c => c.Curriculum.ExpertiseBranch.Name" Title="@L["_name", L["Expertise Branch"]]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Curriculum.Version" TRowData="StandardResponseDTO" Expression="c => c.Curriculum.Version" Title="@L["Version"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn class="max-w-50px align-middle" TRowData="StandardResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StandardGetById}">
+                                <a @onclick="() => OpenModalForEdit(context)" class="btn btn-light-success btn-icon btn-sm"><i class="fas fa-edit"></i></a>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StandardDelete}">
+                                <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                            </PermissionWrapper>
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>
+
+<MyModal @ref="_standardModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_standardEc">
+            <FluentValidator TValidator="StandardValidator" />
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["Curriculum"]</label>
+                        <div class="form-group">
+                            <BlazoredTypeahead SearchMethod="SearchCurriculums"
+                                               TItem="CurriculumResponseDTO"
+                                               TValue="CurriculumResponseDTO"
+                                               Value="_standard.Curriculum"
+                                               ValueExpression="()=> _standard.Curriculum"
+                                               ValueChanged="OnChangeCurriculum"
+                                               EnableDropDown="true">
+                                <SelectedTemplate Context="curriculum">
+                                    @(curriculum.ExpertiseBranch?.Name + " " + curriculum.Version)
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="curriculum">
+                                    @(curriculum.ExpertiseBranch?.Name + " " + curriculum.Version)
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                            <ValidationMessage For="() => _standard.CurriculumId" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Standard Category"]</label>
+                        <div class="form-group">
+                            <BlazoredTypeahead SearchMethod="SearchStandardCategories"
+                                               TItem="StandardCategoryResponseDTO"
+                                               TValue="StandardCategoryResponseDTO"
+                                               Value="_standard.StandardCategory"
+                                               ValueExpression="()=> _standard.StandardCategory"
+                                               ValueChanged="OnChangeStandardCategory"
+                                               Disabled="_standard.CurriculumId is null or 0"
+                                               EnableDropDown="true">
+                                <SelectedTemplate Context="standardCategory">
+                                    @standardCategory.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="standardCategory">
+                                    @standardCategory.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                            <ValidationMessage For="() => _standard.StandardCategoryId" />
+                        </div>
+                    </div>
+
+                    @if (_standard.Id <= 0)
+                    {
+                        <div class="form-group">
+                            <label>@L["Standard Code"]</label>
+                            <InputText @bind-Value="_standard.Code" class="form-control"></InputText>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label>@L["_name", L["Standard"]]</label>
+                        <InputTextArea @bind-Value="_standard.Name" class="form-control" rows="5"></InputTextArea>
+                        <ValidationMessage For="() => _standard.Name" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Description"]</label>
+                        <InputTextArea @bind-Value="_standard.Description" class="form-control" rows="5"></InputTextArea>
+                    </div>
+
+
+                </div>
+            </div>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StandardUpdate}">
+                <button @onclick="SaveStandard" class="btn btn-clean btn-primary"> @L["Save"]</button>
+            </PermissionWrapper>
+        </EditForm>
+    </Body>
+</MyModal>

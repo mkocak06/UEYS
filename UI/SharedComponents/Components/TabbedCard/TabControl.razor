@@ -1,0 +1,56 @@
+﻿<div class="card card-custom">
+    <div class="card-header card-header-tabs-line position-relative">
+        <div class="card-toolbar" style="width:75%;">
+            <ul class="nav nav-tabs nav-bold nav-tabs-line">
+                @foreach (TabPage tabPage in _pages)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link cursor-pointer @(IsSelected(tabPage) ? "active" : "")" @onclick='() => ActivatePage(tabPage)'>
+                            <span class="nav-text">@tabPage.Text</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <CascadingValue Value="this">
+                @ChildContent
+            </CascadingValue>
+        </div>
+    </div>
+    
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public TabPage ActivePage { get; set; }
+    List<TabPage> _pages;
+
+    protected override void OnInitialized()
+    {
+        _pages = new List<TabPage>();
+        base.OnInitialized();
+    }
+
+    internal void AddPage(TabPage tabPage)
+    {
+        _pages.Add(tabPage);
+        if (_pages.Count == 1)
+            ActivePage = tabPage;
+        StateHasChanged();
+    }
+
+    internal void ActivatePage(TabPage tabPage)
+    {
+        ActivePage = tabPage;
+    }
+
+    internal bool IsSelected(TabPage tabPage)
+    {
+        return ActivePage == tabPage;
+    }
+}

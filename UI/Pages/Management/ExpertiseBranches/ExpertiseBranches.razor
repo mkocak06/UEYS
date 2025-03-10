@@ -1,0 +1,149 @@
+﻿@page "/management/expertisebranches"
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ExpertiseBranchAdd}">
+            <div class="d-flex">
+                <a href="/management/expertise/add-branch" type="button" class="btn btn-outline-primary mr-3"><i class="fas fa-plus"></i>@L["add_new", L["Expertise Training Program"]]</a>
+            </div>
+        </PermissionWrapper>
+        <div class="col-12 col-lg-6 d-none">
+            <div class="form-group">
+                <label>alt limit</label>
+                <InputNumber class="form-control" @bind-Value="altLimit" />
+            </div>
+            <div class="form-group">
+                <label>üst limit</label>
+                <InputNumber class="form-control" @bind-Value="ustLimit" />
+            </div>
+            <SpinnerButton OnClick="() => SendStudent()">
+                <i class="fas fa-save"></i>@L["gönder"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_branches != null)
+                {
+                    <Grid IsFilter="false" Items="_branches" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)"
+                          class="table table-hover table-bordered text-center" RowClass='(row, index) => row.ProtocolProgramCount != null ? "table-warning" : ""'>
+                        <GridColumn Sort="Name" TRowData="ExpertiseBranchResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Expertise Training Program"]]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Profession.Name" Expression="c => c.Profession.Name" TRowData="ExpertiseBranchResponseDTO" Title="@L["Expertise Branch"]">
+                            <ChildContent>
+                                @context.Profession?.Name
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Details" Expression="c => c.Details" TRowData="ExpertiseBranchResponseDTO" Title="@L["Explanation"]">
+                            <ChildContent>
+                                @if (!string.IsNullOrEmpty(context.Details))
+                                {
+                                    @context.Details
+                                }
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group md-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn TRowData="ExpertiseBranchResponseDTO" Title="@L["At least how many of the principal branches must be present in order to create a program protocol?"]">
+                            <ChildContent>
+                                @(context.ProtocolProgramCount == null ? "-" : context.ProtocolProgramCount)
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="ExpertiseBranchResponseDTO" Title="@L["Principal Branch"]">
+                            <ChildContent>
+                                @foreach (var item in context.PrincipalBranches)
+                                {
+                                    <ul><li><b>@(item.PrincipalBranch.Name ?? "-")</b></li></ul>
+                                }
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="ExpertiseBranchResponseDTO" Title="@L["Sub Branch"]">
+                            <ChildContent>
+                                @foreach (var item in context.SubBranches)
+                                {
+                                    <ul><li><b>@(item.SubBranch.Name ?? "-")</b></li></ul>
+                                }
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn class="min-w-150px align-middle" TRowData="ExpertiseBranchResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ExpertiseBranchGetById}">
+                                <a href="/management/expertise/@context.Id" class="btn btn-light-success btn-icon btn-sm"><i class="far fa-edit"></i></a>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ExpertiseBranchDelete}">
+                                <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                            </PermissionWrapper>
+                        </GridColumn>
+                    </Grid>
+                    <p class="font-size-sm font-weight-light">*Sarı renkli satırlar protokollü program oluşturabilir.</p>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

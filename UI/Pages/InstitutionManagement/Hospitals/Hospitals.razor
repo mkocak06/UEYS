@@ -1,0 +1,398 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/hospitals"
+@inherits FluxorComponent
+
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>() { PermissionEnum.HospitalAdd }">
+                <a href="/institution-management/hospitals/add-hospital" type="button" class="btn btn-outline-primary mr-3">
+                    <i class="fas fa-plus"></i>@L["add_new", L["Institution of Education"]]
+                </a>
+            </PermissionWrapper>
+            <PermissionWrapper Permissions="new List<PermissionEnum>() { PermissionEnum.HospitalExcelExport }">
+                <a @onclick="() => _excelModal.OpenModal()" type="button" class="btn btn-success font-weight-bolder font-size-sm mr-3">
+                    <i class="far fa-file-excel"></i> Excel
+                </a>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_hospitals != null)
+                {
+                    <Grid IsFilter="false" Items="_hospitals" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)"
+                          class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                        <GridColumn Sort="Name" TRowData="HospitalResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Institution of Education"]]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Phone" TRowData="HospitalResponseDTO" Expression="c => c.Phone" Title="@L["Telephone Number"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Email" TRowData="HospitalResponseDTO" Expression="c => c.Email" Title="@L["Email"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="WebAddress" TRowData="HospitalResponseDTO" Expression="c => c.WebAddress" Title="@L["Web Address"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Address" TRowData="HospitalResponseDTO" Expression="c => c.Address" Title="@L["Address"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Province.Name" TRowData="HospitalResponseDTO" Title="@L["Province"]">
+                            <ChildContent>
+                                @context.Province?.Name
+                            </ChildContent>
+
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Institution.Name" TRowData="HospitalResponseDTO" Title="@L["Affiliated Parent Institution"]">
+                            <ChildContent>
+                                @context.Institution?.Name
+                            </ChildContent>
+
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn class="min-w-100px align-middle" TRowData="HospitalResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>() { PermissionEnum.HospitalGetById }">
+                                <a href="/institution-management/hospitals/@context.Id" class="btn btn-light-success btn-icon btn-sm">
+                                    <i class="far fa-edit"></i>
+                                </a>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>() { PermissionEnum.HospitalDelete }">
+                                <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </PermissionWrapper>
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+
+        <MyModal @ref="_excelModal" Size="MyModal.ModalSize.Large" ShowFooter="false" ShowHeader="false">
+            <Body>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <label>@L["Expertise Branch"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchProfessions"
+                                               Values="ExcelFilter.ProfessionList"
+                                               ValuesChanged="((IList<ProfessionResponseDTO> values) => ProfessionListChanged(values))"
+                                               ValuesExpression="() => ExcelFilter.ProfessionList"
+                                               EnableDropDown="true"
+                                               MinimumLength="1"
+                                               MaximumSuggestions=int.MaxValue
+                                               placeholder="Uzmanlık Alanı ile arama yap">
+                                <SelectedTemplate Context="profession">
+                                    @profession?.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="profession">
+                                    @profession?.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <label>@L["Province"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                               Values="ExcelFilter.ProvinceList"
+                                               ValuesChanged="((IList<ProvinceResponseDTO> values)=>ProvinceListChanged(values))"
+                                               ValuesExpression="()=>ExcelFilter.ProvinceList"
+                                               EnableDropDown="true"
+                                               MinimumLength="1"
+                                               MaximumSuggestions=int.MaxValue
+                                               placeholder="@L["Search by {0}",L["Province"]]">
+                                <SelectedTemplate Context="province">
+                                    @province?.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named."]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="province">
+                                    @province?.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <label>@L["Parent Institution"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchInstitutions"
+                                               Values="ExcelFilter.InstitutionList"
+                                               ValuesChanged="((IList<InstitutionResponseDTO> values)=>InstitutionListChanged(values))"
+                                               ValuesExpression="()=>ExcelFilter.InstitutionList"
+                                               EnableDropDown="true"
+                                               MinimumLength="1"
+                                               MaximumSuggestions=int.MaxValue
+                                               placeholder="@L["Search by {0}",L["Parent Institution"]]">
+                                <SelectedTemplate Context="institution">
+                                    @institution.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="institution">
+                                    @institution.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <label>@L["Ministry / University"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchUniversities"
+                                               Values="ExcelFilter.UniversityList"
+                                               ValuesChanged="((IList<UniversityResponseDTO> values) => UniversityListChanged(values))"
+                                               ValuesExpression="() => ExcelFilter.UniversityList"
+                                               EnableDropDown="true"
+                                               MinimumLength="1"
+                                               MaximumSuggestions=int.MaxValue
+                                               placeholder="@L["Search by {0}", L["Ministry / University"]]">
+                                <SelectedTemplate Context="university">
+                                    @university.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named."]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="university">
+                                    @university.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <label>@L["Institution of Education"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchHospitals"
+                                               Values="ExcelFilter.HospitalList"
+                                               ValuesChanged="((IList<HospitalResponseDTO> values) => HospitalListChanged(values))"
+                                               ValuesExpression="() => ExcelFilter.HospitalList"
+                                               EnableDropDown="true"
+                                               MinimumLength="1"
+                                               MaximumSuggestions=int.MaxValue
+                                               placeholder="@L["Search by {0}", L["Hospital Name"]]">
+                                <SelectedTemplate Context="hospital">
+                                    @hospital.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named."]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="hospital">
+                                    @hospital.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <label>@L["Ana Dal / Yan Dal"]</label>
+                            <div class="radio-inline">
+                                <label class="radio radio-primary">
+                                    <input type="radio" checked="@_isPrincipal" @onclick="TogglePrincipal" name="radios3_1" />
+                                    <span></span>
+                                    @L["Ana Dal"]
+                                </label>
+                                <label class="radio radio-primary">
+                                    <input type="radio" checked="@(!_isPrincipal)" @onclick="ToggleSecondary" name="radios3_1" />
+                                    <span></span>
+                                    @L["Yan Dal"]
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <label>@L["Specialization Training Program"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                               Values="ExcelFilter.ExpertiseBranchList"
+                                               ValuesChanged="((IList<ExpertiseBranchResponseDTO> values) => ExpertiseBranchListChanged(values))"
+                                               ValuesExpression="() => ExcelFilter.ExpertiseBranchList"
+                                               EnableDropDown="true"
+                                               MinimumLength="1"
+                                               MaximumSuggestions=int.MaxValue
+                                               placeholder="@L["Search by {0}", L["Expertise Branch"]]">
+                                <SelectedTemplate Context="expertiseBranch">
+                                    @expertiseBranch?.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named."]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="expertiseBranch">
+                                    @expertiseBranch?.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-group mb-6">
+                            <button type="button" class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left float-left" : "btn btn-outline-success mr-3 float-left") @onclick="DownloadDetailedExcelFile">
+                                <i class=@(_loadingFile ? "" : "fas fa-download")></i>Detaylı Rapor
+                            </button>
+                            <button type="button" class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left float-right" : "btn btn-outline-success mr-3 float-right") @onclick="DownloadExcelFile">
+                                <i class=@(_loadingFile ? "" : "fas fa-download")></i>Listeyi Dışa Aktar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </Body>
+        </MyModal>
+    </Content>
+</AppContent>

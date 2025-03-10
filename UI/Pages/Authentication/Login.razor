@@ -1,0 +1,63 @@
+﻿@page "/login"
+@layout LoginLayout
+@using UI.Validation
+@using Shared.Types
+
+<div class="login-body d-flex flex-column-fluid align-items-stretch justify-content-center">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-center">
+            <!--begin::Signin-->
+            <div class="login-form login-signin bg-white rounded-lg">
+                <!--begin::Form-->
+                <EditForm Model="@_model" class="form w-xxl-550px rounded-lg p-20 shadow-lg ribbon ribbon-right" novalidate="novalidate" OnValidSubmit="@HandleValidSubmit">
+                    <FluentValidator TValidator="LoginValidator" />
+                    <div class="pb-13 pt-lg-0 pt-5">
+                        <div class="text-center mb-10">
+                            <img alt="Logo" src="assets/media/logos/ueys-logo-yatay.png" class="h-60px">
+                        </div>
+                    </div>
+                    <div class="@(!_showLogin ? "d-none" : "")">
+                        <!--begin::Form group-->
+                        <div class="form-group">
+                            <label class="font-size-h6 font-weight-bolder text-dark">@L["Email"]</label>
+                            @*<InputText class="form-control form-control-solid h-auto p-6 rounded-lg" type="text" name="username" autocomplete="off" />*@
+                            <InputText @bind-Value="_model.Email" class="form-control form-control-solid h-auto p-6 rounded-lg" />
+                            <ValidationMessage For="@(() => _model.Email)" />
+                        </div>
+                        <!--end::Form group-->
+                        <!--begin::Form group-->
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between mt-n5">
+                                <label class="font-size-h6 font-weight-bolder text-dark pt-5">Parola</label> 
+                                <a class="text-primary font-size-h6 font-weight-bolder text-hover-primary pt-5">@L["Forgot password?"]</a>
+                            </div>
+                            @*<input class="form-control form-control-solid h-auto p-6 rounded-lg" type="password" name="password" autocomplete="off" />*@
+                            <InputText @bind-Value="_model.Password" type="password" class="form-control form-control-solid h-auto p-6 rounded-lg" />
+                            <ValidationMessage For="@(() => _model.Password)" />
+                        </div>
+                        <Alert IsActive="@IsError" Message="@_error" ColorType="@_errorColor"></Alert>
+                        <!--begin::Action-->
+                        <div class="pb-lg-0 pb-5">
+                            <button type="submit" class="btn btn-primary font-weight-bolder font-size-h6 py-4 my-3 mr-4 @((_isLoading ? "spinner spinner-white spinner-left" : ""))" disabled="@_isLoading">
+                                @L["Login"]
+                            </button>
+                        </div>
+                    </div>
+                    <div class="cursor-pointer @(_showLogin ? "d-none" : "")" @onclick="RedirectSSO">
+                        <div class="text-center mb-10">
+                            <img alt="Logo" src="assets/media/logos/ogn-logo.svg" class="h-75px">
+                        </div>
+                        <div class="text-center mb-10">
+                            <a class="text-primary"> @L["Common Entry Point"]</a> @L["you can login to the system using"]
+                        </div>                                                        
+                    </div>   
+
+                    <div class="ribbon-target bg-primary cursor-pointer @(NavigationManager.Uri.Contains("localhost") ? "" : "d-none")" style="bottom: 20px; right: -2px;" @onclick="() => { _showLogin = !_showLogin; StateHasChanged(); }">@(_showLogin ? "OGN" : "Giriş (Dev)")</div>
+                    <!--end::Action-->
+                </EditForm>
+                <!--end::Form-->
+            </div>
+            <!--end::Signin-->
+        </div>
+    </div>
+</div>

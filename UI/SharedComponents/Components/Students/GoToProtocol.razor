@@ -1,0 +1,176 @@
+﻿@using Shared.ResponseModels;
+@using Shared.Types;
+@using Shared.Extensions;
+
+@if (!_loading)
+{
+    @if (_students != null)
+    {
+        <Grid Items="_students" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+            <GridColumn Sort="IdentityNo" TRowData="StudentPaginateResponseDTO" Title="@L["T.R. Identity Number"]">
+                <ChildContent>
+                    @context.IdentityNo
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                            @if (IsFiltered(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Sort="Name" TRowData="StudentPaginateResponseDTO" Title="@L["Specialization Student's Name Surname"]">
+                <ChildContent>
+                    @context.Name
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                            @if (IsFiltered(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Sort="ProfessionName" TRowData="StudentPaginateResponseDTO" Title=@L["Education Field"]>
+                <ChildContent>
+                    @context.ProfessionName
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                            @if (IsFiltered(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Sort="HospitalName" TRowData="StudentPaginateResponseDTO" Title="@L["Institution of Education"]">
+                <ChildContent>
+                    @if (context.Status == StudentStatus.Abroad)
+                    {
+                        <span style="color:red;-webkit-text-stroke-width:0.3px;-webkit-text-stroke-color:black;">
+                            @L["Education Abroad"]
+                        </span>
+                    }
+                    else
+                    {
+                        @context.HospitalName @(context.Status == StudentStatus.Rotation ?  $"({L[context.Status?.GetDescription()]})" : "")
+                    }
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                            @if (IsFiltered(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Sort="ExpertiseBranchName" TRowData="StudentPaginateResponseDTO" Title="@L["Specialization Training Program"]">
+                <ChildContent>
+                    @context.ExpertiseBranchName
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                            @if (IsFiltered(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Sort="CurriculumVersion" TRowData="StudentPaginateResponseDTO" Title="@L["Curriculum"]">
+                <ChildContent>
+                    @context.CurriculumVersion
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                            @if (IsFiltered(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            @*<GridColumn TRowData="StudentPaginateResponseDTO" Title="@L["Transactions"]">
+                <ChildContent>
+                    <button class="btn btn-light-primary btn-sm btn-icon" title="@L["Details"]" @onclick=@(()=>NavigationManager.NavigateTo($"./student/students/{context.Id}"))>
+                        <i class="flaticon2-search-1 icon-md"></i>
+                    </button>
+                </ChildContent>
+            </GridColumn>*@
+        </Grid>
+    }
+}
+else
+{
+    <Spinner></Spinner>
+}

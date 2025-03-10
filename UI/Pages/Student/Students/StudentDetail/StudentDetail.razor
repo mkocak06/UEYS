@@ -1,0 +1,169 @@
+﻿@page "/student/students/{Id:long?}"
+@using Shared.Types;
+@using UI.Pages.Student.Students.StudentDetail.Tabs
+@using UI.Pages.Student.Students.StudentDetail.Tabs.OpinionForm
+@using UI.Pages.Student.Students.StudentDetail.Tabs.PerformanceRating
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        @if (_editing)
+        {
+            if (Loaded)
+            {
+                if (SelectedStudent != null)
+                {
+
+                    <TabControl>
+                        @if (SelectedStudent.Status == StudentStatus.Abroad)
+                        {
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducationTrackingGetPaginateList}">
+                                <TabPage Text="@L["Education Time Tracking"]">
+                                    <EducationTimeTracking />
+                                </TabPage>
+                            </PermissionWrapper>
+                        }
+                        else if (SelectedStudent.Status == StudentStatus.TransferDueToNegativeOpinion || SelectedStudent.Status == StudentStatus.EndOfEducationDueToNegativeOpinion)
+                        {
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducationTrackingGetPaginateList}">
+                                <TabPage Text="@L["Education Time Tracking"]">
+                                    <EducationTimeTracking />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.OpinionFormGetList}">
+                                <TabPage Text="@L["_Information", L["Opinion"]]">
+                                    <OpinionForms />
+                                </TabPage>
+                            </PermissionWrapper>
+                        }
+                        else if (SelectedStudent.Status == StudentStatus.Dismissed)
+                        {
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducationTrackingGetPaginateList}">
+                                <TabPage Text="@L["Education Time Tracking"]">
+                                    <EducationTimeTracking />
+                                </TabPage>
+                            </PermissionWrapper>
+                            if (SelectedStudent?.OriginalProgram?.ExpertiseBranch?.IsPrincipal == true)
+                            {
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ThesisGetPaginateList}">
+                                    <TabPage Text="@L["_Information", L["Thesis"]]">
+                                        <StudentThesis />
+                                    </TabPage>
+                                </PermissionWrapper>
+                            }
+                        }
+                        else if (SelectedStudent.Status == StudentStatus.Rotation)
+                        {
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducationTrackingGetPaginateList}">
+                                <TabPage Text="@L["Education Time Tracking"]">
+                                    <EducationTimeTracking />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationGetListByStudentId}">
+                                <TabPage Text="@L["_Information", L["Rotation"]]">
+                                    <StudentRotation />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.OpinionFormGetList}">
+                                <TabPage Text="@L["_Information", L["Opinion"]]">
+                                    <OpinionForms />
+                                </TabPage>
+                            </PermissionWrapper>
+                        }
+                        else
+                        {
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentGetById}">
+                                <TabPage Text="@L["_Information", L["Specialization Student"]]">
+                                    <StudentOverview IsEditing=_editing />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducationTrackingGetPaginateList}">
+                                <TabPage Text="@L["Education Time Tracking"]">
+                                    <EducationTimeTracking />
+                                </TabPage>
+                            </PermissionWrapper>
+                            @if (SelectedStudent.ProtocolOrComplement != null)
+                            {
+                                if (SelectedStudent.ProtocolOrComplement == ProgramType.Protocol)
+                                {
+                                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramGetList}">
+                                        <TabPage Text="@L["_Information", L["Protocol Program"]]">
+                                            <ProtocolProgram />
+                                        </TabPage>
+                                    </PermissionWrapper>
+                                }
+                                else
+                                {
+                                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramGetList}">
+                                        <TabPage Text="@L["_Information", L["Complement Program"]]">
+                                            <ProtocolProgram />
+                                        </TabPage>
+                                    </PermissionWrapper>
+                                }
+                            }
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentRotationGetListByStudentId}">
+                                <TabPage Text="@L["_Information", L["Rotation"]]">
+                                    <StudentRotation />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectionGetListByStudentId}">
+                                <TabPage Text="@L["_Information", L["Basic Perfection"]]">
+                                    <StudentPerfection />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.OpinionFormGetList}">
+                                <TabPage Text="@L["_Information", L["Opinion"]]">
+                                    <OpinionForms />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentsSpecificEducationGetList}">
+                                <TabPage Text="@L["_Information", L["Specific Education"]]">
+                                    <SpecificEducations />
+                                </TabPage>
+                            </PermissionWrapper>
+                            if (SelectedStudent?.OriginalProgram?.ExpertiseBranch?.IsPrincipal == true)
+                            {
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ThesisGetPaginateList}">
+                                    <TabPage Text="@L["_Information", L["Thesis"]]">
+                                        <StudentThesis />
+                                    </TabPage>
+                                </PermissionWrapper>
+                            }
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ScientificStudyGetList}">
+                                <TabPage Text="@L["Scientific Studies"]">
+                                    <ScientificStudies />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ExitExamGetListPagination}">
+                                <TabPage Text="@L["Specialist Training Exit Examination"]">
+                                    <ExitExams />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EReportGet}">
+                                <TabPage Text="@L["E-Report"]">
+                                    <EReport />
+                                </TabPage>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentGetById}">
+                                <TabPage Text="@L["Portföy Bilgileri (E-Nabız Bilgileri)"]">
+                                    <ENabizOperations />
+                                </TabPage>
+                            </PermissionWrapper>
+                        }
+
+                    </TabControl>
+                }
+                else
+                {
+                    <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/student/students"></_404Page>
+                }
+            }
+            else
+            {
+                <Spinner></Spinner>
+            }
+        }
+    </Content>
+</AppContent>
+

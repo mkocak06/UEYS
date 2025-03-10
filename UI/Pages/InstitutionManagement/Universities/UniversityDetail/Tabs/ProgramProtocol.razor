@@ -1,0 +1,23 @@
+﻿@using Shared.ResponseModels
+@using Shared.ResponseModels.ProtocolProgram
+@if (_loading)
+{
+    <Spinner></Spinner>
+}
+else
+{
+    <Grid IsFilter="false" Items="_programs" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+        <GridColumn TRowData="ProtocolProgramByUniversityIdResponseDTO" Title="@L["Expertise Training Program"]">
+            @context.ExpertiseBranch
+        </GridColumn>
+        <GridColumn TRowData="ProtocolProgramByUniversityIdResponseDTO" Title="@L["_name", L["Ministry / University"]]">
+            @context.UniversityName
+        </GridColumn>
+        <GridColumn TRowData="ProtocolProgramByUniversityIdResponseDTO" Title="@L["_name", L["Institution of Education"]]">
+            @context.HospitalName
+        </GridColumn>
+        <GridColumn TRowData="ProtocolProgramByUniversityIdResponseDTO" Title="@L["Program Manager"]">
+            @context.ManagerName
+        </GridColumn>
+    </Grid>
+}

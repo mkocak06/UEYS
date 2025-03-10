@@ -1,0 +1,87 @@
+﻿@using Shared.ResponseModels
+<MyModal @ref="_studentViewerModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <div>
+            <ul class="nav nav-pills" id="myTab1" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab-1" data-toggle="tab" href="#home-1">
+                        <span class="nav-icon">
+                            <i class="flaticon2-chat-1"></i>
+                        </span>
+                        <span @onclick="()=>GoToPage()" class="nav-text">@L["Student Info"]</span>
+                    </a>
+                </li>
+            </ul>
+            @if (Student is not null)
+            {
+                <div class="tab-content mt-5" id="myTabContent1">
+                    <div class="tab-pane fade show active" id="home-1" role="tabpanel" aria-labelledby="home-tab-1">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="p-0 w-250px"></th>
+                                    <th class="p-0"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Identity Number"]</td>
+                                    <td>@(Student.User?.IdentityNo ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Name Surname"]</td>
+                                    <td>@(Student.User?.Name ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Phone"]</td>
+                                    <td>@(Student.User?.Phone ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Email"]</td>
+                                    <td>@(Student.User?.Email ?? "-")</td>
+                                </tr>
+                               @* <tr>
+                                    <td class="font-weight-bolder">@L["Address"]</td>
+                                    <td>@(Student.User?.Address ?? "-")</td>
+                                </tr>*@
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Expertise Training Program"]</td>
+                                    <td>@(Student.Program.ExpertiseBranch.Name)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @L["No data to display"]
+            }
+        </div>
+    </Body>
+</MyModal>
+
+@code {
+    [Parameter]
+    public StudentResponseDTO Student { get; set; }
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+
+    private MyModal _studentViewerModal;
+
+    public void OpenModal()
+    {
+        _studentViewerModal.OpenModal();
+    }
+
+    public void CloseModal()
+    {
+        _studentViewerModal.CloseModal();
+    }
+    public void GoToPage()
+    {
+        CloseModal();
+        NavigationManager.NavigateTo($"/student/students/{Student.Id}");
+    }
+}

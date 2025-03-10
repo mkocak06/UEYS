@@ -1,0 +1,250 @@
+﻿@using Shared.ResponseModels.Program
+@using UI.SharedComponents.AdvancedFilters
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Types
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="true" BreadCrumbLinks="_links">
+    <Toolbar>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_programs != null)
+                {
+                    <Grid IsFilter="true" Items="_programs" OnSortChanged="sort => OnSortChange(sort)" Sort="_filter.Sort?.FirstOrDefault() ?? new Shared.FilterModels.Base.Sort()" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                        <GridColumn Sort="ProvinceName" TRowData="ProgramPaginateResponseDTO" Title="@L["Province"]">
+                            <ChildContent>
+                                @context.ProvinceName
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="ProfessionName" TRowData="ProgramPaginateResponseDTO" Title=@L["Expertise Branch"]>
+                            <ChildContent>
+                                @context.ProfessionName
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="HospitalName" TRowData="ProgramPaginateResponseDTO" Title="@L["Institution of Education"]">
+                            <ChildContent>
+                                @context.HospitalName
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="ExpertiseBranchName" TRowData="ProgramPaginateResponseDTO" Title="@L["Specialization Training Program"]">
+                            <ChildContent>
+                                @context.ExpertiseBranchName
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn TRowData="ProgramPaginateResponseDTO" Title="@L["Authorization End Date"]">
+                            <ChildContent>
+                                @context.AuthorizationEndDate?.ToString("dd.MM.yyyy")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="AuthorizationCategory" TRowData="ProgramPaginateResponseDTO" Title="@L["Authorization Category"]">
+                            <ChildContent>
+                                <div class="cursor-pointer" @onclick="()=>GetAuthorizationDetails(context.Id)">
+                                    <span class="label label-xl" style="background-color:@context.AuthorizationCategoryColorCode"><span style="@GetTextStyle(context.AuthorizationCategory)">@context.AuthorizationCategory</span></span>
+                                </div>
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="IsPrincipal" TRowData="ProgramPaginateResponseDTO" Title="@L["Principal Branch / Sub Branch"]">
+                            <ChildContent>
+                                @{
+                                    if (context.IsPrincipal == true)
+                                    {
+                                        <span class="label label-xl label-outline-primary mr-2" title="@L["Principal Branch"]">A</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="label label-xl label-outline-warning mr-2" title="@L["Sub Branch"]">Y</span>
+                                    }
+                                }
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeBranchFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="ProtocolStatus" TRowData="ProgramPaginateResponseDTO" Title=@L["Protocol Status"]>
+                            <ChildContent>
+
+                                @{
+                                    if (context.AffiliationId != null)
+                                    {
+
+                                        <div data-styles="width:500px" data-placement="bottom" data-trigger="hover" data-toggle="popover" title="@L["Affiliation Detail"]" data-html="true"
+                                             data-content="
+                                                                                                          <div class='form-group'>
+                                                                                                              <span>@L["Protocol No"]: <span class='text-primary'>@(context.AffiliationProtocolNo??"-")</span></span>
+                                                                                                          </div>
+                                                                                                          <div class='form-group'>
+                                                                                                                  <span>@L["Institution of Education"]: <span class='text-primary'>@(context.AffiliationHospitalName??"-")</span></span>
+                                                                                                          </div>
+                                                                                                          <div class='form-group'>
+                                                                                                                  <span>@L["Ministry / University"]: <span class='text-primary'>@(context.AffiliationUniversityName??"-")</span></span>
+                                                                                                          </div>"
+                                                                                                                                                                                                    >
+                                                                                                                                                                                                        <span class="label label-xl label-outline-success mr-2">BK</span>
+                                                                                                                                                                                                    </div>
+                                    }
+                                    foreach (var item in context.ProgramType)
+                                    {
+                                        if (item == ProgramType.Protocol)
+                                        {
+                                            <span class="label label-xl label-outline-success mr-2" title="@L["Protocol Program"]">PP</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="label label-xl label-outline-success mr-2" title="@L["Complement Program"]">TP</span>
+                                        }
+
+                                    }
+                                }
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+        <AdvancedSearchOffCanvas IsTabView>
+            <ProgramFilterForm />
+        </AdvancedSearchOffCanvas>
+    </Content>
+</AppContent>
+
+<UI.SharedComponents.DetailCards.AuthorizationDetailsModal @ref="_authDetailsModal"></UI.SharedComponents.DetailCards.AuthorizationDetailsModal>

@@ -1,0 +1,457 @@
+﻿@using Shared.Extensions;
+@using Shared.Types;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+@if (RotationId == 0)
+{
+    <div class="card-toolbar position-absolute top-0 right-0 mt-1 mr-20">
+        <div class="d-flex self-align-end">
+            <div class="text-center mt-5">
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                    <button @onclick="OnPerfectionAddList" class="btn btn-outline-primary">@L["add_new", @L["Perfection"]]</button>
+                </PermissionWrapper>
+            </div>
+        </div>
+    </div>
+}
+
+
+<div class="card card-custom">
+    <div class="card-header">
+        <div class="card-title">
+            <h3 class="card-label">@L["_Information", L["Perfection"]]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (RotationId != 0)
+            {
+                <div class="card-toolbar position-absolute top-0 right-0 mt-1 mr-20">
+                    <div class="d-flex self-align-end">
+                        <div class="text-center mt-5">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                                <button @onclick="OnPerfectionAddList" class="btn btn-outline-primary">@L["add_new", @L["Perfection"]]</button>
+                            </PermissionWrapper>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        @if (_perfections != null)
+        {
+            <Grid Items="_perfections" class="table table-hover table-bordered">
+                <GridColumn Sort="PerfectionType" TRowData="PerfectionResponseDTO" Title="@L["Perfection Type"]">
+                    <ChildContent>
+                        @context.PerfectionType.GetDescription()
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangePerfectionTypeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="PerfectionGroup" TRowData="PerfectionResponseDTO" Title="@L["Group"]">
+                    <ChildContent>
+                        @context.Group?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="PerfectionName" TRowData="PerfectionResponseDTO" Title="@L["Name"]">
+                    <ChildContent>
+                        @context.PName?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="PerfectionSeniorty" TRowData="PerfectionResponseDTO" Title="@L["Education Year-Seniorty"]">
+                    <ChildContent>
+                        @context.Seniorty?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="PerfectionLevel" TRowData="PerfectionResponseDTO" Title="@L["Level"]">
+                    <ChildContent>
+                        @foreach (var item in context.LevelList)
+                        {
+                            <li>@item.Name</li>
+                        }
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+
+                <GridColumn Sort="PerfectionMethod" TRowData="PerfectionResponseDTO" Title="@L["Method"]">
+                    <ChildContent>
+                        @foreach (var item in context.MethodList)
+                        {
+                            <li>@item.Name</li>
+                        }
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn class="max-w-100px align-middle" TRowData="PerfectionResponseDTO" Title="@L["Transactions"]">
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                        <a @onclick="() => OnPerfectionDetail(context)" class="btn btn-light-success btn-icon btn-sm"><i class="fas fa-edit"></i></a>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                        <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                    </PermissionWrapper>
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandler" Count="_paginationModelPerfections.TotalItemCount" Page="_paginationModelPerfections.Page"
+                        DefaultPageSize="10" Loading="_loading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+<MyModal @ref="_perfectionAddModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_perfectionEc">
+            <FluentValidator TValidator="PerfectionValidator"></FluentValidator>
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["Perfection Type"]</label>
+                        <InputSelect @bind-Value="_perfection.PerfectionType" class="form-control">
+                            @foreach (PerfectionType perfectionType in Enum.GetValues(typeof(PerfectionType)))
+                            {
+                                <option value="@perfectionType">@L[perfectionType.Description()] </option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => _perfection.PerfectionType"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Group"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchGroup"
+                                           @bind-Value="_perfection.Group"
+                                           EnableDropDown="true"
+                                           MinimumLength="2"
+                                           MaximumSuggestions=99999>
+                            <SelectedTemplate Context="group">
+                                @group?.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                @if (string.IsNullOrEmpty(searchText))
+                                {
+                                    @L["Could not find an item"]
+                                }
+                                else
+                                {
+                                    <div>@searchText @L["Could not find an item named"]</div>
+                                }
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="group">
+                                @group?.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _perfection.Group"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Perfection Name"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchName"
+                                           @bind-Value="_perfection.PName"
+                                           EnableDropDown="true"
+                                           MinimumLength="2"
+                                           MaximumSuggestions=99999>
+                            <SelectedTemplate Context="name">
+                                @name?.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                @if (string.IsNullOrEmpty(searchText))
+                                {
+                                    @L["Could not find an item"]
+                                }
+                                else
+                                {
+                                    <div>@searchText @L["Could not find an item named"]</div>
+                                }
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="name">
+                                @name?.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _perfection.PName.Name"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Education Year-Seniorty"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchSeniority"
+                                           @bind-Value="_perfection.Seniorty"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions=99999>
+                            <SelectedTemplate Context="group">
+                                @group?.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                @if (string.IsNullOrEmpty(searchText))
+                                {
+                                    @L["Could not find an item"]
+                                }
+                                else
+                                {
+                                    <div>@searchText @L["Could not find an item named"]</div>
+                                }
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="group">
+                                @group?.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _perfection.Seniorty"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Level"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchLevel"
+                                           Values="_perfection.LevelList"
+                                           ValuesExpression="()=>_perfection.LevelList"
+                                           ValuesChanged="(IList<PropertyResponseDTO> values)=>OnChangeLevels(values)"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions=99999>
+                            <SelectedTemplate Context="group">
+                                @group?.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                @if (string.IsNullOrEmpty(searchText))
+                                {
+                                    @L["Could not find an item"]
+                                }
+                                else
+                                {
+                                    <div>@searchText @L["Could not find an item named"]</div>
+                                }
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="group">
+                                @group?.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _perfection.LevelList"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Method"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchMethod"
+                                           Values="_perfection.MethodList"
+                                           ValuesExpression="()=>_perfection.MethodList"
+                                           ValuesChanged="(IList<PropertyResponseDTO> values)=>OnChangeMethods(values)"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions=99999>
+                            <SelectedTemplate Context="group">
+                                @group?.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                @if (string.IsNullOrEmpty(searchText))
+                                {
+                                    @L["Could not find an item"]
+                                }
+                                else
+                                {
+                                    <div>@searchText @L["Could not find an item named"]</div>
+                                }
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="group">
+                                @group?.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _perfection.MethodList"></ValidationMessage>
+                    </div>
+
+
+                </div>
+            </div>
+            @if (_perfection.Id > 0)
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                    <button @onclick="UpdatePerfection" class="btn btn-clean btn-primary"> @L["Update"]</button>
+                </PermissionWrapper>
+            }
+            else
+            {
+                <button @onclick="AddPerfection" class="btn btn-clean btn-primary"> @L["Save"]</button>
+            }
+        </EditForm>
+    </Body>
+</MyModal>
+
+
+@*<MyModal @ref="_perfectionDetailModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_perfectionEc">
+            @if (_loaded)
+            {
+                <div class="form-group">
+                    <label>@L["Group"]</label>
+                    <InputText class="form-control" @bind-Value="_perfection." />
+                    <ValidationMessage For="() => _perfection.PerfectionGroup"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Clinical Perfection"]</label>
+                    <InputText class="form-control" @bind-Value="_perfection.PerfectionName" />
+                    <ValidationMessage For="() => _perfection.PerfectionName"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Level"]</label>
+                    <InputText class="form-control" @bind-Value="_perfection.PerfectionLevel" />
+                    <ValidationMessage For="() => _perfection.PerfectionLevel"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Seniorty"]</label>
+                    <InputText class="form-control" @bind-Value="_perfection.PerfectionSeniorty" />
+                    <ValidationMessage For="() => _perfection.PerfectionSeniorty"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Method"]</label>
+                    <InputText class="form-control" @bind-Value="_perfection.PerfectionMethod" />
+                    <ValidationMessage For="() => _perfection.PerfectionMethod"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Type"]</label>
+                    <InputText class="form-control" @bind-Value="_perfection.PerfectionType" />
+                    <ValidationMessage For="() => _perfection.PerfectionType"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label><b>@L["Active"]/@L["Passive"]</b></label>
+                    <div></div>
+                    <div class="radio-inline">
+                        <label class="radio radio-lg">
+                            <input type="radio" checked="@(_perfection.Status == Shared.Types.StatusType.Active)" @onchange="OnChangeStatusUpdate" name="radios3_1" />
+                            <span></span>
+                            @L["Active"]
+                        </label>
+                        <label class="radio radio-lg">
+                            <input type="radio" checked="@(_perfection.Status == Shared.Types.StatusType.Passive)" @onchange="OnChangeStatusUpdate" name="radios3_1" />
+                            <span></span>
+                            @L["Passive"]
+                        </label>
+                    </div>
+                </div>
+            }
+            <button @onclick="UpdatePerfection" class="btn btn-clean btn-primary"> @L["Save"]</button>
+        </EditForm>
+    </Body>
+</MyModal>
+*@
+

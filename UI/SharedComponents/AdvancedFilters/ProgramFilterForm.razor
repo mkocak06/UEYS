@@ -1,0 +1,211 @@
+﻿@using Shared.ResponseModels
+@using Radzen
+@using Radzen.Blazor
+@inherits FluxorComponent
+
+<EditForm EditContext="_EC">
+    <div class="form-group">
+        <label>@L["Expertise Branch"]</label>
+        <BlazoredTypeahead SearchMethod="SearchProfessions"
+                           Values="ProgramFilter.ProfessionList"
+                           ValuesChanged="((IList<ProfessionResponseDTO> values)=>ProfessionListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.ProfessionList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["Education Field"]]">
+            <SelectedTemplate Context="profession">
+                @profession?.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named"]
+            </NotFoundTemplate>
+            <ResultTemplate Context="profession">
+                @profession?.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Parent Institution"]</label>
+        <BlazoredTypeahead SearchMethod="SearchInstitution"
+                           Values="ProgramFilter.InstitutionList"
+                           ValuesChanged="((IList<InstitutionResponseDTO> values)=>InstitutionListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.InstitutionList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["Parent Institution"]]">
+            <SelectedTemplate Context="institution">
+                @institution.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named"]
+            </NotFoundTemplate>
+            <ResultTemplate Context="institution">
+                @institution.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Ministry / University"]</label>
+        <BlazoredTypeahead SearchMethod="SearchUniversities"
+                           Values="ProgramFilter.UniversityList"
+                           ValuesChanged="((IList<UniversityResponseDTO> values)=>UniversityListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.UniversityList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["University Name"]]">
+            <SelectedTemplate Context="university">
+                @university.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named"]
+            </NotFoundTemplate>
+            <ResultTemplate Context="university">
+                @university.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Educational Institution / Faculty"]</label>
+        <BlazoredTypeahead SearchMethod="SearchFaculty"
+                           Values="ProgramFilter.FacultyList"
+                           ValuesChanged="((IList<FacultyResponseDTO> values)=>FacultyListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.FacultyList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["Educational Institution / Faculty"]]">
+            <SelectedTemplate Context="faculty">
+                @faculty.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named"]
+            </NotFoundTemplate>
+            <ResultTemplate Context="faculty">
+                @faculty.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Institution of Education"]</label>
+        <BlazoredTypeahead SearchMethod="SearchHospitals"
+                           Values="ProgramFilter.HospitalList"
+                           ValuesChanged="((IList<HospitalResponseDTO> values)=>HospitalListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.HospitalList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["Hospital Name"]]">
+            <SelectedTemplate Context="hospital">
+                @hospital.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named."]
+            </NotFoundTemplate>
+            <ResultTemplate Context="hospital">
+                @hospital.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Specialization Training Program"]</label>
+        <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                           Values="ProgramFilter.ExpertiseBranchList"
+                           ValuesChanged="((IList<ExpertiseBranchResponseDTO> values)=>ExpertiseBranchListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.ExpertiseBranchList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["Expertise Branch"]]">
+            <SelectedTemplate Context="expertiseBranch">
+                @expertiseBranch?.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named."]
+            </NotFoundTemplate>
+            <ResultTemplate Context="expertiseBranch">
+                @expertiseBranch?.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Authorization Category"]</label>
+        <BlazoredTypeahead SearchMethod="SearchAuthorizationCategory"
+                           Values="ProgramFilter.AuthorizationCategoryList"
+                           ValuesChanged="((IList<AuthorizationCategoryResponseDTO> values)=>AuthorizationCategoryListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.AuthorizationCategoryList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["Authorization Category"]]">
+            <SelectedTemplate Context="authorizationCategory">
+                @authorizationCategory?.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named."]
+            </NotFoundTemplate>
+            <ResultTemplate Context="authorizationCategory">
+                @authorizationCategory?.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Province"]</label>
+        <BlazoredTypeahead SearchMethod="SearchProvinces"
+                           Values="ProgramFilter.ProvinceList"
+                           ValuesChanged="((IList<ProvinceResponseDTO> values)=>ProvinceListChanged(values))"
+                           ValuesExpression="()=>ProgramFilter.ProvinceList"
+                           EnableDropDown="true"
+                           MinimumLength="1"
+                           MaximumSuggestions=int.MaxValue
+                           placeholder="@L["Search by {0}",L["Province"]]">
+            <SelectedTemplate Context="province">
+                @province?.Name
+            </SelectedTemplate>
+            <HelpTemplate>
+                @L["Please enter at least 1 character to search."]
+            </HelpTemplate>
+            <NotFoundTemplate Context="searchText">
+                "@searchText" @L["Could not find an item named."]
+            </NotFoundTemplate>
+            <ResultTemplate Context="province">
+                @province?.Name
+            </ResultTemplate>
+        </BlazoredTypeahead>
+    </div>
+    <div class="form-group">
+        <label>@L["Authorization End Date"]</label>
+        <div class="form-group">
+            <InputDate class="form-control" Value="ProgramFilter.StartDate" TValue="DateTime?" ValueExpression="()=>ProgramFilter.StartDate" ValueChanged="(DateTime? dt)=>StartDateChange(dt)" />
+            <InputDate class="form-control" Value="ProgramFilter.EndDate" TValue="DateTime?" ValueExpression="()=>ProgramFilter.EndDate" ValueChanged="(DateTime? dt)=>EndDateChange(dt)" />
+        </div>
+    </div>
+    <div class="form-group">
+        <SpinnerButton ButtonClass="btn-secondary" Disabled="_saving" OnClick="() => ResetFilter()">
+            <i class="fas fa-undo"></i>@L["Reset"]
+        </SpinnerButton>
+    </div>
+</EditForm>

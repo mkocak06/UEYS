@@ -1,0 +1,400 @@
+﻿@page "/student/students/"
+@using Shared.Types;
+@using UI.SharedComponents.AdvancedFilters
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Extensions;
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="true" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentAdd}">
+                <a href="/student/students/add-student" type="button" class="btn btn-outline-primary mr-3">
+                    <i class="fas fa-plus"></i>@L["add_new", L["Specialization Student"]]
+                </a>
+            </PermissionWrapper>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentExcelExport}">
+                <div type="button" class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left" : "btn btn-outline-success mr-3") @onclick="DownloadExcelFile">
+                    <i class=@(_loadingFile ? "" : "fas fa-download")></i>@L["Export"]
+                </div>
+            </PermissionWrapper>
+            <div type="button" class="d-none" @onclick="AddGraduateFilter">
+                <i class=@(_loadingFile ? "" : "fas fa-download")></i>@L["Ekleeeee"]
+            </div>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            @* <div class="alert alert-custom alert-outline-2x alert-outline-primary text-center mt-3 mx-3" role="alert">
+            <h3 class="alert-text">@L["Check the students whose status is 'Estimated Finish Date Past'"]</h3>
+            </div> *@
+            <div class="card-body">
+                @if (_students != null)
+                {
+                    <Grid Items="_students" class="table table-hover table-bordered text-center" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                        <GridColumn Sort="IdentityNo" TRowData="StudentPaginateResponseDTO" Title="@L["T.R. Identity Number"]">
+                            <ChildContent>
+                                @context.IdentityNo
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Name" TRowData="StudentPaginateResponseDTO" Title="@L["Specialization Student's Name Surname"]">
+                            <ChildContent>
+                                @context.Name
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="ProfessionName" TRowData="StudentPaginateResponseDTO" Title=@L["Education Field"]>
+                            <ChildContent>
+                                @context.ProfessionName
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="OriginalHospitalName" TRowData="StudentPaginateResponseDTO" Title="@L["Institution of Education"]">
+                            <ChildContent>
+                                @if (context.Status == StudentStatus.Abroad)
+                                {
+                                    <span style="color:red;-webkit-text-stroke-width:0.3px;-webkit-text-stroke-color:black;">
+                                        @L["Education Abroad"]
+                                    </span>
+                                }
+                                else
+                                {
+                                    @context.OriginalHospitalName
+                                }
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="OriginalExpertiseBranchName" TRowData="StudentPaginateResponseDTO" Title="@L["Specialization Training Program"]">
+                            <ChildContent>
+                                @context.OriginalExpertiseBranchName
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="CurriculumVersion" TRowData="StudentPaginateResponseDTO" Title="@L["Curriculum"]">
+                            <ChildContent>
+                                @context.CurriculumVersion
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn TRowData="StudentPaginateResponseDTO" Title="@L["Status"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group row mb-0">
+                                    <div class="col-md-10">
+                                        <select value="@_studentStatus" class="form-control" name="@filter" title="Lütfen seçiniz..." @onchange='(args) => OnChangeFilter(args, "Status")'>
+                                            <option value="">@L["Select"]</option>
+                                            @foreach (StudentStatus studentStatus in Enum.GetValues(typeof(StudentStatus)).Cast<StudentStatus>().Except(new StudentStatus[] { StudentStatus.EducationEnded, StudentStatus.Gratuated, StudentStatus.SentToRegistration }))
+                                            {
+                                                <option value="@studentStatus">@L[studentStatus.GetDescription()] </option>
+                                            }
+
+                                        </select>
+
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-center justify-content-center">
+
+                                        @if (IsFiltered("Status"))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter("Status")'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                            <ChildContent>
+
+                                @if (context.ProtocolProgramId != null)
+                                {
+                                    if (context.Status == StudentStatus.Rotation)
+                                    {
+                                        @L[context.Status?.GetDescription() ?? "-"]
+                                    }
+                                    else if (context.ProtocolType == ProgramType.Protocol)
+                                    {
+                                        @L["Under Protocol Program"]
+                                    }
+                                    else
+                                    {
+                                        @L["Under Complement Program"]
+                                    }
+                                }
+                                else
+                                {
+                                    @(L[context.Status?.GetDescription() ?? "-"])
+                                }
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn class="min-w-150px align-middle" TRowData="StudentPaginateResponseDTO" Title="@L["Transactions"]">
+                            @if (context.Status != StudentStatus.SentToRegistration)
+                            {
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentGetById}">
+                                    <a href="/student/students/@context.Id" class="btn btn-light-success btn-icon btn-sm">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                </PermissionWrapper>
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentDelete}">
+
+                                    <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+
+                                </PermissionWrapper>
+                            }
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+        @* <MyModal @ref="_cancelModal" ShowFooter="false" ShowHeader="false">
+        <Body>
+        <EditForm EditContext="_cancelEc">
+        <div id="form-exams-list">
+        <div id="authorization-form">
+        <div class="form-group">
+        <label>@L["Delete Reason"]</label>
+        <InputSelect Class="form-control" @bind-Value="@_student.DeleteReasonType">
+        <option value="" selected>@L["Select"]</option>
+        @foreach (StudentDeleteReasonType deleteReasonType in Enum.GetValues(typeof(StudentDeleteReasonType)).Cast<StudentDeleteReasonType>().Except(new StudentDeleteReasonType[] { StudentDeleteReasonType.BranchChange }))
+        {
+        <option value="@deleteReasonType">@L[deleteReasonType.Description()] </option>
+        }
+        </InputSelect>
+        </div>
+        @if (!string.IsNullOrEmpty(_deleteReasonValidatorMessage))
+        {
+        <div class="validation-message">@_deleteReasonValidatorMessage</div>
+        }
+        <div class="form-group">
+        <label>@L["Explanation"]</label>
+        <InputText type="text" class="form-control" @bind-Value="_student.DeleteReason" />
+        </div>
+        </div>
+        </div>
+        @if (!string.IsNullOrEmpty(_validationMessage))
+        {
+        <div class="validation-message">@_validationMessage</div>
+        }
+        @if (!string.IsNullOrEmpty(_explanationValidatorMessage))
+        {
+        <div class="validation-message">@_explanationValidatorMessage</div>
+        }
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentDelete}">
+
+        <button @onclick="DeleteStudent" class="btn btn-clean btn-primary"> @L["Add"]</button>
+        </PermissionWrapper>
+        </EditForm>
+        </Body>
+        </MyModal> *@
+    </Content>
+</AppContent>
+<MyModal @ref="_educationTrackingAddModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ec">
+            <FluentValidator TValidator="EducationTrackingValidator" />
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    @if (StudentStatuses.Contains(_student.Status))
+                    {
+                        <div class="alert alert-custom alert-outline-2x alert-outline-primary text-center mt-3 mx-3" role="alert">
+                            <div class="alert-text">@L["Since the student's status is {0}, you can finish the education after completing the necessary operations from the student details.", L[_student.Status?.GetDescription()]]</div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label>@L["Delete Reason"]</label>
+                            <InputSelect @bind-Value="_educationTracking.ReasonType" class="form-control">
+                                <option value="" selected>@L["Select"]</option>
+                                @foreach (var item in _educationTracking?.ProcessType?.GetReasonTypes(_student?.Status))
+                                {
+                                    <option value="@item">@L[item.GetDescription()] </option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="()=>_educationTracking.ReasonType"></ValidationMessage>
+                        </div>
+                        @if (_educationTracking.ReasonType != ReasonType.RegistrationByMistake)
+                        {
+                            <div class="form-group">
+                                <label>@L["Description"]</label>
+                                <InputTextArea class="form-control" @bind-Value="_educationTracking.Description" />
+                                <ValidationMessage For="()=>_educationTracking.Description"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Process Date"]</label>
+                                <InputDate @bind-Value="_educationTracking.ProcessDate" class="form-control"></InputDate>
+                                <ValidationMessage For="()=>_educationTracking.ProcessDate"></ValidationMessage>
+                            </div>
+                        }
+                        <button @onclick="AddEducationTracking" class="btn btn-clean btn-primary"> @L["Delete"] </button>
+                    }
+                </div>
+            </div>
+        </EditForm>
+    </Body>
+</MyModal>
+
+<MyModal @ref="_expiredStudentModal" Size="MyModal.ModalSize.XLarge" ShowFooter="false" ShowHeader="true">
+    <Body>
+        <div class="alert alert-custom alert-outline-2x alert-outline-primary text-center mt-3 mx-3" role="alert">
+            <h3 class="alert-text">@L["Check the students whose status is 'Estimated Finish Date Past'"]</h3>
+        </div>
+        <div class="row">
+            @if (_expiredStudents != null)
+            {
+                <Grid Items="_expiredStudents" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                    <GridColumn Sort="Name" TRowData="StudentPaginateResponseDTO" Title="@L["Specialization Student's Name Surname"]">
+                        <ChildContent>
+                            @context.Name
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="OriginalHospitalName" TRowData="StudentPaginateResponseDTO" Title="@L["Institution of Education"]">
+                        <ChildContent>
+                            @context.OriginalHospitalName
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="OriginalExpertiseBranchName" TRowData="StudentPaginateResponseDTO" Title="@L["Specialization Training Program"]">
+                        <ChildContent>
+                            @context.OriginalExpertiseBranchName
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="StudentPaginateResponseDTO" Title="@L["Status"]">
+                        <ChildContent>
+                            @(L[context.Status?.GetDescription() ?? "-"])
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn class="min-w-150px align-middle" TRowData="StudentPaginateResponseDTO" Title="@L["Transactions"]">
+                        @if (context.Status != StudentStatus.SentToRegistration)
+                        {
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentGetById}">
+                                <div type="button" class="btn btn-light-success btn-icon btn-sm" @onclick="()=> OnDetailHandler(context.Id)">
+                                    <i class="far fa-edit"></i>
+                                </div>
+                            </PermissionWrapper>
+                        }
+                    </GridColumn>
+                </Grid>
+            }
+            else
+            {
+                <Spinner></Spinner>
+            }
+        </div>
+    </Body>
+</MyModal>

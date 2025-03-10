@@ -1,0 +1,126 @@
+﻿@using System.Collections.ObjectModel
+@using System.Collections.Specialized
+@using Shared.Extensions
+@using Shared.Types
+@using UI.SharedComponents.BlazorLeaflet.Models
+@using UI.SharedComponents.BlazorLeaflet.Models.Events
+@using System.Drawing
+@inject IJSRuntime _jsRuntime
+@inherits FluxorComponent
+
+@if (_map != null)
+{
+    <div style="height:500px; width: 100%;">
+        <LeafletMap Map="_map" />
+    </div>
+}
+
+@code {
+    [Parameter] public ObservableCollection<MapLayerModel> Layers { get; set; }
+    [Parameter] public bool FullHeight { get; set; } = false;
+    [Inject] NavigationManager NavManager { get; set; }
+    private Map _map;
+
+    private bool _rendered = false;
+
+    protected override void OnParametersSet()
+    {
+        if (!_rendered)
+        {
+            _rendered = true;
+
+            Layers.CollectionChanged -= UpdateMap;
+            Layers.CollectionChanged += UpdateMap;
+            InitializeMap();
+        }
+        base.OnParametersSet();
+    }
+
+    private void InitializeMap()
+    {
+        _map = new Map(_jsRuntime)
+            {
+                Center = new LatLng(39.925533f, 32.866287f),
+                MaxBounds = new List<LatLng>() { new LatLng(34.48531669790588f, 24.742965168912324f), new LatLng(43.18594862642655f, 44.72045303313992f) },
+                MinZoom = 6f,
+                Zoom = 6f
+            };
+
+        _map.OnInitialized += () =>
+        {
+            Marker _marker;
+            _map.AddLayer(new TileLayer
+                {
+                    UrlTemplate = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    Attribution = "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>",
+                });
+            if (Layers is not null)
+            {
+                foreach (var layer in Layers)
+                {
+                    foreach (var marker in layer.MarkerList)
+                    {
+                        _marker = new Marker(marker.LatLong.Item1, marker.LatLong.Item2)
+                            {
+                                Draggable = false,
+                                Icon = new Icon(layer.MarkerType),
+                                Title = marker.Title,
+                                Popup = new Popup()
+                                {
+                                    Content = marker.Content,
+                                    ShowCloseButton = false,
+                                    CloseOnEscapeKey = true,
+                                    MaximumHeight = 100,
+                                    MinimumWidth = 50,
+                                },
+                            };
+                        _map.AddLayer(_marker);
+                    }
+                }
+            }
+        };
+    }
+
+    public void UpdateMap(object sender, NotifyCollectionChangedEventArgs args)
+    {
+        Marker _marker;
+        var layers = _map.GetLayers();
+        if (layers is not null && layers.Count != 0)
+        {
+            foreach (var layer in layers)
+            {
+                if (layer.GetType() != typeof(TileLayer))
+                    _map.RemoveLayer(layer);
+            }
+        }
+        if (Layers is not null)
+        {
+
+            foreach (var layer in Layers)
+            {
+                foreach (var marker in layer.MarkerList)
+                {
+                    if (!(marker.LatLong.Item1 == 0 && marker.LatLong.Item2 == 0))
+                    {
+                        _marker = new Marker(marker.LatLong.Item1, marker.LatLong.Item2)
+                            {
+                                Draggable = false,
+                                Icon = new Icon(layer.MarkerType),
+                                Title = marker.Title,
+                                Popup = new Popup()
+                                {
+                                    Content = marker.Content,
+                                    ShowCloseButton = false,
+                                    CloseOnEscapeKey = true,
+                                    MaximumHeight = 100,
+                                    MinimumWidth = 50,
+                                },
+                                ColorCode = marker.ColorCode
+                            };
+                        _map.AddLayer(_marker);
+                    }
+                }
+            }
+        }
+    }
+}

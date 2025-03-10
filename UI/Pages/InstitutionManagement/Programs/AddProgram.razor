@@ -1,0 +1,250 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/programs/add-program"
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+
+        <div class="card card-custom">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-12">
+                        <EditForm EditContext="_ec">
+                            <FluentValidator TValidator="ProgramValidator"></FluentValidator>
+
+
+
+                            <div class="form-group">
+                                <label>@L["Ministry / University"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchUniversities"
+                                                   TItem="UniversityResponseDTO"
+                                                   TValue="UniversityResponseDTO"
+                                                   Value="_university"
+                                                   ValueExpression="() => _university"
+                                                   ValueChanged="OnChangeUniversity"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions="int.MaxValue">
+                                    <SelectedTemplate Context="university">
+                                        @university.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="university">
+                                        @university.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Educational Institution / Faculty"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchFaculties"
+                                                   TItem="FacultyResponseDTO"
+                                                   TValue="FacultyResponseDTO"
+                                                   Value="_program.Faculty"
+                                                   ValueExpression="() => _program.Faculty"
+                                                   ValueChanged="OnChangeFaculty"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   Disabled=@( _university == null)
+                                                   MaximumSuggestions="int.MaxValue">
+                                    <SelectedTemplate Context="faculty">
+                                        @faculty.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="faculty">
+                                        @faculty.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Institution of Education"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchHospitals"
+                                                   TItem="HospitalResponseDTO"
+                                                   TValue="HospitalResponseDTO"
+                                                   Value="_program.Hospital"
+                                                   ValueExpression="() => _program.Hospital"
+                                                   ValueChanged="OnChangeHospital"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions="int.MaxValue"
+                                                   Disabled=@(_program.FacultyId==0 || _program.FacultyId==null)>
+                                    <SelectedTemplate Context="hospital">
+                                        @hospital?.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="hospital">
+                                        @hospital?.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Specialization Training Program"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                                   TItem="ExpertiseBranchResponseDTO"
+                                                   TValue="ExpertiseBranchResponseDTO"
+                                                   Value="_program.ExpertiseBranch"
+                                                   ValueExpression="() => _program.ExpertiseBranch"
+                                                   ValueChanged="OnChangeExpertiseBranch"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="2"
+                                                   Disabled=@(_program.HospitalId==0 || _program.HospitalId==null)
+                                                   MaximumSuggestions="int.MaxValue">
+                                    <SelectedTemplate Context="expBrc">
+                                        @expBrc.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="expBrc">
+                                        @expBrc.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+
+                        </EditForm>
+                        <Grid IsFilter="false" Items="_program.AuthorizationDetails" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization End Date"]">
+                                @context.AuthorizationEndDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Current Authorization Category"]">
+                                @context.AuthorizationCategory?.Name (@context.AuthorizationCategory?.Description?)
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Current Date of Visit"]">
+                                @context.VisitDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Current Authorization Decision Date"]">
+                                @context.AuthorizationDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Current Authorization Decision No"]">
+                                @context.AuthorizationDecisionNo
+                            </GridColumn>
+                            <GridColumn class="max-w-70px align-middle" TRowData="AuthorizationDetailResponseDTO" Title="@L["Transactions"]">
+                                <button @onclick="() => RemoveAuthorizationDetail(context)" class="btn btn-outline-danger btn-sm"><i class="fa fa-trash"></i></button>
+                            </GridColumn>
+                        </Grid>
+                        <div class="text-center mt-5">
+                            <button @onclick="OnOpenAuthorizationDetailList" class="btn btn-outline-primary">@L["add_new", @L["_Detail", L["Authorization"]]]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <MyModal @ref="_authorizationDetailModal" ShowFooter="false" ShowHeader="false">
+            <Body>
+                <EditForm EditContext="_authorizationEc">
+                    <FluentValidator TValidator="AuthorizationDetailValidator"></FluentValidator>
+                    <div id="form-exams-list">
+                        <div id="authorization-form">
+                            div class="form-group">
+                            <label>@L["_Date", L["Visit"], string.Empty]</label>
+                            <InputDate class="form-control" @bind-Value="_authorizationDetail.VisitDate" TValue="DateTime?"></InputDate>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Authorization Decision Date"]</label>
+                            <InputDate class="form-control" Value="_authorizationDetail.AuthorizationDate" ValueExpression="()=>_authorizationDetail.AuthorizationDate" ValueChanged="OnChangeAuthorizationDate" TValue="DateTime?"></InputDate>
+                        </div>
+                            <div class="form-group">
+                            <label>@L["Authorization Decision Number"]</label>
+                                <InputText type="text" class="form-control" @bind-Value="_authorizationDetail.AuthorizationDecisionNo" />
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Current Authorization Category"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchAuthorizationCategories"
+                                                   TItem="AuthorizationCategoryResponseDTO"
+                                                   TValue="AuthorizationCategoryResponseDTO"
+                                                   Value="_authorizationDetail.AuthorizationCategory"
+                                                   ValueExpression="() =>_authorizationDetail.AuthorizationCategory"
+                                                   ValueChanged="OnChangeAuthorizationCategory"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions="int.MaxValue">
+                                    <SelectedTemplate Context="autCat">
+                                        @if (autCat.Name != null)
+                                        {
+                                            @autCat.Name
+                                            <i class="fa fa-circle icon-lg" style="display:flex;  margin-left:5px; font-size:80px; color: @autCat.ColorCode"></i>
+                                        }
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText"  @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="autCat">
+                                        @autCat.Name
+                                        <i class="fa fa-circle icon-lg" style="display:flex;  font-size:80px; color: @autCat.ColorCode"></i>
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                        <div class="form-group">
+                            <label>@L["_Date", L["End"]]</label>
+                            <input type="text" class="form-control" value="@_authorizationDetail.AuthorizationEndDate?.ToString("dd MMMM yyyy")" disabled />
+                        </div>
+                            <div class="form-group">
+                                <label>@L["Description"]</label>
+
+                                <BlazoredTypeahead SearchMethod="ExtensionMethods.GetDescriptionOptions"
+                                                   Values="_authorizationDetail.Descriptions"
+                                                   ValuesExpression="()=>_authorizationDetail.Descriptions"
+                                                   ValuesChanged="(IList<string> values)=>OnChangeDescription(values)"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1" AddItemOnEmptyResultMethod="AddItemOnEmptyResult" ShowDropDownOnFocus
+                                                   MaximumSuggestions=10 >
+                                    <SelectedTemplate Context="group">
+                                        @group
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 2 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        @if (string.IsNullOrEmpty(searchText))
+                                        {
+                                            @L["Could not find an item"]
+                                        }
+                                        else
+                                        {
+                                            <div>@searchText @L["Could not find an item named"]</div>
+                                        }
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="group">
+                                        @group
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => _authorizationDetail.Descriptions"></ValidationMessage>
+                                <ValidationMessage For="() => _authorizationDetail.AuthorizationEndDate"></ValidationMessage>
+                            </div>
+                        </div>
+                    <button @onclick="AddAuthorizationDetail" class="btn btn-clean btn-primary"> @L["Save"]</button>
+                </EditForm>
+            </Body>
+        </MyModal>
+    </Content>
+</AppContent>
+

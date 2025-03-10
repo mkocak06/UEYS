@@ -1,0 +1,29 @@
+﻿@using UI.Services
+@using Shared.ResponseModels
+@inherits FluxorComponent
+	<!--begin::Profile Overview-->
+    @if (UserInfo==null)
+	{
+		<div class="d-flex align-items-center justify-content-center my-auto">
+			<div style="height:100%" class="spinner spinner-success spinner-lg"></div>
+		</div>
+	}
+	else
+	{
+		<div class="d-flex flex-row">
+			<ProfileLeftMenu UserInfo="@UserInfo" />
+			@ChildContent
+		</div>
+	}
+	<!--end::Profile Overview-->
+@code {
+	[Parameter] public RenderFragment ChildContent { get; set; }
+	[Parameter] public UserAccountDetailInfoResponseDTO UserInfo { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+	{
+        
+		await base.OnInitializedAsync();
+	}
+}

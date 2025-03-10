@@ -1,0 +1,35 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/archive/documents"
+@inherits FluxorComponent
+
+<AppContent Title="@L["_List", L["Deleted Document"]]">
+    <Toolbar>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_documents != null)
+                {
+
+                    <Grid Items="_documents" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                        <GridColumn TRowData="DocumentResponseDTO" Title="@L["Name"]">
+                            <ChildContent>
+                                @context.Name
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="DocumentResponseDTO" Title="@L["Document Type"]">
+                            <ChildContent>
+                                @L[$"{context.DocumentType.Description()}"]
+                            </ChildContent>
+                        </GridColumn>
+                    </Grid>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

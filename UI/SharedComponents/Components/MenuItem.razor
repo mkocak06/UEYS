@@ -1,0 +1,89 @@
+﻿@using Shared.Constants;
+@using Shared.ResponseModels.Menu;
+@inherits FluxorComponent
+@inject NavigationManager _navigationManager
+@inject IIconHelperService _iconHelperService
+
+@if (MenuModel.ChildMenus != null && MenuModel.ChildMenus.Any())
+{
+    <li class="menu-item menu-item-submenu @GetDropDownActive(MenuModel.URL)" aria-haspopup="true" data-menu-toggle="hover">
+        <a href="javascript:;" class="menu-link menu-toggle">
+            <span class="svg-icon menu-icon">
+                @if (!string.IsNullOrEmpty(MenuModel.Icon))
+                {
+                    <span class="svg-icon menu-icon">
+                        @((MarkupString)GetSvg[MenuModel.Icon])
+                    </span>
+                }
+            </span>
+            <span class="menu-text">@L[MenuModel.Name]</span>
+            <i class="menu-arrow"></i>
+        </a>
+        <div class="menu-submenu">
+            <i class="menu-arrow"></i>
+            <ul class="menu-subnav">
+                <li class="menu-item menu-item-parent" aria-haspopup="true">
+                    <span class="menu-link">
+                        <span class="menu-text">@L[MenuModel.Name]</span>
+                    </span>
+                </li>
+                @foreach (var menuModelSubMenu in MenuModel.ChildMenus.OrderBy(x => x.Order))
+                {
+                    <MenuItem MenuModel="@menuModelSubMenu"></MenuItem>
+                }
+            </ul>
+        </div>
+    </li>
+}
+else
+{
+    
+        <li class="menu-item @GetActive(MenuModel.URL, string.IsNullOrEmpty(MenuModel.URL) ? NavLinkMatch.All : NavLinkMatch.Prefix)" aria-haspopup="true">
+        <a href="/@MenuModel.URL" class="menu-link">
+                @if (!string.IsNullOrEmpty(MenuModel.Icon))
+                {
+                    <span class="svg-icon menu-icon">
+                        @((MarkupString)GetSvg[MenuModel.Icon])
+                    </span>
+                }
+                else
+                {
+                    <i class="menu-bullet menu-bullet-dot">
+                        <span></span>
+                    </i>
+                }
+            <span class="menu-text">@L[MenuModel.Name]</span>
+            </a>
+        </li>
+}
+
+@code {
+    [Parameter] public MenuResponseDTO MenuModel { get; set; }
+
+
+    bool IsActive(string href, NavLinkMatch navLinkMatch = NavLinkMatch.Prefix)
+    {
+        var relativePath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).ToLower();
+        if (relativePath.Contains("?"))
+        {
+            relativePath = relativePath.GetUntilOrEmpty("?");
+        }
+        return navLinkMatch == NavLinkMatch.All ? relativePath == href.ToLower() : relativePath.StartsWith(href.ToLower());
+    }
+
+    private static readonly IDictionary<string, string>
+        GetSvg = new Dictionary<string, string>
+                    {
+            {"Home", SvgConstants.HOME},
+            {"LayoutRightPanel", SvgConstants.LAYOUTRIGHTPANEL},
+            {"Chat4", SvgConstants.CHAT4},
+            {"Video",SvgConstants.VIDEO}
+                    };
+
+    string GetActive(string href, NavLinkMatch navLinkMatch = NavLinkMatch.Prefix) => IsActive(href, navLinkMatch) ?
+        "menu-item-active" : "";
+
+    string GetDropDownActive(string href, NavLinkMatch navLinkMatch = NavLinkMatch.All) => IsActive(href, navLinkMatch) ?
+        "menu-item-open" : "";
+
+}

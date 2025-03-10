@@ -1,0 +1,127 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/archive/universities"
+@inherits FluxorComponent
+
+
+<AppContent Title="@L["_List", L["Deleted Universities"]]" IsFluid="false">
+    <Toolbar>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_universities != null)
+                {
+                    <Grid IsFilter="false" Items="_universities" OnSortChanged="sort => OnSortChange(sort)"
+                          Sort="_filter.Sort.FirstOrDefault()" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                        <GridColumn Sort="Name" TRowData="UniversityResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Ministry / University"]]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Phone" TRowData="UniversityResponseDTO" Expression="c => c.Phone" Title="@L["Telephone Number"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="WebAddress" TRowData="UniversityResponseDTO" Expression="c => c.WebAddress" Title="@L["Web Address"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="IsPrivate" TRowData="UniversityResponseDTO" Title="@L["Foundation University"]">
+                            <ChildContent>
+                                <BoolLabel PositiveString="Yes" NegativeString="No" Value="context.IsPrivate" />
+                            </ChildContent>
+
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="d-flex align-items-center justify-content-around mt-2">
+                                        <label class="checkbox checkbox-lg">
+                                            <input type="checkbox" name="@filter" @onchange='(args) => OnChangeFilterCheckBox(args, filter)' />
+                                            <span></span>
+                                        </label>
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn class="min-w-100px align-middle" TRowData="UniversityResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ArchiveUndeleteUniversity}">
+                                <a @onclick="() => OnUndeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i title=@L["Take Back"] class="fas fa-trash-restore-alt"></i></a>
+                            </PermissionWrapper>
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>
+

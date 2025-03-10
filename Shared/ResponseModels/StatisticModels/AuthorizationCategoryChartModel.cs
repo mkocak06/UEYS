@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shared.ResponseModels.StatisticModels
+{
+    public class AuthorizationCategoryChartModel
+    {
+        public string SeriesName { get; set; }
+        public int Count { get; set; }
+        public string ColorCode { get; set; }
+    }
+}

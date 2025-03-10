@@ -1,0 +1,304 @@
+﻿@page "/visit-module/institution-requests"
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Extensions
+<AppContent BreadCrumbLinks="_links">
+    <Content>
+        @if (!_isEditing)
+        {
+            <div class="card card-custom">
+                <div class="card-body">
+                    @if (!_loading)
+                    {
+                        <Grid Items="_formPaginationModel.Items" class="table table-hover table-bordered " Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                            <GridColumn Sort="Program.Hospital.Name" TRowData="FormResponseDTO" Expression="c => c.Program.Hospital.Name" Title="@L["_name", L["Kurum"]]">
+                                <FilterTemplate Context="filter">
+                                    <div class="form-group mb-0">
+                                        <div class="input-icon input-icon-right">
+                                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                            @if (IsFiltered(filter))
+                                            {
+                                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="cursor-pointer">
+                                                    <i class="flaticon2-search-1 icon-md"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </FilterTemplate>
+                            </GridColumn>
+                            <GridColumn Sort="CurriculumName" TRowData="FormResponseDTO" Title="@L["_name", L["Expertise Branch"]]">
+                                <ChildContent>
+                                    @(context.FormStandards?.FirstOrDefault()?.Standard?.Curriculum?.ExpertiseBranch?.Name + " " + context.FormStandards?.FirstOrDefault()?.Standard?.Curriculum?.Version)
+                                </ChildContent>
+                                <FilterTemplate Context="filter">
+                                    <div class="form-group mb-0">
+                                        <div class="input-icon input-icon-right">
+                                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                            @if (IsFiltered(filter))
+                                            {
+                                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="cursor-pointer">
+                                                    <i class="flaticon2-search-1 icon-md"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </FilterTemplate>
+                            </GridColumn>
+                            <GridColumn Sort="ApplicationDate" TRowData="FormResponseDTO" Title="@L["Başvuru Tarihi"]">
+                                <ChildContent>
+                                    @(context.ApplicationDate?.ToShortDateString())
+                                </ChildContent>
+                            </GridColumn>
+                            @* <GridColumn Sort="AuthorizationDetail.AuthorizationCategory.Name" TRowData="FormResponseDTO" Title="@L["Authorization Category"]">
+                                <ChildContent>
+                                    <div class="cursor-pointer" @onclick="()=>GetAuthorizationDetails(context.ProgramId.Value)">
+
+                                    <span class="label label-xl" style="background-color:@context.AuthorizationDetail.AuthorizationCategory.ColorCode"><span style="@GetTextStyle(context.AuthorizationDetail.AuthorizationCategory.Name)">@context.AuthorizationDetail.AuthorizationCategory.Name</span></span>
+                                    </div>
+                                </ChildContent>
+                                <FilterTemplate Context="filter">
+                                    <div class="form-group mb-0">
+                                        <div class="input-icon input-icon-right">
+                                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                            @if (IsFiltered(filter))
+                                            {
+                                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="cursor-pointer">
+                                                    <i class="flaticon2-search-1 icon-md"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </FilterTemplate>
+                            </GridColumn> *@
+                            <GridColumn TRowData="FormResponseDTO" Title="@L["Status"]">
+                                <ChildContent>
+                                    @if (context.VisitStatusType != Shared.Types.VisitStatusType.TUKEvaluated)
+                                    {
+
+                                        <span class="label label-lg font-weight-bold label-light-warning label-inline h-auto">
+                                            @L[context.VisitStatusType?.GetDescription() ?? "-"]
+                                            <span class="label pulse pulse-danger" style="background-color:transparent;">
+                                                <span class="position-relative"><span class="label label-xl label-dot label-danger"></span></span>
+                                                <span class="pulse-ring"></span>
+                                            </span>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-light-success disabled">
+                                            <i class="fas fa-check-circle"></i>@L[context.VisitStatusType?.GetDescription() ?? "-"]
+                                        </a>
+                                    }
+                                </ChildContent>
+                            </GridColumn>
+                            @* <GridColumn class="align-middle" TRowData="FormResponseDTO" Title="@L["Transactions"]">
+                                // Burası commentlenecek
+                                @if (context.CommitteeOpinionType == null)
+                                {
+                                    <button @onclick="() => AssignCommitteToForm(context)" class="btn btn-light-success ml-1"><i class="fas fa-edit"></i>Komisyon Üyelerini Düzenle</button>
+                                    <button @onclick="() => VisitDateToForm(context)" class="btn btn-light-danger ml-1"><i class="fas fa-calendar"></i>Ziyaret Tarihini Belirle</button>
+                                }
+                                <button @onclick="()=>{_formId=context.Id;_isEditing=true; StateHasChanged();}" class="btn btn-light-primary ml-1">
+                                    <i class="fas fa-search"></i> İncele
+                                </button>
+                            </GridColumn> *@
+                        </Grid>
+                        <Pagination Action="PaginationHandler" Count="_formPaginationModel.TotalItemCount" Page="_formPaginationModel.Page"
+                                    DefaultPageSize="10" Loading="_loading">
+                        </Pagination>
+                    }
+                    else
+                    {
+                        <Spinner></Spinner>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <UI.Pages.VisitModule.Form.Tabs.InstitutionForm FormId="@_formId" OnCancel="OnCanceled"></UI.Pages.VisitModule.Form.Tabs.InstitutionForm>
+        }
+    </Content>
+</AppContent>
+<MyModal @ref="_visitDateModal" Size="MyModal.ModalSize.Small" ActionMethod="SaveCommittee" ActionName="Kaydet">
+    <Body>
+        <div class="form-group">
+            <label>Ziyaret Tarihi</label>
+            <InputDate @bind-Value="@_selectedForm.VisitDate" class="form-control"></InputDate>
+        </div>
+    </Body>
+</MyModal>
+<MyModal @ref="_committeeModal" Size="MyModal.ModalSize.Large" ActionMethod="SaveCommittee" ActionName="Kaydet">
+    <Title>Komisyon Üyeleri</Title>
+    <Body>
+        @if (_committeePaginationModel?.Items != null)
+        {
+            <Grid Items="_committeePaginationModel.Items" class="table table-hover table-bordered text-center" Sort="_filterCommittee.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChangeCommittee(sort)" RowClass='(row, index) => ""'>
+                <GridColumn Context="educator" Sort="IdentityNo" TRowData="EducatorPaginateResponseDTO" Title="@L["T.R. Identity Number"]">
+                    <ChildContent>
+                        @educator.IdentityNo
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterCommittee(args, filter)' autocomplete="false">
+                                @if (IsFilteredCommittee(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterCommittee(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Name" TRowData="EducatorPaginateResponseDTO" Title="@L["Name Surname"]">
+                    <ChildContent>
+                        @context.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterCommittee(args, filter)' autocomplete="false">
+                                @if (IsFilteredCommittee(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterCommittee(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Phone" TRowData="EducatorPaginateResponseDTO" Title="@L["Educator Phone"]">
+                    <ChildContent>
+                        @context.Phone
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterCommittee(args, filter)' autocomplete="false">
+                                @if (IsFilteredCommittee(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterCommittee(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Email" TRowData="EducatorPaginateResponseDTO" Title="@L["Email"]">
+                    <ChildContent>
+                        @context.Email
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterCommittee(args, filter)' autocomplete="false">
+                                @if (IsFilteredCommittee(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterCommittee(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn TRowData="EducatorPaginateResponseDTO" Title="@L["Roles"]">
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <select class="selectpicker" data-actions-box="true" data-selected-text-format="count" multiple name="@filter" title="Lütfen seçiniz..." @onchange='(args) => OnChangeSelectFilter(args, "Role")'>
+                                @foreach (var role in _roles)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+
+                            </select>
+                        </div>
+                    </FilterTemplate>
+                    <ChildContent>
+                        @if (context.Roles?.Count > 0 && context.Roles != null)
+                        {
+                            @foreach (var item in context.Roles)
+                            {
+                                <span class="badge badge-warning mb-1 mr-1">
+                                    @(item)
+                                </span>
+                            }
+                        }
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="align-middle" Context="educator" TRowData="EducatorPaginateResponseDTO" Title="@L["Transactions"]">
+                    @if (!_selectedForm.OnSiteVisitCommittees.Any(y => y.UserId == educator.UserId))
+                    {
+
+                        <SpinnerButton OnClick="() => OnAddCommittee(educator.UserId.Value)" ButtonClass="btn btn-light-primary btn-icon btn-sm" Title="@L["Add"]" Spinning="false" Disabled="false">
+                            <i class="fas fa-plus"></i>
+                        </SpinnerButton>
+                    }
+                    else
+                    {
+                        <SpinnerButton OnClick="() => OnRemoveCommittee(educator.UserId.Value)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                            <i class="fas fa-minus"></i>
+                        </SpinnerButton>
+                    }
+
+                </GridColumn>
+            </Grid>
+
+            <Pagination Action="PaginationHandlerCommittee" Count="_committeePaginationModel.TotalItemCount" Page="_committeePaginationModel.Page"
+                        DefaultPageSize="5" Loading="_committeeLoading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner />
+        }
+    </Body>
+</MyModal>
+
+<UI.SharedComponents.DetailCards.AuthorizationDetailsModal @ref="_authDetailsModal"></UI.SharedComponents.DetailCards.AuthorizationDetailsModal>

@@ -1,0 +1,1396 @@
+﻿@using Shared.Extensions;
+@using Shared.ResponseModels
+@using Shared.Types;
+@inherits FluxorComponent
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        @if (Student.Status == StudentStatus.Gratuated)
+        {
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentUpdate}">
+                <a @onclick="SendToRegistration" type="button" class="btn btn-primary mr-3"><i class="fas fa-plus"></i>@L["Send to Registration"]</a>
+            </PermissionWrapper>
+        }
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentDocumentUpload}">
+            <a @onclick="()=>{fileUploadModal.OpenModal(); selectedDocumentType = DocumentTypes.Null; documentValidatorMessage = null; }" type="button" class="btn btn-primary mr-3"><i class="fas fa-plus"></i>@L["File Upload"]</a>
+        </PermissionWrapper>
+    </div>
+</div>
+
+<div class="card-body">
+    <div class="row">
+        <div class="col-12">
+            <h3>@L["Registration Cancel Statements"]</h3>
+            <InputTextArea class="form-control" @bind-Value="Student.RegistrationStatements" disabled />
+            <br />
+            <h3>Dosyalar</h3>
+            <div class="table-responsive">
+                <FileItemRegistration CanDownloaded=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.StudentDocumentDownload})) IsEditing=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.StudentDocumentDelete})) Documents="Student?.Documents" Loaded="true"></FileItemRegistration>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header ribbon ribbon-top ribbon-ver">
+        <div class="ribbon-target bg-dark-o-5 d-block" style="top: -2px; right: 20px;">
+            <ImageUpload imagePath="@(Student.User.ProfilePhoto)" EditMode="@false" />
+        </div>
+        <div class="card-header">
+            <div class="card-title">
+                <span class="card-icon">
+                    <i class="flaticon2-pin text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["_Information", L["Specialization Student"]]</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+
+                <div class="timeline timeline-justified timeline-4 position-sticky" style="top:140px;">
+                    <div class="timeline-bar"></div>
+                    <div class="timeline-items">
+                        @if (Student?.User is not null)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["Specialization Student"]</span>
+                                </div>
+
+                                <div class="timeline-content">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="p-0 w-250px"></th>
+                                                <th class="p-0"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["T.R. Identity Number"]</td>
+                                                <td>@Student.User.IdentityNo</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Name Surname"]</td>
+                                                <td>@Student.User.Name</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Gender"]</td>
+                                                <td>@L[Student?.User?.Gender?.GetDescription() ?? ""]</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Birthplace"]</td>
+                                                <td>@Student?.User?.BirthPlace</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Birth Date"]</td>
+                                                <td>@Student?.User?.BirthDate?.ToString("dd.MM.yyyy")</td>
+                                            </tr>
+                                            @*<tr>
+                                        <td class="font-weight-bolder">@L["Email"]</td>
+                                        <td>@Student.User.Email</td>
+                                        </tr>
+                                        <tr>
+                                        <td class="font-weight-bolder">@L["Phone"]</td>
+                                        <td>@Student.User.Phone</td>
+                                        </tr>*@
+                                            @*<tr>
+                                        <td class="font-weight-bolder">@L["Address"]</td>
+                                        <td>@Student.User.Address</td>
+                                        </tr>*@
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["_Information", L["Expertise Training Program"]]</span>
+                                </div>
+                                <div class="timeline-content">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="p-0 w-250px"></th>
+                                                <th class="p-0"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["_name", L["Expertise Training Program"]]</td>
+                                                <td>@(Student.Program?.Name ?? "-")</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Curriculum"]</td>
+                                                <td>@(Student.Curriculum?.ExpertiseBranch?.Name + " v" + Student.Curriculum?.Version + " " + (Student.Curriculum.Duration != null ? Student.Curriculum.Duration + " " : "-") + L["Year"])</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Beginning Exam"]</td>
+                                                <td>@(Student.BeginningExam?.GetDescription()?.ToString() ?? "-")</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Beginning Period"]</td>
+                                                <td>@(Student.BeginningPeriod?.GetDescription()?.ToString() ?? "-")</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Placement Year"]</td>
+                                                <td>@(Student.BeginningYear?.ToString() ?? "-")</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Placement Score"]</td>
+                                                <td>@(Student.PlacementScore?.ToString() ?? "-")</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["QuotaType_1"]</td>
+                                                <td>@($"{L[Student.QuotaType_1?.GetDescription() ?? "-"]}")</td>
+                                            </tr>
+                                            @if (Student.QuotaType_2 != null)
+                                            {
+                                                <tr>
+                                                    <td class="font-weight-bolder">@L["QuotaType_2"]</td>
+                                                    <td>@($"{L[Student.QuotaType_2?.GetDescription() ?? "-"]}")</td>
+
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["_Information", L["Graduation"]]</span>
+                                </div>
+                                <div class="timeline-content">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="p-0 w-250px"></th>
+                                                <th class="p-0"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Graduated School"]</td>
+                                                <td>@(Student.GraduatedSchool ?? "-")</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Graduated Date"]</td>
+                                                <td>@(Student.GraduatedDate ?? "-")</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bolder">@L["Graduation Registration Date"]</td>
+                                                <td>@(Student.MedicineRegistrationDate ?? "-")</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["_Information", L["Education Time Tracking"]]</span>
+                                </div>
+                                <div class="timeline-content">
+                                    @if (!_loading)
+                                    {
+                                        if (_educationTrackings?.Count > 0)
+                                        {
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="p-0">@L["Process Type"]</th>
+                                                        <th class="p-0">@L["Reason"]</th>
+                                                        <th class="p-0">@L["Institution of Education"]</th>
+                                                        <th class="p-0">@L["Assignment"]</th>
+                                                        <th class="p-0">@L["Additional Days(Day)"]</th>
+                                                        <th class="p-0">@L["Process Date"]</th>
+                                                        <th class="p-0">@L["Description"]</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+
+                                                    @foreach (var item in _educationTrackings)
+                                                    {
+                                                        <tr>
+                                                            <td>@(L[item.ProcessType?.GetDescription() ?? "-"])</td>
+                                                            <td>@(L[item.ReasonType?.GetDescription() ?? "-"])</td>
+                                                            <td>@(L[item.Program?.Name ?? "-"])</td>
+                                                            <td>@(L[item.AssignmentType?.GetDescription() ?? "-"])</td>
+                                                            <td>@(item.AdditionalDays?.ToString() ?? "-")</td>
+                                                            <td>@(item.ProcessDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                                            <td>@(item.Description ?? "-")</td>
+                                                        </tr>
+                                                    }
+
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["_Information", L["Rotation"]]</span>
+                                </div>
+                                <div class="timeline-content">
+                                    @if (!_loading)
+                                    {
+                                        if (_studentRotations?.Count > 0)
+                                        {
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="p-0">@L["Rotation Branch"]</th>
+                                                        <th class="p-0">@L["Place of Rotation"]</th>
+                                                        <th class="p-0">@L["_name", L["Educator"]]</th>
+                                                        <th class="p-0">@L["Begin and End Date"]</th>
+                                                        <th class="p-0">@L["Successful"]/@L["Unsuccessful"]</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in _studentRotations)
+                                                    {
+                                                        <tr>
+                                                            <td>@(item.Rotation?.ExpertiseBranch?.Name ?? "-")</td>
+                                                            <td>@(item.Program?.Name ?? "-")</td>
+                                                            <td>@(item.Educator?.User?.Name ?? "-")</td>
+                                                            <td>@(item.BeginDate?.ToShortDateString() + "-" + item.EndDate?.ToShortDateString())</td>
+                                                            <td>@(item.IsSuccessful == true ? L["Successful"] : item.IsSuccessful == false ? L["Unsuccessful"] : L["Exempt"])</td>
+                                                        </tr>
+                                                        @if (item.StudentRotationPerfections?.Count > 0)
+                                                        {
+                                                            <tr>
+                                                                <td colspan="5">
+                                                                    <table class="table">
+
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>@L["Perfection Name"]</th>
+                                                                                <th>@L["Process Date"]</th>
+                                                                                <th>@L["Evaluator Educator"]</th>
+                                                                                <th>@L["Status"]</th>
+
+                                                                            </tr>
+                                                                        </thead>
+                                                                        @foreach (var perfection in item.StudentRotationPerfections)
+                                                                        {
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td>@(perfection.Perfection?.PName?.Name ?? "-")</td>
+                                                                                    <td>@(perfection.ProcessDate?.ToShortDateString() ?? "-")</td>
+                                                                                    <td>@(perfection.Educator?.User?.Name ?? "-")</td>
+                                                                                    <td>@(perfection.IsSuccessful == true ? L["Successful"] : L["Unsuccessful"])</td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        }
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["Clinic Perfections"]</span>
+                                </div>
+                                <div class="timeline-content">
+
+                                    @if (!_loading)
+                                    {
+                                        if (_clinicalPerfections?.Count > 0)
+                                        {
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="p-0">@L["Perfection"]</th>
+                                                        <th class="p-0">@L["Process Date"]</th>
+                                                        <th class="p-0">@L["Portfolio"]</th>
+                                                        <th class="p-0">@L["Program"]</th>
+                                                        <th class="p-0">@L["Educator"]</th>
+                                                        <th class="p-0">@L["Successful"]/@L["Unsuccessful"]</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in _clinicalPerfections)
+                                                    {
+                                                        <tr>
+                                                            <td>@(item.Perfection?.PName?.Name ?? "-")</td>
+                                                            <td>@(item.ProcessDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                                            <td>@(item.Experience?.ToString() ?? "-")</td>
+                                                            <td>@(item.Program?.Name ?? "-")</td>
+                                                            <td>@(item.Educator?.User?.Name ?? "-")</td>
+                                                            <td>@(item.IsSuccessful == true ? L["Successful"] : L["Unsuccessful"])</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["Interventional Perfections"]</span>
+                                </div>
+                                <div class="timeline-content">
+
+                                    @if (!_loading)
+                                    {
+                                        if (_interventionalPerfections?.Count > 0)
+                                        {
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="p-0">@L["Perfection"]</th>
+                                                        <th class="p-0">@L["Process Date"]</th>
+                                                        <th class="p-0">@L["Portfolio"]</th>
+                                                        <th class="p-0">@L["Program"]</th>
+                                                        <th class="p-0">@L["Educator"]</th>
+                                                        <th class="p-0">@L["Successful"]/@L["Unsuccessful"]</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in _interventionalPerfections)
+                                                    {
+                                                        <tr>
+                                                            <td>@(item.Perfection?.PName?.Name ?? "-")</td>
+                                                            <td>@(item.ProcessDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                                            <td>@(item.Experience?.ToString() ?? "-")</td>
+                                                            <td>@(item.Program?.Name ?? "-")</td>
+                                                            <td>@(item.Educator?.User?.Name ?? "-")</td>
+                                                            <td>@(item.IsSuccessful == true ? L["Successful"] : L["Unsuccessful"])</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["Other Perfections"]</span>
+                                </div>
+                                <div class="timeline-content">
+
+                                    @if (!_loading)
+                                    {
+                                        if (_otherPerfections != null)
+                                        {
+                                            <div class="row">
+                                                <div class="col-12 col-md-6">
+                                                    <table class="table" frame="border">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="w-250px">@L["İletişim"]</th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Kişilere Uygun Şekilde Hitapta Bulunur"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.AppropriateAppealToPeople (@perfectionValues[(int)_otherPerfections?.AppropriateAppealToPeople])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Etkili Dinleme Yapar"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.Listening (@perfectionValues[(int)_otherPerfections?.Listening])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Geri Bildirimi Kurallarına Uygun Olarak Kullanır"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.FeedBack (@perfectionValues[(int)_otherPerfections?.FeedBack])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["İletişimde Empati Yapar"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.Empathy (@perfectionValues[(int)_otherPerfections?.Empathy])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Çalışma Ortamında İletişim Engellerini Ortadan Kaldırır"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.CommunicationObstacleRemove (@perfectionValues[(int)_otherPerfections?.CommunicationObstacleRemove])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Olumsuz, Kötü Haber Verebilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.NegativeNews (@perfectionValues[(int)_otherPerfections?.NegativeNews])</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table class="table" frame="border">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="w-250px">@L["Ekip Üyeliği"]</th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Ekip İçinde Çalışabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.WorkInTeam (@perfectionValues[(int)_otherPerfections?.WorkInTeam])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Ekip Lideri Olabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.Leadership (@perfectionValues[(int)_otherPerfections?.Leadership])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Ekip İçi Çatışmalarda Çözüm Sağlayabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.ConflictResolution (@perfectionValues[(int)_otherPerfections?.ConflictResolution])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Ekibine Motivasyon Sağlayabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.MotivatePeople (@perfectionValues[(int)_otherPerfections?.MotivatePeople])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Ekibinin Haklarını Gözetir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.StandUpForTeam (@perfectionValues[(int)_otherPerfections?.StandUpForTeam])</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table class="table" frame="border">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="w-250px">@L["Değerler-Sorumluluk"]</th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="w-500px">@L["İnsani Değerleri Tutum Halindedir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.HumanValues (@perfectionValues[(int)_otherPerfections?.HumanValues])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Adil Olmaya Çalışır"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.Fair (@perfectionValues[(int)_otherPerfections?.Fair])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Diğerkamlık Özelliği Gelişmiştir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.Altruism (@perfectionValues[(int)_otherPerfections?.Altruism])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Hukuki Sorumluluk Durumlarının Farkındadır"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.LegalLiabilityAwareness (@perfectionValues[(int)_otherPerfections?.LegalLiabilityAwareness])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Hukuki Sorumluluklarını Yerine Getirir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.LegalLiabilityCompletion (@perfectionValues[(int)_otherPerfections?.LegalLiabilityCompletion])</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <table class="table" frame="border">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="w-250px">@L["Management"]</th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Çalışma Ortamlarında Yöneticilik Yapabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.WorkPlaceManagement (@perfectionValues[(int)_otherPerfections?.WorkPlaceManagement])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Toplantı, Görüşme Yönetimini Yapabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.MeetingManagement (@perfectionValues[(int)_otherPerfections?.MeetingManagement])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Kriz-Çatışma Yönetimi Yapabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.CrisisManagement (@perfectionValues[(int)_otherPerfections?.CrisisManagement])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Yönetim Tekniklerini Uygulayabilir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.ManagementTechniquesApply (@perfectionValues[(int)_otherPerfections?.ManagementTechniquesApply])</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <table class="table" frame="border">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="w-250px">@L["Öğrenen-Öğreten"]</th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <tr>
+
+                                                                <td class="w-500px">@L["Sürekli Öğrenme ve Öğretme İdealini Benimser"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.EmbraceLearningAndTeaching (@perfectionValues[(int)_otherPerfections?.EmbraceLearningAndTeaching])</td>
+
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td class="w-500px">@L["Bildiklerini Öğretme Gayreti Gösterir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.TeachingEffort (@perfectionValues[(int)_otherPerfections?.TeachingEffort])</td>
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td class="w-500px">@L["Bilimsel Düşünceye Sahiptir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.ScientificThinking (@perfectionValues[(int)_otherPerfections?.ScientificThinking])</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <table class="table" frame="border">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="w-250px">@L["Sağlık Koruyuculuğu"]</th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Sağlığın Tehditlerinin Farkındadır"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.HealthRiskAwareness (@perfectionValues[(int)_otherPerfections?.HealthRiskAwareness])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Sağlığın Korunması İçin Gönüllüdür"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.HealthProtectionVolunteer (@perfectionValues[(int)_otherPerfections?.HealthProtectionVolunteer])</td>
+                                                            </tr>
+                                                            <tr>
+
+                                                                <td class="w-500px">@L["Bağımlılık ile Mücadele Eder"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.FightAddiction (@perfectionValues[(int)_otherPerfections?.FightAddiction])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Sağlık İçin Yaşam Tarzı Değişikliğini Rol Model Olarak Gösterir"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.LifeStyleChangeRoleModel (@perfectionValues[(int)_otherPerfections?.LifeStyleChangeRoleModel])</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="w-500px">@L["Kendisini, Personeli ve Hasta Güvenliğini Sağlar"]</td>
+                                                                <td class="font-weight-bolder w-200px">@_otherPerfections?.SafetyProviding (@perfectionValues[(int)_otherPerfections?.SafetyProviding])</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["_Information", L["Opinion Form"]]</span>
+                                </div>
+                                <div class="timeline-content">
+
+                                    @if (!_loading)
+                                    {
+                                        if (_opinionForms?.Count > 0)
+                                        {
+                                            @foreach (var item in _opinionForms)
+                                            {
+                                                <div class="row">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-0">@L["Period"]</th>
+                                                                <th class="p-0">@L["Evaluator"]</th>
+                                                                <th class="p-0">@L["Education Officer"]</th>
+                                                                <th class="p-0">@L["Begin and End Date"]</th>
+                                                                <th class="p-0">@L["Result"]</th>
+                                                                <th class="p-0">@L["The Person Entering The Evaluation Data"]</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>@(item.Period == null ? "-" : item.Period?.GetDescription())</td>
+                                                                <td>@(item.Educator == null ? "-" : item.Educator?.StaffTitle?.Name + " " + item.Educator?.User?.Name)</td>
+                                                                <td>@(item.ProgramManager == null ? "-" : item.ProgramManager?.StaffTitle?.Name + " " + item.ProgramManager?.User?.Name)</td>
+                                                                <td>@(item.StartDate?.ToShortDateString() + "-" + item.EndDate?.ToShortDateString())</td>
+                                                                <td>@(item.Result == RatingResultType.Positive ? L["Positive"] : item.Result == RatingResultType.Negative ? L["Negative"] : "-")</td>
+                                                                <td>@(item.Secretary == null ? "-" : item.Secretary?.Name)</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    @*<div class="col-12 col-md-6">
+                                    <table class="table" frame="border">
+                                    <thead>
+                                    <tr>
+                                    <th class="w-250px">@L["Göreve Bağlılık"]</th>
+                                    <th class="p-0"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <td class="w-500px">@L["Mesai Saatlerine Uyum"]</td>
+                                    <td class="font-weight-bolder w-200px">@item.ComplianceToWorkingHours_DC (@opinionFormValues[(int)item.ComplianceToWorkingHours_DC])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Görev Sorumluluğu"]</td>
+                                    <td class="font-weight-bolder w-200px">@item.DutyResponsibility_DC (@opinionFormValues[(int)item.DutyResponsibility_DC])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Görevlerini Yürütmesi"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.DutyExecution_DC (@opinionFormValues[(int)item?.DutyExecution_DC])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Görevlerini Sonuçlandırması"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.DutyAccomplishment_DC (@opinionFormValues[(int)item?.DutyAccomplishment_DC])</td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+                                    <table class="table" frame="border">
+                                    <thead>
+                                    <tr>
+                                    <th class="w-250px">@L["Çalışma Yeteneği"]</th>
+                                    <th class="p-0"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <td class="w-500px">@L["Mesleki Uygulama Yeteneği"]</td>
+                                    <td class="font-weight-bolder w-200px">@item.ProfessionalPracticeAbility (@opinionFormValues[(int)item.ProfessionalPracticeAbility])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Bilimsellik"]</td>
+                                    <td class="font-weight-bolder w-200px">@item.Scientificness (@opinionFormValues[(int)item.Scientificness])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Ekip Çalışmasına Uyumu"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.TeamworkAdaptation (@opinionFormValues[(int)item?.TeamworkAdaptation])</td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+                                    <table class="table" frame="border">
+                                    <thead>
+                                    <tr>
+                                    <th class="w-250px">@L["Araştırma Yeteneği"]</th>
+                                    <th class="p-0"></th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+                                    <tr>
+                                    <td class="w-500px">@L["Araştırma İsteği"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.ResearchDesire (@opinionFormValues[(int)item?.ResearchDesire])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Araştırmayı Yürütme ve Sonuçlandırma"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.ResearchExecutionAndAccomplish (@opinionFormValues[(int)item?.ResearchExecutionAndAccomplish])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Bilgi Kaynaklarını Verimli Kullanma"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.UsingResourcesEfficiently (@opinionFormValues[(int)item?.UsingResourcesEfficiently])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Yayın Yapma Becerisi"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.BroadcastingAbility (@opinionFormValues[(int)item?.BroadcastingAbility])</td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                    <table class="table" frame="border">
+                                    <thead>
+                                    <tr>
+                                    <th class="w-250px">@L["Yönetme Yeteneği"]</th>
+                                    <th class="p-0"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <td class="w-500px">@L["Problem Analiz ve Çözüm Yeteneği"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.ProblemAnalysisAndSolutionAbility (@opinionFormValues[(int)item?.ProblemAnalysisAndSolutionAbility])</td>
+
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Organizasyon-Koordinasyon Yeteneği"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.OrganizationAndCoordinationAbility (@opinionFormValues[(int)item?.OrganizationAndCoordinationAbility])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["İletişim Yetenekleri"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.CommunicationSkills (@opinionFormValues[(int)item?.CommunicationSkills])</td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+
+                                    <table class="table" frame="border">
+                                    <thead>
+                                    <tr>
+                                    <th class="w-250px">@L["Meslek Ahlakı"]</th>
+                                    <th class="p-0"></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                    <td class="w-500px">@L["Diğer Uzmanlık Öğrencileri İle İlişkiler"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.RelationsWithOtherStudents (@opinionFormValues[(int)item?.RelationsWithOtherStudents])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Eğitim Sorumluları ve Uzmanlar İle İlişkiler"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.RelationsWithEducators (@opinionFormValues[(int)item?.RelationsWithEducators])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Diğer Çalışanlar İle İlişkiler"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.RelationsWithOtherEmployees (@opinionFormValues[(int)item?.RelationsWithOtherEmployees])</td>
+                                    </tr>
+                                    <tr>
+                                    <td class="w-500px">@L["Hasta, Hasta Yakınları ve Uzmanlık Alanını İlgilendiren Diğer İlişkiler"]</td>
+                                    <td class="font-weight-bolder w-200px">@item?.RelationsWithPatients (@opinionFormValues[(int)item?.RelationsWithPatients])</td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+                                    </div>*@
+                                                </div>
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="p-0 w-250px">@L["Description"]</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="w-500px">@item.AdditionalExplanation</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["_Information", L["Thesis"]]</span>
+                                </div>
+                                <div class="timeline-content">
+                                    @if (!_loading)
+                                    {
+                                        if (_theses?.Count > 0)
+                                        {
+                                            foreach (var thesis in _theses)
+                                            {
+                                                <div class="border border-dark">
+                                                    <p class="text-success font-weight-bolder">@L["Uyarılar-Resmi Yazılar"]</p>
+                                                    @if (thesis.OfficialLetters?.Count > 0)
+                                                    {
+                                                        <table class="table" border-style="inset">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="col-12 col-md-10">@L["Description"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Date"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            @foreach (var item in thesis.OfficialLetters)
+                                                            {
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>@(item.Description)</td>
+                                                                        <td>@(item.Date?.ToShortDateString())</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            }
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            &nbsp;
+                                                            @L["There is no record belong to this field"]
+                                                        </span>
+                                                    }
+
+                                                    <p class="text-success font-weight-bolder">@L["Thesis Advisors"]</p>
+                                                    @if (thesis.AdvisorTheses?.Count > 0)
+                                                    {
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="col-12 col-md-2">@L["Thesis Advisor"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Tez Danışmanı Atanma Tarihi"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Description"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Danışman Tipi"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            @foreach (var item in thesis.AdvisorTheses)
+                                                            {
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>@(item.Educator.User.Name + " " + (item.IsCoordinator == true ? "(" + L["Coordinator Thesis Advisor"] + ")" : ""))</td>
+                                                                        <td>@(item.AdvisorAssignDate?.ToShortDateString())</td>
+                                                                        <td>@(item.Description)</td>
+                                                                        <td>@(L[item.Educator.EducatorType.GetDescription()])</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            }
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            &nbsp;
+                                                            @L["There is no record belong to this field"]
+                                                        </span>
+                                                    }
+
+                                                    <p class="text-success font-weight-bolder">@L["Thesis Subject"]</p>
+                                                    @if (thesis.Subject != null)
+                                                    {
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>@L["Thesis Type"]</th>
+                                                                    <th>@L["Thesis Subject"]</th>
+                                                                    <th>@L["Subject Determine Date"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>@L[thesis.ThesisSubjectType_1?.GetDescription() ?? "-"] / @L[thesis.ThesisSubjectType_2?.GetDescription() ?? "-"]</td>
+                                                                    <td>@(thesis.Subject ?? "-")</td>
+                                                                    <td>@(thesis.SubjectDetermineDate?.ToShortDateString() ?? "-")</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            &nbsp;
+                                                            @L["There is no record belong to this field"]
+                                                        </span>
+                                                    }
+
+                                                    <p class="text-success font-weight-bolder">@L["Thesis Title"]</p>
+                                                    @if (thesis.Subject != null)
+                                                    {
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>@L["Thesis Title"]</th>
+                                                                    <th>@L["Subject Determine Date"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>@(thesis.ThesisTitle ?? "-")</td>
+                                                                    <td>@(thesis.ThesisTitleDetermineDate?.ToShortDateString() ?? "-")</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            &nbsp;
+                                                            @L["There is no record belong to this field"]
+                                                        </span>
+                                                    }
+
+                                                    <p class="text-success font-weight-bolder">@L["Etik Kurul Kararları"]</p>
+                                                    @if (thesis.EthicCommitteeDecisions?.Count > 0)
+                                                    {
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>@L["Tez Etik Kurul Kararı"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            @foreach (var item in thesis.EthicCommitteeDecisions)
+                                                            {
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>@(item.Date?.ToShortDateString() + " tarih " + item.Number + " sayılı " + item.Description)</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            }
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            &nbsp;
+                                                            @L["There is no record belong to this field"]
+                                                        </span>
+                                                    }
+
+                                                    <p class="text-success font-weight-bolder">@L["Tez İlerleme Raporları"]</p>
+                                                    @if (thesis.ProgressReports?.Count > 0)
+                                                    {
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="col-12 col-md-2">@L["Advisor"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Description"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Start Date"]</th>
+                                                                    <th class="col-12 col-md-2">@L["End Date"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            @foreach (var item in thesis.ProgressReports)
+                                                            {
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>@(item.Educator?.User?.Name)</td>
+                                                                        <td>@(item.Description)</td>
+                                                                        <td>@(item.BeginDate?.ToShortDateString())</td>
+                                                                        <td>@(item.EndDate?.ToShortDateString())</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            }
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            &nbsp;
+                                                            @L["There is no record belong to this field"]
+                                                        </span>
+                                                    }
+
+                                                    <p class="text-success font-weight-bolder">@L["Tez Savunması"]</p>
+                                                    @if (thesis.ThesisDefences?.Count > 0)
+                                                    {
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="col-12 col-md-2">@L["Tez Savunması"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Description"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Exam Date"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Exam Place"]</th>
+                                                                    <th class="col-12 col-md-2">@L["Result"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            @foreach (var item in thesis.ThesisDefences)
+                                                            {
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>@(item.DefenceOrder + ". Savunma")</td>
+                                                                        <td>@(item.Description)</td>
+                                                                        <td>@(item.ExamDate?.ToShortDateString())</td>
+                                                                        <td>@(item.Hospital?.Name)</td>
+                                                                        <td>@(L[item.Result?.GetDescription() ?? ""])</td>
+                                                                    </tr>
+                                                                    <tr class="text-success font-weight-bolder">@(item.DefenceOrder + ". Savunma" + L["Jury Members"])</tr>
+                                                                    <tr>
+                                                                        <th class="p-0">@L["Core/Alternate"]</th>
+                                                                        <th class="p-0">@L["Name Surname"]</th>
+                                                                        <th class="p-0 w-450">@L["Expertise Branches"]</th>
+                                                                    </tr>
+                                                                    @foreach (var item_1 in item.Juries)
+                                                                    {
+                                                                        if (item_1.Educator != null)
+                                                                        {
+                                                                            <tr>
+                                                                                <td>@L[$"{item_1.JuryType.GetDescription()}"]</td>
+                                                                                <td>@(item_1.Educator?.AcademicTitle?.Name + " " + item_1.Educator?.User?.Name)</td>
+                                                                                <td width="300px">
+                                                                                    @if (item_1?.Educator?.EducatorExpertiseBranches != null)
+                                                                                    {
+                                                                                        @foreach (var eduExpBr in item_1?.Educator?.EducatorExpertiseBranches)
+                                                                                        {
+                                                                                            <div class="d-flex flex-column">
+                                                                                                @($"{eduExpBr.ExpertiseBranchName} ({eduExpBr.RegistrationNo})")
+                                                                                            </div>
+                                                                                        }
+                                                                                    }
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                </tbody>
+
+                                                            }
+                                                        </table>
+
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>
+                                                            &nbsp;
+                                                            @L["There is no record belong to this field"]
+                                                        </span>
+                                                    }
+
+                                                    @*@if (thesis.ThesisDefences?.Count > 0)
+                                    {
+                                    <table class="table">
+                                    <thead>
+                                    <tr>
+                                    <th class="p-0">@L["Core/Alternate"]</th>
+                                    <th class="p-0">@L["Name Surname"]</th>
+                                    <th class="p-0">@L["Expertise Branches"]</th>
+                                    </tr>
+                                    </thead>
+                                    @foreach (var item in thesis.ThesisDefences)
+                                    {
+                                    if (item.Juries?.Count > 0)
+                                    {
+                                    foreach (var item_1 in item.Juries)
+                                    {
+                                    <tbody>
+                                    <tr>
+                                    <td>@L[$"{item_1.JuryType.GetDescription()}"]</td>
+                                    <td>@(item_1.Educator?.AcademicTitle?.Name + " " + item_1.Educator?.User?.Name)</td>
+                                    <td>@(item_1.Educator?.StaffTitleName)</td>
+                                    </tr>
+                                    </tbody>
+                                    }
+                                    }
+                                    else
+                                    {
+                                    <tbody>
+                                    &nbsp;
+                                    @L["There is no record belong to this field"]
+                                    </tbody>
+                                    }
+                                    }
+                                    </table>
+                                    }
+                                    else
+                                    {
+                                    <span>
+                                    &nbsp;
+                                    @L["There is no record belong to this field"]
+                                    </span>
+                                    }*@
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["Scientific Studies"]</span>
+                                </div>
+                                <div class="timeline-content">
+
+                                    @if (!_loading)
+                                    {
+                                        if (_scientificStudies?.Count > 0)
+                                        {
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="p-0">@L["Study Type"]</th>
+                                                        <th class="p-0">@L["Description"]</th>
+                                                        <th class="p-0">@L["Date"]</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in _scientificStudies)
+                                                    {
+                                                        <tr>
+                                                            <td>@(item.Study.Name ?? "-")</td>
+                                                            <td>@(item.Description ?? "-")</td>
+                                                            <td>@(item.ProcessDate?.ToShortDateString() ?? "-")</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-badge">
+                                    <div class="bg-success"></div>
+                                </div>
+                                <div class="timeline-label">
+                                    <span class="text-success font-weight-bold">@L["Specialist Training Exit Examination"]</span>
+                                </div>
+                                <div class="timeline-content">
+
+                                    @if (!_loading)
+                                    {
+                                        if (_exitExams?.Count > 0)
+                                        {
+                                            @foreach (var item in _exitExams)
+                                            {
+                                                <div class="border border-dark">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-0">@L["Exam Date"]</th>
+                                                                <th class="p-0">@L["Exam Place"]</th>
+                                                                <th class="p-0">@L["Practice and Ability Exam Note"]</th>
+                                                                <th class="p-0">@L["Vocational Knowledge Exam Note"]</th>
+                                                                <th class="p-0">@L["The Person Recorded The Entry"]</th>
+                                                                <th class="p-0">@L["Result"]</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>@(item.ExamDate?.ToShortDateString() ?? "-")</td>
+                                                                <td>@(item.Hospital?.Name ?? "-")</td>
+                                                                <td>@(item.PracticeExamNote == null ? "-" : item.PracticeExamNote)</td>
+                                                                <td>@(item.AbilityExamNote == null ? "-" : item.AbilityExamNote)</td>
+                                                                <td>@(item.Secretary?.Name ?? "-")</td>
+                                                                <td>
+                                                                    @if (item.ExamStatus == ExitExamResultType.Concluded)
+                                                                    {
+                                                                        @if (item.PracticeExamNote != null && item.AbilityExamNote != null)
+                                                                        {
+                                                                            if (item.PracticeExamNote >= 60 && item.AbilityExamNote >= 60)
+                                                                            {
+                                                                                @L["Successful"]
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                @L["Failed"]
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            @L["-"]
+                                                                        }
+                                                                    }
+                                                                    else if (item.ExamStatus == ExitExamResultType.NotConcluded)
+                                                                    {
+                                                                        @L["Exam Not Concluded"]
+                                                                    }
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <p class="font-weight-bolder text-success">@L["Jury Members"]</p>
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-0">@L["Core/Alternate"]</th>
+                                                                <th class="p-0">@L["Name Surname"]</th>
+                                                                <th class="p-0">@L["Expertise Branches"]</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var item_1 in item.Juries)
+                                                            {
+                                                                <tr>
+                                                                    <td>@L[$"{item_1.JuryType.GetDescription()}"]</td>
+                                                                    <td>@(item_1.Educator?.AcademicTitle?.Name + " " + item_1.Educator?.User?.Name)</td>
+                                                                    <td>@(item_1.Educator?.StaffTitleName)</td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @L["There is no record belong to this field"]
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <Spinner></Spinner>
+                                    }
+                                </div>
+                            </div>
+                            @if (Student.StudentExpertiseBranches != null && Student.StudentExpertiseBranches.Count > 0)
+                            {
+                                foreach (var item in Student.StudentExpertiseBranches)
+                                {
+                                    <div class="timeline-item">
+                                        <div class="timeline-badge">
+                                            <div class="bg-success"></div>
+                                        </div>
+                                        <div class="timeline-label">
+                                            <span class="text-success font-weight-bold">@(item.IsPrincipal == true ? @L["_Information", L["Principal Branch"]] : @L["_Information", L["Sub Branch"]])</span>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="p-0 w-250px"></th>
+                                                        <th class="p-0"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="font-weight-bolder">@L["Expertise Branch"]</td>
+                                                        <td>@item.ExpertiseBranchName</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="font-weight-bolder">@L["Registration Date"]</td>
+                                                        <td>@item.RegistrationDate?.ToString("dd.MM.yyyy")</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<MyModal @ref="fileUploadModal" ShowFooter="false" ShowHeader="false">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+
+        <div class="form-group row">
+            <div class="col-9 col-form-label">
+                <label>Yüklenecek dosya tipini seçin</label>
+                <div class="radio-inline">
+                    <InputRadioGroup @bind-Value="selectedDocumentType">
+                        @if (Student.Documents?.Any(x => x.DocumentType == DocumentTypes.RegistrationControlForm) == false)
+                        {
+                            <label class="radio radio-primary">
+                                <InputRadio Value="DocumentTypes.RegistrationControlForm"></InputRadio>
+                                <span></span>@L["Registration Control Form"]
+                            </label>
+                        }
+                        @if (Student.Documents?.Any(x => x.DocumentType == DocumentTypes.FeeReceipt) == false)
+                        {
+                            <label class="radio radio-primary">
+                                <InputRadio Value="DocumentTypes.FeeReceipt"></InputRadio>
+                                <span></span>@L["Fee Receipt"]
+                            </label>
+                        }
+                        @if (Student.Documents?.Any(x => x.DocumentType == DocumentTypes.PhotocopyOfIdentityCard) == false)
+                        {
+                            <label class="radio radio-primary">
+                                <InputRadio Value="DocumentTypes.PhotocopyOfIdentityCard"></InputRadio>
+                                <span></span>@L["Photocopy of Identity Card"]
+                            </label>
+                        }
+                    </InputRadioGroup>
+                    @if (!string.IsNullOrEmpty(documentTypeValidatorMessage))
+                    {
+                        <div class="validation-message">@documentTypeValidatorMessage</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <Dropzone @ref="fileUploadDropzone" EntityId="Student.Id" DocumentType="@selectedDocumentType" />
+            @if (!string.IsNullOrEmpty(documentValidatorMessage))
+            {
+                <div class="validation-message">@documentValidatorMessage</div>
+            }
+        </div>
+        <button @onclick="UploadFile" class="btn btn-clean btn-primary"> @L["Save"] </button>
+    </Body>
+</MyModal>

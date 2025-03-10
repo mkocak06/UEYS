@@ -1,0 +1,114 @@
+﻿@page "/management/menu-roles"
+@using Shared.ResponseModels
+@using Shared.Types
+@inherits FluxorComponent
+
+<style>
+    .work-item:hover, .work-item.active {
+        -webkit-transition: all 0.15s ease;
+        transition: all 0.15s ease;
+        color: #3699FF;
+        background-color: #F3F6F9;
+        border-radius: 0.42rem;
+        cursor: pointer;
+    }
+</style>
+
+<AppContent Title=@L["Roles and Menus"]>
+    <Toolbar>
+        <div class="d-none">
+            <button class="btn btn-primary" @onclick="AddDefaultMenu">Default</button> @*temp. button*@
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                @L["Roles"]
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (RolesAndPermissionsState.Value.RolesLoaded)
+                        {
+                            foreach (var role in Roles)
+                            {
+                                <div @onclick="() => SelectRole(role)" class="work-item mb-3 @(_selectedRole != null && _selectedRole.Id == role.Id ? "active" : "")">
+                                    <div class="d-flex align-items-center flex-grow-1 work-item-content">
+                                        <div class="d-flex align-items-center flex-grow-1">
+                                            <div class="d-flex flex-column p-2 flex-grow-1 work-item-text">
+                                                <span class="wi-title text-dark-75 font-weight-bold text-hover-primary font-size-lg mb-1">@role.RoleName</span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <Spinner></Spinner>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-9">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                @L["Menus"]
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (IsRoleBuiltIn(_selectedRole))
+                        {
+                            <div>@L["You cannot edit default menus!"]</div>
+                        }
+                        else
+                        {
+                            if (AppState.Value.MenuCreated)
+                            {
+                                <div class="accordion accordion-solid accordion-toggle-plus" id="accordionExample6">
+                                    @{
+                                        var i = 0;
+                                    }
+                                    @foreach (var menuGroup in Menus.Where(x => x.ParentId != null).GroupBy(x => x.ParentMenu.Name))
+                                    {
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <div class="card-title @(i == 0 ? "" : "collapsed")" data-toggle="collapse" data-target="#group-@i">
+                                                    @(menuGroup.Key != null ? L[menuGroup.Key] : string.Empty)
+                                                </div>
+                                            </div>
+                                            <div id="group-@i" class="collapse @(i == 0 ? "show" : "")" data-parent="#accordionExample6">
+                                                <div class="card-body">
+                                                    @if (menuGroup.Key != null)
+                                                    {
+                                                        @foreach (var menu in menuGroup.ToList())
+                                                        {
+                                                            <button disabled="@_loading" @onclick="() => ToggleMenu(menu)" type="button" class="btn @(IsAdded(menu) ? "btn-primary" : "btn-outline-light btn-hover-light") btn-lg btn-block text-left">@L[menu.Name]</button>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        i++;
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <Spinner></Spinner>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </Content>
+</AppContent>

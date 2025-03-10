@@ -1,0 +1,164 @@
+﻿@page "/management/role-and-permissions-settings"
+@using Shared.ResponseModels
+@using Shared.Types
+@inherits FluxorComponent
+
+<style>
+    .work-item:hover, .work-item.active {
+        -webkit-transition: all 0.15s ease;
+        transition: all 0.15s ease;
+        color: #3699FF;
+        background-color: #F3F6F9;
+        border-radius: 0.42rem;
+        cursor: pointer;
+    }
+
+    .rz-accordion-header a[role='tab'] {
+        font-size: small;
+        font-weight: 500;
+    }
+
+   
+</style>
+
+<AppContent Title=@L["Roles and Permissions"]>
+    <Toolbar>
+
+    </Toolbar>
+    <Content>
+        <div class="row">
+            <div class="col-12 col-md-3">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                @L["Roles"]
+                            </h3>
+                        </div>
+                        <div class="card-toolbar">
+                            <a @onclick="() => OnEditRole(new RoleResponseDTO())" class="btn btn-sm btn-success font-weight-bold">
+                                <i class="flaticon2-plus-1"></i> @L["Add Role"]
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (RolesAndPermissionsState.Value.RolesLoaded)
+                        {
+                                @foreach (var role in Roles)
+                                {
+                                <div @onclick="() => SelectRole(role)" class="work-item mb-3 s @(SelectedRole != null && SelectedRole.Id == role.Id ? "active" : "")">
+                                    <div class="d-flex align-items-center flex-grow-1 work-item-content">
+                                        <div class="d-flex align-items-center flex-grow-1">
+                                            <div class="d-flex flex-column p-2 flex-grow-1 work-item-text">
+                                                <span class="wi-title text-dark-75 font-weight-bold text-hover-primary font-size-lg mb-1">@role.RoleName</span>
+                                            </div>
+                                            <div class="m-2">
+                                                <div class="d-flex justify-content-end symbol-group symbol-hover">
+                                                    <span @onclick="() => OnEditRole(role)" class="btn btn-clean btn-sm btn-icon mr-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="Düzenle" aria-describedby="tooltip850239">
+                                                        <i class="fas fa-edit text-success icon-1x"></i>
+                                                    </span>
+                                                    <span @onclick="() => DeleteRole(role)" class="btn btn-clean btn-sm btn-icon mr-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="Sil" aria-describedby="tooltip850239">
+                                                        <i class="fas fa-trash text-danger icon-1x"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                }
+                        }
+                        else
+                        {
+                            <Spinner></Spinner>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-9">
+                <div class="card card-custom">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h3 class="card-label">
+                                @L["Permissions"]
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (IsRoleBuiltIn(SelectedRole))
+                        {
+                            <div>@L["You cannot edit default roles!"]</div>
+                        }
+                        else
+                        {
+                            if (RolesAndPermissionsState.Value.PermissionsLoaded && RolesAndPermissionsState.Value.RolePermissionsLoaded)
+                            {
+
+                                <Radzen.Blazor.RadzenAccordion Multiple="true">
+                                    <Items>
+                                        @foreach (var mainGroup in Permissions.Where(x => x.MainGroup != null).GroupBy(x => x.MainGroup).OrderBy(x => x.Key))
+                                        {
+
+                                            <Radzen.Blazor.RadzenAccordionItem Text="@(L[mainGroup.Key])" Icon="list">
+                                                <Radzen.Blazor.RadzenAccordion>
+                                                    <Items>
+                                                        @foreach (var subGroup in mainGroup.Where(x => x.SubGroup != null).GroupBy(x => x.SubGroup).OrderBy(x => x.Key))
+                                                        {
+                                                            <Radzen.Blazor.RadzenAccordionItem Text="@(L[subGroup.Key])" Icon="label" Style="background-color:lightgray;" class="collapse-style">
+                                                                @{
+                                                                    var y = 0;
+                                                                }
+                                                                <div class="checkbox-list">
+                                                                    @foreach (var subItem in subGroup.Where(x => x.Description2 != null).ToList().OrderBy(x => x.Description2.Length))
+                                                                    {
+                                                                        <label class="checkbox">
+
+                                                                            <input @onclick="() => TogglePermission(subItem)" disabled="@_loading" type="checkbox" checked="@(IsAdded(subItem))" />
+                                                                            <span></span>
+                                                                            @L[subItem.Description2]
+
+                                                                        </label>
+                                                                        y++;
+                                                                    }
+                                                                </div>
+                                                            </Radzen.Blazor.RadzenAccordionItem>
+                                                        }
+                                                    </Items>
+                                                </Radzen.Blazor.RadzenAccordion>
+                                            </Radzen.Blazor.RadzenAccordionItem>
+                                        }
+                                    </Items>
+                                </Radzen.Blazor.RadzenAccordion>
+
+
+                            }
+                            else
+                            {
+                                <Spinner></Spinner>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <MyModal @ref="_roleDetail" Size="MyModal.ModalSize.Normal" ShowFooter="false" ShowHeader="false">
+            <Body>
+                <EditForm EditContext="_ec" OnValidSubmit="SaveRole">
+                    <FluentValidator TValidator="RoleValidator" />
+                    <div class="form-group">
+                        <label>Rol Adı</label>
+                        <InputText class="form-control" @bind-Value="_editingRole.RoleName" />
+                        <ValidationMessage For="@(() => _editingRole.RoleName)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Açıklama</label>
+                        <InputTextArea class="form-control" @bind-Value="_editingRole.Description" />
+                        <ValidationMessage For="@(() => _editingRole.Description)" />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Kaydet
+                    </button>
+                </EditForm>
+            </Body>
+        </MyModal>
+    </Content>
+</AppContent>

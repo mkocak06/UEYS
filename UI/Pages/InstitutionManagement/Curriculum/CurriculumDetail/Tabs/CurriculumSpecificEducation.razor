@@ -1,0 +1,80 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-1 mr-20">
+    <div class="d-flex self-align-end">
+        <div class="text-center mt-5">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SpecificEducationAdd}">
+                <button @onclick=OpenModalForAdd class="btn btn-outline-primary">@L["add_new", L["Specific Education"]]</button>
+            </PermissionWrapper>
+        </div>
+    </div>
+</div>
+<div class="card card-custom">
+    <div class="card-body">
+        @if (_specificEducations != null)
+        {
+            <Grid IsFilter="false" Items="_specificEducations" class="table table-hover table-bordered " Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                <GridColumn Sort="Name" TRowData="SpecificEducationResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Specific Education"]]">
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn class="max-w-50px align-middle" TRowData="SpecificEducationResponseDTO" Title="@L["Transactions"]">
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SpecificEducationGetById}">
+                        <a @onclick="() => OpenModalForEdit(context)" class="btn btn-light-success btn-icon btn-sm"><i class="fas fa-edit"></i></a>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SpecificEducationDelete}">
+                        <a @onclick="() => DeleteSpecificEducation(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                    </PermissionWrapper>
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                        DefaultPageSize="10" Loading="_loading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+<MyModal @ref="_specificEducationModal" ShowFooter="false" ShowHeader="false" Size="MyModal.ModalSize.Small" Scrollable=false>
+    <Body>
+        <EditForm EditContext="_specificEducationEc">
+            <FluentValidator TValidator="SpecificEducationValidator" />
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["_name", L["Specific Education"]]</label>
+                        <InputTextArea @bind-Value="_specificEducation.Name" class="form-control" rows="5"></InputTextArea>
+                        <ValidationMessage For="() => _specificEducation.Name" />
+                    </div>
+                </div>
+            </div>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SpecificEducationUpdate}">
+                <button @onclick="SaveSpecificEducation" class="btn btn-clean btn-primary"> @L["Save"]</button>
+            </PermissionWrapper>
+        </EditForm>
+    </Body>
+</MyModal>

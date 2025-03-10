@@ -1,0 +1,59 @@
+﻿@page "/institution-management/programs/{Id:long?}"
+@using Shared.Types
+@using UI.Pages.InstitutionManagement.Programs.ProgramDetail.Tabs
+@using UI.Pages.InstitutionManagement.Programs.ProgramDetail.Store
+@using UI.SharedComponents.Components.TabbedCard
+@inject IState<ProgramDetailState> _programDetailState
+@inherits FluxorComponent
+<AppContent Title="" BreadCrumbLinks="_links" BreadCrumbLoading="_loading">
+    <Toolbar></Toolbar>
+    <Content>
+        @if (_loaded)
+        {
+            if (_program != null)
+            {
+                <TabControl>
+                    <TabPage Text="@L["_Detail", L["Expertise Training Program"]]">
+                        <ProgramOverview />
+                    </TabPage>
+                    <TabPage Text="@L["Protocol Status"]">
+                        <ProgramStatus />
+                    </TabPage>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorGetList}">
+                        <TabPage Text="@L["Educators"]">
+                            <GridEducators AddEducator ByProgramId Id="_program.Id" Program="_program" />
+                        </TabPage>
+                    </PermissionWrapper>
+                    @if (_user.RoleCategoryType != RoleCategoryType.Registration)
+                    {
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorGetList}">
+                            <TabPage Text="@L["Uzman Doktorlar"]">
+                                <Specialists />
+                            </TabPage>
+                        </PermissionWrapper>
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentGetList}">
+                            <TabPage Text="@L["Specialization Students"]">
+                                <StudentsGrid ProtocolOrComplement="_program.ProtocolOrComplement" ProgramId="_program.Id" IsDependentProgram="_program.IsDependentProgram" IsMainProgram="_program.IsMainProgram" />
+                            </TabPage>
+                            <TabPage Text="@L["Program Portföy Bilgileri (E-Nabız Bilgileri)"]">
+                                <ENabizOperations />
+                            </TabPage>
+                        </PermissionWrapper>
+                    }
+                    <TabPage Text="@L["Past Education Officers"]">
+                        <PastEducatorOfficers />
+                    </TabPage>
+                </TabControl>
+            }
+            else
+            {
+                <_404Page ButtonText="Return Back" ReturnLink="/institution-management/programs/"></_404Page>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Content>
+</AppContent>
+

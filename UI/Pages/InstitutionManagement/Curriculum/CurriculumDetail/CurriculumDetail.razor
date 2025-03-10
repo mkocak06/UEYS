@@ -1,0 +1,64 @@
+﻿@page "/institution-management/curriculums/{Id:long?}"
+@page "/institution-management/curriculums/add-curriculum"
+@using Shared.Types
+@using UI.Pages.InstitutionManagement.Curriculum.CurriculumDetail.Tabs
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        @if (_editing)
+        {
+            if (Loaded)
+            {
+                if (SelectedCurriculum != null)
+                {
+                    <TabControl>
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramUpdate}">
+                            <TabPage Text="@L["_Information", L["Curriculum"]]">
+                                <CurriculumOverview IsEditing=_editing />
+                            </TabPage>
+                            @* <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumPerfectionGetPaginateList}"> *@
+                                <TabPage Text="@L["_Information", L["Perfection"]]">
+                                    <CurriculumPerfections CurriculumId="SelectedCurriculum.Id" />
+                                </TabPage>
+                            @* </PermissionWrapper> *@
+                            @* <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumRotationGetPaginateList}"> *@
+                                <TabPage Text="@(SelectedCurriculum.ExpertiseBranch.Profession.Name.ToLower().Contains("ecza") ? L["Klinik Ortam Eğitimi"] : L["_Information", L["Rotation"]])">
+                                    <CurriculumRotations CurriculumId="SelectedCurriculum.Id" />
+                                </TabPage>
+                            @* </PermissionWrapper> *@
+                            @* <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StandardGetList}"> *@
+                                <TabPage Text="@L["_Information", L["Standard"]]">
+                                    <CurriculumStandards CurriculumId="SelectedCurriculum.Id" />
+                                </TabPage>
+                            @* </PermissionWrapper> *@
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SpecificEducationPaginateList}">
+                                <TabPage Text="@L["_Information", L["Specific Education"]]">
+                                    <CurriculumSpecificEducation CurriculumId="SelectedCurriculum.Id" />
+                                </TabPage>
+                            </PermissionWrapper>
+                        </PermissionWrapper>
+                    </TabControl>
+                }
+                else
+                {
+                    <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/institution-management/curriculums"></_404Page>
+                }
+            }
+            else
+            {
+                <Spinner></Spinner>
+            }
+        }
+        else
+        {
+            <TabControl>
+                <TabPage Text="@L["_Information", L["Curriculum"]]">
+                    <CurriculumOverview IsEditing=_editing />
+                </TabPage>
+            </TabControl>
+        }
+    </Content>
+</AppContent>
+

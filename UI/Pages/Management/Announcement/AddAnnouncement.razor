@@ -1,0 +1,40 @@
+﻿@page "/management/Announcement/add-Announcement"
+@using Shared.Types
+@using Shared.Extensions;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="AnnouncementValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["Announcement Title"]</label>
+                                    <InputText class="form-control" @bind-Value="_announcement.Title" />
+                                    <ValidationMessage For="() => _announcement.Title"></ValidationMessage>
+                                    <label>@L["Explanation"]</label>
+                                    <InputTextArea @bind-Value="_announcement.Explanation" class="form-control">
+                                        <ValidationMessage For="() => _announcement.Explanation"></ValidationMessage>
+                                    </InputTextArea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>

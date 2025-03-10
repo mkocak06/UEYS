@@ -1,0 +1,53 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/province/add-province"
+@inherits FluxorComponent
+
+<AppContent  IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="ProvinceValidator"></FluentValidator>
+                    <div>
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["_name", L["Province"]]</label>
+                                <InputText @ref="_focusTarget" class="form-control" @bind-Value="_province.Name"/>
+                                 <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                <ValidationMessage For="() => _province.Name"></ValidationMessage>
+                            </div>
+                                 <div class="form-group">
+                                <label>@L["Latitude"]</label> 
+                                <Input class="form-control" value="@_province.Latitude" @onchange=" OnChangeLatitude"/>
+                                <ValidationMessage For="() => _province.Latitude"></ValidationMessage>
+                            </div>
+                             <div class="form-group">
+                                <label>@L["Longitude"]</label>
+                                <Input class="form-control" value="@_province.Longitude" @onchange=" OnChangeLongitude" />
+                                <ValidationMessage For="() => _province.Longitude"></ValidationMessage>
+                            </div>
+                              <div class="form-group">
+                                <label>@L["Location"]</label>
+                                <SingleMapView @ref="_singleMapView" EditMode="true" Lat="@(_province.Latitude ?? 0)" Lng="@(_province.Longitude ?? 0)" OnLocationChanged="OnChangeLocation"></SingleMapView>
+                            </div>
+                      </div>
+
+                    </div>
+                    </div>
+                   
+                </EditForm>
+                
+            </div>
+        </div>
+        
+    </Content>
+</AppContent>

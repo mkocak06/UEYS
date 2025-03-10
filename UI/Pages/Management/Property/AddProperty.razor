@@ -1,0 +1,63 @@
+﻿@using Shared.Types;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Extensions;
+@using Shared.Validations;
+@page "/management/properties/add-property"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_editContext">
+                    <FluentValidator TValidator="PropertyValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["_name", L["Property"]]</label>
+                                    <InputText @ref="_inputText" class="form-control" @bind-Value="_property.Name" />
+                                    <ValidationMessage For="() => _property.Name"></ValidationMessage>
+                                        
+                                      
+                                    <label>@L["_Detail", L["Property"]]</label>
+                                  
+                                    <InputSelect  @bind-Value="_property.PropertyType" class="form-control">
+                                        <option value="" selected>@L["Select"]</option>
+                                        @foreach (PropertyType propertytype in Enum.GetValues(typeof(PropertyType)))
+                                        {
+                                            <option value= "@propertytype">@L[propertytype.GetDescription()] </option>
+                                        }
+                                    </InputSelect>
+                                    
+                                    <ValidationMessage For="() => _property.PropertyType"></ValidationMessage>
+
+
+                                    <label>@L["Perfection"]</label>
+                                    <InputSelect @bind-Value="_property.PerfectionType" class="form-control">
+                                        <option value="" selected>@L["Select"]</option>
+                                        @foreach (PerfectionType perfectiontype in Enum.GetValues(typeof(PerfectionType) ))
+                                        {
+                                            <option value="@perfectiontype">@L[perfectiontype.GetDescription()] </option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => _property.PropertyType"></ValidationMessage>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+       
+    </Content>
+</AppContent>

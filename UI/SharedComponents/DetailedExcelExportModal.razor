@@ -1,0 +1,187 @@
+﻿@using Shared.ResponseModels
+<MyModal @ref="_excelModal" Size="MyModal.ModalSize.Large" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <label>@L["Expertise Branch"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchProfessions"
+                                       Values="ExcelFilter.ProfessionList"
+                                       ValuesChanged="((IList<ProfessionResponseDTO> values) => ProfessionListChanged(values))"
+                                       ValuesExpression="() => ExcelFilter.ProfessionList"
+                                       EnableDropDown="true"
+                                       MinimumLength="1"
+                                       MaximumSuggestions=int.MaxValue
+                                       placeholder="Uzmanlık Alanı ile arama yap">
+                        <SelectedTemplate Context="profession">
+                            @profession?.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="profession">
+                            @profession?.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <label>@L["Province"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                       Values="ExcelFilter.ProvinceList"
+                                       ValuesChanged="((IList<ProvinceResponseDTO> values)=>ProvinceListChanged(values))"
+                                       ValuesExpression="()=>ExcelFilter.ProvinceList"
+                                       EnableDropDown="true"
+                                       MinimumLength="1"
+                                       MaximumSuggestions=int.MaxValue
+                                       placeholder="@L["Search by {0}",L["Province"]]">
+                        <SelectedTemplate Context="province">
+                            @province?.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named."]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="province">
+                            @province?.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <label>@L["Parent Institution"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchInstitutions"
+                                       Values="ExcelFilter.InstitutionList"
+                                       ValuesChanged="((IList<InstitutionResponseDTO> values)=>InstitutionListChanged(values))"
+                                       ValuesExpression="()=>ExcelFilter.InstitutionList"
+                                       EnableDropDown="true"
+                                       MinimumLength="1"
+                                       MaximumSuggestions=int.MaxValue
+                                       placeholder="@L["Search by {0}",L["Parent Institution"]]">
+                        <SelectedTemplate Context="institution">
+                            @institution.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="institution">
+                            @institution.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <label>@L["Ministry / University"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchUniversities"
+                                       Values="ExcelFilter.UniversityList"
+                                       ValuesChanged="((IList<UniversityResponseDTO> values) => UniversityListChanged(values))"
+                                       ValuesExpression="() => ExcelFilter.UniversityList"
+                                       EnableDropDown="true"
+                                       MinimumLength="1"
+                                       MaximumSuggestions=int.MaxValue
+                                       placeholder="@L["Search by {0}", L["Ministry / University"]]">
+                        <SelectedTemplate Context="university">
+                            @university.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named."]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="university">
+                            @university.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <label>@L["Institution of Education"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchHospitals"
+                                       Values="ExcelFilter.HospitalList"
+                                       ValuesChanged="((IList<HospitalResponseDTO> values) => HospitalListChanged(values))"
+                                       ValuesExpression="() => ExcelFilter.HospitalList"
+                                       EnableDropDown="true"
+                                       MinimumLength="1"
+                                       MaximumSuggestions=int.MaxValue
+                                       placeholder="@L["Search by {0}", L["Hospital Name"]]">
+                        <SelectedTemplate Context="hospital">
+                            @hospital.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named."]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="hospital">
+                            @hospital.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <label>@L["Ana Dal / Yan Dal"]</label>
+                    <div class="radio-inline">
+                        <label class="radio radio-primary">
+                            <input type="radio" checked="@_isPrincipal" @onclick="TogglePrincipal" name="radios3_1" />
+                            <span></span>
+                            @L["Ana Dal"]
+                        </label>
+                        <label class="radio radio-primary">
+                            <input type="radio" checked="@(!_isPrincipal)" @onclick="ToggleSecondary" name="radios3_1" />
+                            <span></span>
+                            @L["Yan Dal"]
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <label>@L["Specialization Training Program"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                       Values="ExcelFilter.ExpertiseBranchList"
+                                       ValuesChanged="((IList<ExpertiseBranchResponseDTO> values) => ExpertiseBranchListChanged(values))"
+                                       ValuesExpression="() => ExcelFilter.ExpertiseBranchList"
+                                       EnableDropDown="true"
+                                       MinimumLength="1"
+                                       MaximumSuggestions=int.MaxValue
+                                       placeholder="@L["Search by {0}", L["Expertise Branch"]]">
+                        <SelectedTemplate Context="expertiseBranch">
+                            @expertiseBranch?.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named."]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="expertiseBranch">
+                            @expertiseBranch?.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group mb-6">
+                    <button type="button" class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left float-left" : "btn btn-outline-success mr-3 float-left") @onclick="DownloadDetailedExcelFile">
+                        <i class=@(_loadingFile ? "" : "fas fa-download")></i>Detaylı Rapor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </Body>
+</MyModal>

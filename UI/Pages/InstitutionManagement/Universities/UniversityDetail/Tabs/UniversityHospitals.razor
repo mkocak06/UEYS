@@ -1,0 +1,240 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityUpdate}">
+            <span @onclick="OnOpenHospitalToUniversity" type="button" class="btn btn-outline-primary mr-3"><i class="fas fa-plus"></i>@L["add_new", L["Institution of Education"]]</span>
+        </PermissionWrapper>
+    </div>
+</div>
+<div class="card card-custom">
+    <div class="card-body">
+        @if (_hospitals != null)
+        {
+            <Grid IsFilter="false" Items="_hospitals" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn Sort="Name" TRowData="HospitalResponseDTO" Expression="c => c.Name" Title=@L["_name", @L["Institution of Education"]]>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Phone" TRowData="HospitalResponseDTO" Expression="c => c.Phone" Title="@L["Phone"]">
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Address" TRowData="HospitalResponseDTO" Expression="c => c.Address" Title="@L["Address"]">
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                        DefaultPageSize="20" Loading="_loading">
+            </Pagination>
+
+        }
+        else
+        {
+            <Spinner></Spinner>
+
+        }
+    </div>
+</div>
+
+<MyModal @ref="_addHospitalToUniversityModal" Size="MyModal.ModalSize.XLarge" ShowFooter ShowHeader ActionName="@L["Save"]" ActionMethod="()=>Save()">
+    <Title>@L["add_new", L["Institution of Education"]]</Title>
+    <Body>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <div class="row">
+                        <FluentValidator TValidator="HospitalValidator"></FluentValidator>
+
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["_name", L["Institution of Education"]]</label>
+                                <InputText @ref="_focusTarget" class="form-control" @bind-Value="_hospital.Name" />
+                                <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                <ValidationMessage For="() => _hospital.Name"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Address"]</label>
+                                <InputTextArea class="form-control" @bind-Value="_hospital.Address" />
+                                <ValidationMessage For="() => _hospital.Address"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Telephone Number"]</label>
+                                <InputMask @ref="_inputMask" Value="@_hospital.Phone" ValueExpression="()=>_hospital.Phone" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(PhoneNoChanged)" class="form-control" type="text" data-mask="(999) 999-9999" />
+                                <ValidationMessage For="() => _hospital.Phone"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Email"]</label>
+                                <InputText class="form-control" @bind-Value="_hospital.Email" />
+                                <ValidationMessage For="() => _hospital.Email"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Web Address"]</label>
+                                <InputText class="form-control" @bind-Value="_hospital.WebAddress" />
+                                <ValidationMessage For="() => _hospital.WebAddress"></ValidationMessage>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["Province"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                                   TItem="ProvinceResponseDTO"
+                                                   TValue="ProvinceResponseDTO"
+                                                   Value="_hospital.Province"
+                                                   ValueExpression="() => _hospital.Province"
+                                                   ValueChanged="OnChangeProvince"
+                                                   MaximumSuggestions="85"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                    <SelectedTemplate Context="province">
+                                        @province.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="province">
+                                        @province.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => _hospital.Province" />
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Latitude"]</label>
+
+                                <InputNumber class="form-control" TValue="float?" Value="@_hospital.Latitude" ValueExpression="()=>_hospital.Latitude" ValueChanged="OnChangeLatitude" placeholder="__.____" step="0.1" />
+                                <ValidationMessage For="() => _hospital.Latitude"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Longitude"]</label>
+                                <InputNumber class="form-control" TValue="float?" Value="@_hospital.Longitude" ValueExpression="()=>_hospital.Longitude" ValueChanged="OnChangeLongitude" placeholder="__.____" step="0.1" />
+                                <ValidationMessage For="() => _hospital.Longitude"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Parent Institution"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchInstitutions"
+                                                   TItem="InstitutionResponseDTO"
+                                                   TValue="InstitutionResponseDTO"
+                                                   Value="_hospital.Institution"
+                                                   ValueExpression="() => _hospital.Institution"
+                                                   ValueChanged="OnChangeInstitution"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                    <SelectedTemplate Context="ins">
+                                        @ins.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="ins">
+                                        @ins.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => _hospital.InstitutionId"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Educational Institution / Faculty"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchFaculties"
+                                                   TItem="FacultyResponseDTO"
+                                                   TValue="FacultyResponseDTO"
+                                                   Value="_hospital.Faculty"
+                                                   ValueExpression="() => _hospital.Faculty"
+                                                   ValueChanged="OnChangeFaculty"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions="int.MaxValue">
+                                    <SelectedTemplate Context="faculty">
+                                        @faculty.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="faculty">
+                                        @faculty.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => _hospital.FacultyId" />
+
+                            </div>
+                        </div>
+                        <div class="col-12">
+
+                            <div class="form-group">
+                                <label>@L["Location"]</label>
+                                @if (!_mapLoading)
+                                {
+                                    <SingleMapView @ref="_singleMapView" EditMode Lat="@(_hospital.Latitude ?? Convert.ToSingle(37.30))" Lng="@(_hospital.Longitude ?? Convert.ToSingle(34.03))" OnLocationChanged="OnChangeLocation"></SingleMapView>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+
+    </Body>
+</MyModal>
+

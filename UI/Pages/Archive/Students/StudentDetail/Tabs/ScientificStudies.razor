@@ -1,0 +1,186 @@
+﻿@using Shared.ResponseModels;
+@using Shared.Types;
+
+@*<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+    <SpinnerButton Spinning="!_fileLoaded" Disabled="!_fileLoaded" ButtonClass="btn-success mr-4" OnClick="() => { dropzone.ResetStatus(); UploaderModal.OpenModal(); }">
+        <i class="fas fa-upload"></i>@L["File Upload"]
+    </SpinnerButton>
+</div>
+</div>
+
+<FileItem Documents="responseDocuments" Loaded="!_loading"></FileItem>
+
+
+
+<MyModal @ref="UploaderModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <Dropzone @ref="dropzone" EntityId=_student.Id DocumentType="@Shared.Types.DocumentTypes.ScientificStudies" />
+    </Body>
+</MyModal>*@
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    
+</div>
+
+<div class="card card-custom">
+    <div class="card-body">
+        <div class="card-title">
+            <h3 class="card-label">@L["Scientific Studies"]</h3>
+        </div>
+        @if (_scientificStudies != null)
+        {
+            <Grid IsFilter="false" Items="_scientificStudies" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn TRowData="ScientificStudyResponseDTO" Title="@L["Study Type"]">
+                    <ChildContent>
+                        @L[context.Study.Name]
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="ScientificStudyResponseDTO" Title="@L["Description"]">
+                    <ChildContent>
+                        @(context.Description ?? "-")
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="ScientificStudyResponseDTO" Title="@L["Date"]">
+                    <ChildContent>
+                        @context.ProcessDate?.ToShortDateString()
+                    </ChildContent>
+                </GridColumn>
+               
+            </Grid>
+            <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                    DefaultPageSize="10" Loading="_loading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+<MyModal @ref="_scientificStudyUpdateModal" ShowFooter="false" ShowHeader="false">
+
+    <Body>
+        <EditForm EditContext="_ecUpdate">
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["Study Type"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchStudies"
+                                           TItem="StudyResponseDTO"
+                                           TValue="StudyResponseDTO"
+                                           Value="_scientificStudyForUpdate.Study"
+                                           ValueExpression="() => _scientificStudyForUpdate.Study"
+                                           ValueChanged="OnChangeStudyUpdate"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions="int.MaxValue">
+                            <SelectedTemplate Context="study">
+                                @study.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="study">
+                                @study.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Description"]</label>
+                        <InputTextArea class="form-control" @bind-Value="_scientificStudyForUpdate.Description" />
+                        <ValidationMessage For="()=>_scientificStudyForUpdate.Description"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Process Date"]</label>
+                        <InputDate class="form-control" @bind-Value="_scientificStudyForUpdate.ProcessDate" TValue="DateTime?" />
+                    </div>
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId="@(_scientificStudyForUpdate.Id.HasValue ? (long)_scientificStudyForUpdate.Id : 0)" DocumentType="DocumentTypes.ScientificStudy"></Dropzone>
+                        @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                        {
+                            <div class="validation-message">@_documentValidatorMessage</div>
+                        }
+                    </div>
+                    @if (_scientificStudyForUpdate.Documents != null && _scientificStudyForUpdate.Documents.Count > 0)
+                    {
+                        <FileItem Documents="_scientificStudyForUpdate.Documents" Loaded="true"></FileItem>
+                    }
+                </div>
+                <button @onclick="UpdateScientificStudy" class="btn btn-clean btn-primary"> @L["Save"] </button>
+            </div>
+
+        </EditForm>
+    </Body>
+</MyModal>
+<MyModal @ref="_scientificStudyAddModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ec">
+            <FluentValidator TValidator="ScientificStudyValidator" />
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["Study Type"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchStudies"
+                                           TItem="StudyResponseDTO"
+                                           TValue="StudyResponseDTO"
+                                           Value="_scientificStudy.Study"
+                                           ValueExpression="() => _scientificStudy.Study"
+                                           ValueChanged="OnChangeStudy"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions="int.MaxValue">
+                            <SelectedTemplate Context="study">
+                                @study.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="study">
+                                @study.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="()=>_scientificStudy.StudyId"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Description"]</label>
+                        <InputTextArea class="form-control" @bind-Value="_scientificStudy.Description" />
+                        <ValidationMessage For="()=>_scientificStudy.Description"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Process Date"]</label>
+                        <InputDate class="form-control" @bind-Value="_scientificStudy.ProcessDate" TValue="DateTime?" />
+                        <ValidationMessage For="()=>_scientificStudy.ProcessDate"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId=0 DocumentType="@DocumentTypes.ScientificStudy" />
+                        @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                        {
+                            <div class="validation-message">@_documentValidatorMessage</div>
+                        }
+                    </div>
+                </div>
+                <button @onclick="AddScientificStudy" class="btn btn-clean btn-primary"> @L["Save"] </button>
+            </div>
+
+        </EditForm>
+    </Body>
+
+</MyModal>
+
+<MyModal @ref="FileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+
+        <FileItem Documents="Documents" Loaded="true"></FileItem>
+
+    </Body>
+</MyModal>

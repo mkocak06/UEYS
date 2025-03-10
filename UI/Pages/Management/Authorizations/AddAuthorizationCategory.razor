@@ -1,0 +1,66 @@
+﻿@page "/management/authorizationCategories/add-authorizationCategory"
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using BlazorColorPicker
+@inherits FluxorComponent
+
+
+<AppContent  IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="AuthorizationCategoryValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["_name", L["Authorization Category"]]</label>
+                                    <InputText @ref="_focusTarget" class="form-control" @bind-Value="_authorizationCategory.Name" />
+                                    <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                    <ValidationMessage For="() => _authorizationCategory.Name"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["_Description", L["Authorization Category"]]</label>
+                                    <InputText class="form-control" @bind-Value="_authorizationCategory.Description" />
+                                    <ValidationMessage For="() => _authorizationCategory.Description"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <Radzen.Blazor.RadzenColorPicker class="form-control" @bind-Value="_authorizationCategory.ColorCode" ShowRGBA="false" Placeholder="@L["Select a color"]">
+                                    </Radzen.Blazor.RadzenColorPicker>
+                                </div>
+                                <div class="form-group">
+                                    <label><b>@L["Show when YUEP List is first opened"]</b></label>
+                                    <div></div>
+                                    <div class="radio-inline">
+                                        <label class="radio radio-lg">
+                                            <input type="radio" checked="@(_authorizationCategory.IsActive == true)" @onchange="OnChangeIsActiveUpdate1" name="radios3_1" />
+                                            <span></span>
+                                            @L["Yes"]
+                                        </label>
+                                        <label class="radio radio-lg">
+                                            <input type="radio" checked="@(_authorizationCategory.IsActive == false)" @onchange="OnChangeIsActiveUpdate2" name="radios3_1" />
+                                            <span></span>
+                                            @L["No"]
+                                        </label>
+                                    </div>
+                                    <ValidationMessage For="() => _authorizationCategory.IsActive"></ValidationMessage>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>
+
+
+

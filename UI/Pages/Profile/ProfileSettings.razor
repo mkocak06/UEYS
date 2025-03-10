@@ -1,0 +1,97 @@
+﻿@page "/settings"
+@using Shared.Constants
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+
+        <button @onclick="@(async ()=> SaveProfileSettings())" class="btn btn-primary font-weight-bolder">@L["Save Changes"]</button>
+    </Toolbar>
+    <Content>
+        @if (!_loading)
+        {
+
+            <div class="card card-custom">
+                <!--begin::Header-->
+                <div class="card-header py-3">
+                    <div class="card-title align-items-start flex-column">
+                        <h3 class="card-label font-weight-bolder text-dark">@L["Account Settings"]</h3>
+                        <span class="text-muted font-weight-bold font-size-sm mt-1">@L["Update your personal information and account settings"]</span>
+                    </div>
+                </div>
+                <!--end::Header-->
+                <!--begin::Form-->
+                <form class="form">
+                    <!--begin::Body-->
+                    <div class="card-body">
+                        <div class="row">
+                            <label class="col-xl-3"></label>
+                            <div class="col-lg-9 col-xl-6">
+                                <h5 class="font-weight-bold mb-6">@L["Personal Info"]</h5>
+                            </div>
+                        </div>
+                        <EditForm Model="UserInfo" class="form">
+
+                            <!--begin::Body-->
+                            <div class="card-body">
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label text-right">@L["Photo"]</label>
+                                    <div class="col-lg-9 col-xl-6">
+                                        <ImageUpload @ref="@_profileImage" imagePath="@(UserInfo.ProfilePhoto)" EditMode="@true" OnImageChanged="@ImageChanged" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label text-right">@L["Name"]</label>
+                                    <div class="col-lg-9 col-xl-6">
+                                        <InputText class="form-control form-control-lg form-control-solid" type="text" @bind-Value="@UserInfo.Name" />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <label class="col-xl-3"></label>
+                                    <div class="col-lg-9 col-xl-6">
+                                        <h5 class="font-weight-bold mt-10 mb-6">@L["Contact Info"]</h5>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label text-right">@L["Phone"]</label>
+                                    <div class="col-lg-9 col-xl-6">
+                                        <div class="input-group input-group-lg input-group-solid">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-phone"></i>
+                                                </span>
+                                            </div>
+                                            <InputMask @bind-Value="@UserInfo.Phone" class="form-control form-control-lg form-control-solid" data-mask="(999) 999 99 99" />
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label text-right">@L["Email"]</label>
+                                    <div class="col-lg-9 col-xl-6">
+                                        <div class="input-group input-group-lg input-group-solid">
+
+                                            <InputText @bind-Value="@UserInfo.Email" class="form-control form-control-solid h-auto p-6 rounded-lg font-size-h6" type="email" autocomplete="off" />
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Body-->
+                        </EditForm>
+                    </div>
+                    <!--end::Body-->
+                </form>
+                <!--end::Form-->
+            </div>
+
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Content>
+</AppContent>

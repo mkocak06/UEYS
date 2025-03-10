@@ -1,0 +1,130 @@
+﻿@page "/visit-module/committee-done-requests"
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Extensions
+<AppContent BreadCrumbLinks="_links">
+    <Content>
+        @if (!_isEditing)
+        {
+            <div class="card card-custom">
+                <div class="card-body">
+                    @if (!_loading)
+                    {
+                        <Grid Items="_formPaginationModel.Items" class="table table-hover table-bordered " Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                            <GridColumn Sort="Program.Hospital.Name" TRowData="FormResponseDTO" Expression="c => c.Program.Hospital.Name" Title="@L["_name", L["Kurum"]]">
+                                <FilterTemplate Context="filter">
+                                    <div class="form-group mb-0">
+                                        <div class="input-icon input-icon-right">
+                                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                            @if (IsFiltered(filter))
+                                            {
+                                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="cursor-pointer">
+                                                    <i class="flaticon2-search-1 icon-md"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </FilterTemplate>
+                            </GridColumn>
+                            <GridColumn Sort="Program.ExpertiseBranch.Name" TRowData="FormResponseDTO" Expression="c => c.Program.ExpertiseBranch.Name" Title="@L["_name", L["ExpertiseBranch"]]">
+                                <FilterTemplate Context="filter">
+                                    <div class="form-group mb-0">
+                                        <div class="input-icon input-icon-right">
+                                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                            @if (IsFiltered(filter))
+                                            {
+                                                <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="cursor-pointer">
+                                                    <i class="flaticon2-search-1 icon-md"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </FilterTemplate>
+                            </GridColumn>
+                            <GridColumn TRowData="FormResponseDTO" Title="@L["Komisyon Üyeleri"]">
+                                <ChildContent>
+                                    <ul>
+                                        @foreach (var item in context.OnSiteVisitCommittees)
+                                        {
+                                            <li class="@(AuthenticationService.User.Id==item.UserId?"font-weight-bold":"")">@item.User.Name</li>
+                                        }
+                                    </ul>
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn TRowData="FormResponseDTO" Title="@L["Başvuru Tarihi"]">
+                                <ChildContent>
+                                    @(context.ApplicationDate?.ToShortDateString())
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn TRowData="FormResponseDTO" Title="@L["Status"]">
+                                <ChildContent>
+                                    @if (context.VisitStatusType != Shared.Types.VisitStatusType.TUKEvaluated)
+                                    {
+
+                                        <span class="label label-lg font-weight-bold label-light-warning label-inline h-auto">
+                                            @L[context.VisitStatusType?.GetDescription() ?? "-"]
+                                            <span class="label pulse pulse-danger" style="background-color:transparent;">
+                                                <span class="position-relative"><span class="label label-xl label-dot label-danger"></span></span>
+                                                <span class="pulse-ring"></span>
+                                            </span>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-light-success disabled">
+                                            <i class="fas fa-check-circle"></i>@L[context.VisitStatusType?.GetDescription() ?? "-"]
+                                        </a>
+                                    }
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn TRowData="FormResponseDTO" Title="@L["Komisyon Kararı"]">
+                                <ChildContent>
+                                    <span>@context.CommitteeOpinionType?.GetDescription()</span>
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn class="min-w-100px align-middle" TRowData="FormResponseDTO" Title="@L["Transactions"]">
+                                <button @onclick="()=>{_formId=context.Id;_isEditing=true; StateHasChanged();}" class="btn btn-light-success btn-icon btn-sm">
+                                    <i class="far fa-edit"></i>
+                                </button>
+                                <button @onclick="()=>{_formId=context.Id;_isEditing=true; _isReview=true; StateHasChanged();}" class="btn btn-light-primary btn-icon btn-sm ml-1">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </GridColumn>
+                        </Grid>
+                        <Pagination Action="PaginationHandler" Count="_formPaginationModel.TotalItemCount" Page="_formPaginationModel.Page"
+                                    DefaultPageSize="10" Loading="_loading">
+                        </Pagination>
+                    }
+                    else
+                    {
+                        <Spinner></Spinner>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            if (_isReview)
+            {
+                <UI.Pages.VisitModule.Form.Tabs.CommitteeForm IsPreview FormId="@_formId" OnCancel="OnCanceled"></UI.Pages.VisitModule.Form.Tabs.CommitteeForm>
+            }
+            else
+            {
+                <UI.Pages.VisitModule.Form.Tabs.TUKForm FormId="@_formId" OnCancel="OnCanceled"></UI.Pages.VisitModule.Form.Tabs.TUKForm>
+            }
+        }
+    </Content>
+</AppContent>
+

@@ -1,0 +1,372 @@
+﻿@using Radzen
+@using Radzen.Blazor
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.Extensions
+@using Shared.ResponseModels
+@using Shared.ResponseModels.Program
+@page "/quota-request/incoming-request/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.QuotaRequestUpdate}">
+                <SpinnerButton OnClick="async () => await Save()" ButtonClass="btn btn-clean btn-primary mr-4" Spinning="_saving" Disabled="_saving">
+                    @L["Save"]
+                </SpinnerButton>
+            </PermissionWrapper>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SubQuotaRequestGetPaginateList}">
+                <SpinnerButton OnClick="async () => await DownloadExcelFile()" ButtonClass="btn btn-outline-success" Spinning="_loadingFile" Disabled="_loadingFile">
+                    @L["Export"]
+                </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.QuotaRequestUpdate}">
+
+                            <div class="row">
+                                <div class="col-12 col-lg-6">
+                                    <div class="form-group">
+                                        <label>@L["Year"]</label>
+                                        <InputNumber class="form-control" @bind-Value="_quotaRequest.Year" disabled />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Period"]</label>
+                                        <InputSelect @bind-Value="_quotaRequest.Period" class="form-control" disabled>
+                                            <option value="" selected>@L["Select"]</option>
+                                            @foreach (YearPeriodType yearPeriodType in Enum.GetValues(typeof(YearPeriodType)))
+                                            {
+                                                <option value="@yearPeriodType">@L[yearPeriodType.GetDescription()] </option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["TUK Decision Number"]</label>
+                                        <InputText class="form-control" @bind-Value="_quotaRequest.TUKDecisionNumber" />
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-6">
+                                    <div class="form-group">
+                                        <label>@L["Type"]</label>
+                                        <InputSelect @bind-Value="_quotaRequest.Type" class="form-control" disabled>
+                                            <option value="" selected>@L["Select"]</option>
+                                            @foreach (PlacementExamType placementExamType in Enum.GetValues(typeof(PlacementExamType)))
+                                            {
+                                                <option value="@placementExamType">@L[placementExamType.GetDescription()] </option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Deadline for Institutions to Submit Requests"]</label>
+                                        <InputDate class="form-control" @bind-Value="_quotaRequest.ApplicationEndDate" TValue="DateTime?" disabled />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["TUK Decision Date"]</label>
+                                        <InputDate class="form-control" @bind-Value="_quotaRequest.TUKDecisionDate" TValue="DateTime?" />
+                                    </div>
+                                </div>
+                            </div>
+                        </PermissionWrapper>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <SpinnerButton OnClick="() => _annualGlobalQuotaModal.OpenModal()" ButtonClass="btn btn-clean btn-primary form-control" Spinning="_loading" Disabled="_loading">
+                                        @L["Enter Annual Global Quota"]
+                                    </SpinnerButton>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <SpinnerButton OnClick="() => OpenSummaryTableModal()" ButtonClass="btn btn-clean btn-primary form-control" Spinning="_loading" Disabled="_loading">
+                                        @L["View Summary Table"]
+                                    </SpinnerButton>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <InputSelect class="form-control" Value="_selectedExpertiseBranch.Id" TValue="long?" ValueExpression="()=>_selectedExpertiseBranch.Id" ValueChanged="(long? id)=>OnChangeNewBranch(id)">
+                                        <option value="">@L["Please Select Expertise Branch"]</option>
+                                        @foreach (var item in _expertiseBranchList)
+                                        {
+                                            <option value="@item.Id">
+                                                @item.Name
+                                            </option>
+                                        }
+                                    </InputSelect>
+                                    @if (!string.IsNullOrEmpty(_validationMessage))
+                                    {
+                                        <div class="validation-message">
+                                            @_validationMessage
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <SpinnerButton OnClick="() => GetSubQuotaRequests()" ButtonClass="btn btn-clean btn-primary form-control" Spinning="_loading" Disabled="_loading">
+                                        @L["Fetch Requests of Selected Expertise Branch"]
+                                    </SpinnerButton>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (_selectedSubQuotaRequests != null)
+
+                        {
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <SpinnerButton OnClick="() => CalculateCapacity()" ButtonClass="btn btn-clean btn-primary form-control" Spinning="_loading" Disabled="_loading  == true || _selectedSubQuotaRequests.Count < 1">
+                                            @L["Calculate Capacities for Selected Expertise Branch"]
+                                        </SpinnerButton>
+                                    </div>
+                                </div>
+                                <Grid Items="_selectedSubQuotaRequests" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                                    <GridColumn TRowData="SubQuotaRequestPaginateResponseDTO" Expression="c => c.ProgramName" Title="@L["Program"]">
+                                    </GridColumn>
+                                    <GridColumn TRowData="SubQuotaRequestPaginateResponseDTO" Expression="c => c.Capacity" Title="@L["Capacity"]">
+                                    </GridColumn>
+                                    <GridColumn TRowData="SubQuotaRequestPaginateResponseDTO" Expression="c => c.TotalEducatorCount" Title="@L["Total Educator Count"]">
+                                    </GridColumn>
+                                    <GridColumn TRowData="SubQuotaRequestPaginateResponseDTO" Expression="c => c.CurrentStudentCount" Title="@L["Total Student Count"]">
+                                    </GridColumn>
+                                    <GridColumn TRowData="SubQuotaRequestPaginateResponseDTO" Expression="c => c.StudentWhoLast6MonthToFinishCount" Title="@L["Number of students with 6 months left until the end of their education time"]">
+                                    </GridColumn>
+                                    <GridColumn class="min-w-150px align-middle" TRowData="SubQuotaRequestPaginateResponseDTO" Title="@L["Transactions"]">
+                                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SubQuotaRequestGetById}">
+                                            <button @onclick="() => OpenSubQuotaRequestModal(context)" class="btn btn-icon btn-light-success btn-sm"><i class="far fa-edit"></i></button>
+                                        </PermissionWrapper>
+                                    </GridColumn>
+                                </Grid>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/quota-request/incoming-request"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>
+<MyModal @ref="_annualGlobalQuotaModal" Size="MyModal.ModalSize.XLarge" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <div class="row">
+            <div class="col-4">
+                <label>@L["Expertise Branch Name"] </label>
+            </div>
+            <div class="col-8">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>@L["Annual Global Quota"] </label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>@L["First Period Global Quota"] </label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label>@L["Second Period Global Quota"] </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            @if (_quotaRequest.GlobalQuota != null)
+            {
+                @foreach (var item in _quotaRequest.GlobalQuota)
+                {
+                    <div class="col-4">
+                        <div class="form-group">
+                            <InputText class="form-control" @bind-Value="item.ExpertiseBranchName" disabled />
+                        </div>
+                    </div>
+                    <div class="col-8">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <InputNumber class="form-control" @bind-Value="item.AnnualGlobalQuota" disabled />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <InputNumber Value="item.FirstPeriodGlobalQuota" ValueExpression="()=>item.FirstPeriodGlobalQuota" TValue="int?" ValueChanged="(int? value)=> OnChangeFirstPeriod(value, item.ExpertiseBranchId)" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <InputNumber Value="item.SecondPeriodGlobalQuota" ValueExpression="()=>item.SecondPeriodGlobalQuota" TValue="int?" ValueChanged="(int? value)=> OnChangeSecondPeriod(value, item.ExpertiseBranchId)" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.QuotaRequestUpdate}">
+            <SpinnerButton OnClick="async () => await Save()" ButtonClass="btn btn-clean btn-primary" Spinning="_saving" Disabled="_saving">
+                @L["Save"]
+            </SpinnerButton>
+        </PermissionWrapper>
+    </Body>
+</MyModal>
+<MyModal @ref="_subQuotaRequestModal" Size="MyModal.ModalSize.XLarge" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <h2>@L["Educator Count Information"] </h2>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label>@L["Professor or Education Person Count"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.ProfessorCount" disabled />
+                    <label>@L["Associate Professor Count"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.AssociateProfessorCount" disabled />
+                    <label>@L["Chief Assistant Count"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.ChiefAssistantCount" disabled />
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+
+                    <label>@L["Doctor Lecturer Count"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.DoctorLecturerCount" disabled />
+                    <label>@L["Total Educator Count"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.TotalEducatorCount" disabled />
+                    <label>@L["Specialist Doctor Count"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.SpecialistDoctorCount" disabled />
+                </div>
+            </div>
+        </div>
+        <h2>@L["Student Count Information"] </h2>
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label>@L["Total Student Count"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.CurrentStudentCount" disabled />
+                    <label>@L["Student Index Per Educator"] </label>
+                    @* <InputNumber class="form-control" Value="_subQuotaRequest.StudentIndexPerEducator" ValueExpression="()=>_subQuotaRequest.StudentIndexPerEducator" TValue="float?" disabled /> *@
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label>@L["Number of students with 6 months left until the end of their education time"] </label>
+                    <InputNumber class="form-control" @bind-Value="_subQuotaRequest.StudentWhoLast6MonthToFinishCount" disabled />
+                </div>
+            </div>
+        </div>
+        @if (_subQuotaRequest.Portfolios?.Count > 0)
+        {
+            <h2>@L["Porfolio Information"] </h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @if (_subQuotaRequest.Portfolios != null)
+                        {
+                            @foreach (var item in _subQuotaRequest.Portfolios)
+                            {
+                                <label>@L[item.PortfolioName] </label>
+                                <InputNumber class="form-control" @bind-Value="item.Answer" disabled />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        <h2>@L["Student Request"] </h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group">
+                    @if (_subQuotaRequest.StudentCounts != null)
+                    {
+                        <Grid Items="_subQuotaRequest.StudentCounts" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                            <GridColumn TRowData="StudentCountResponseDTO" Title="@L["Request Type"]">
+                                <ChildContent Context="sc">
+                                    @(L[sc.QuotaType?.GetDescription() ?? "-"])
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn TRowData="StudentCountResponseDTO" Title="@L["Requested"]">
+                                <ChildContent Context="sc">
+                                    <InputNumber class="form-control" @bind-Value="sc.RequestedCount" disabled />
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn TRowData="StudentCountResponseDTO" Title="@L["Allocated By TUK Secretary"]">
+                                <ChildContent Context="sc">
+                                    <InputNumber class="form-control" @bind-Value="sc.SecretaryAllocatedCount" />
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn TRowData="StudentCountResponseDTO" Title="@L["Allocated By TUK"]">
+                                <ChildContent Context="sc">
+                                    <InputNumber class="form-control" @bind-Value="sc.BoardAllocatedCount" />
+                                </ChildContent>
+                            </GridColumn>
+                        </Grid>
+                    }
+                </div>
+            </div>
+        </div>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.SubQuotaRequestUpdate}">
+            <SpinnerButton OnClick="async () => await UpdateStudentCount()" ButtonClass="btn btn-clean btn-primary" Spinning="_saving" Disabled="_saving">
+                @L["Save"]
+            </SpinnerButton>
+        </PermissionWrapper>
+    </Body>
+</MyModal>
+<MyModal @ref="_summaryTableModal" Size="MyModal.ModalSize.XLarge" ShowFooter="false" ShowHeader="false">
+    <Body>
+        @if (_studentCounts?.Count > 0)
+        {
+            <h2>@L["Summary Table"] </h2>
+            <div class="row">
+                <Grid Items="_expertiseBranchList" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                    <GridColumn TRowData="ExpertiseBranchResponseDTO" Expression="c => c.Name" Title="@L["Expertise Branch"]">
+                    </GridColumn>
+                    <GridColumn TRowData="ExpertiseBranchResponseDTO" Title="@L["Annual Global Quota"]">
+                        <ChildContent>
+                            @(context.Id == -1 ? _quotaRequest.GlobalQuota.Sum(x => x.AnnualGlobalQuota) : _quotaRequest.GlobalQuota.FirstOrDefault(x => x.ExpertiseBranchId == context.Id).AnnualGlobalQuota)
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="ExpertiseBranchResponseDTO" Title="@L["First Period Global Quota"]">
+                        <ChildContent>
+                            @(context.Id == -1 ? _quotaRequest.GlobalQuota.Sum(x => x.FirstPeriodGlobalQuota) : _quotaRequest.GlobalQuota.FirstOrDefault(x => x.ExpertiseBranchId == context.Id).FirstPeriodGlobalQuota)
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="ExpertiseBranchResponseDTO" Title="@L["Second Period Global Quota"]">
+                        <ChildContent>
+                            @(context.Id == -1 ? _quotaRequest.GlobalQuota.Sum(x => x.SecondPeriodGlobalQuota) : _quotaRequest.GlobalQuota.FirstOrDefault(x => x.ExpertiseBranchId == context.Id).SecondPeriodGlobalQuota)
+                        </ChildContent>
+                    </GridColumn>
+                    @foreach (var item in _quotaTypes)
+                    {
+                        <GridColumn TRowData="ExpertiseBranchResponseDTO" Title="@L[item?.GetDescription()]">
+                            <ChildContent>
+                                @(context.Id == -1 ? _studentCounts.Where(x => x.QuotaType == item).Sum(x => x.RequestedCount) : _studentCounts.Where(x => x.SubQuotaRequest.Program.ExpertiseBranchId == context.Id && x.QuotaType == item).Sum(x => x.RequestedCount))
+                            </ChildContent>
+                        </GridColumn>
+                    }
+                </Grid>
+            </div>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Body>
+</MyModal>

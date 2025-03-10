@@ -1,0 +1,52 @@
+﻿<InputSelect class="@("form-control "+ (Value.HasValue?GetClass(Value.Value):""))" @bind-Value="@Value">
+    <option value="" selected>@L["Select point"]</option>
+    @for (int i = 1; i < 10; i++)
+    {
+
+            string[] point = { "Olumsuz", "Olumsuz", "Olumsuz", "İyi", "İyi", "İyi", "Mükemmel", "Mükemmel", "Mükemmel" };
+
+            <option class="@GetClass(i)" value="@i">@i (@point[i-1])</option>
+        
+
+    }
+</InputSelect>
+
+@code {
+    [Parameter]
+    public int? Value
+    {
+        get => _value;
+
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(Value);
+
+        }
+    }
+    [Parameter] public EventCallback<int?> ValueChanged { get; set; }
+    [Parameter] public int Count { get; set; }
+    private int? _value;
+
+    private string GetClass(int i)
+    {
+        if (i >= 1 && i <= 3)
+        {
+            return "btn btn-xl btn-danger font-weight-bold";
+        }
+        else if (i >= 4 && i <= 6)
+        {
+            return "btn btn-xl btn-warning font-weight-bold";
+
+        }
+        else if (i >= 7 && i <= 9)
+        {
+            return "btn btn-xl btn-success font-weight-bold";
+
+        }
+        else
+            return "";
+    }
+
+}

@@ -1,0 +1,22 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+<AppContent Title="">
+    <Toolbar></Toolbar>
+    <Content>
+        <TabControl>
+            <TabPage Text="Portföy Bilgileri">
+                <EnabizOperationDetail />
+            </TabPage>
+            <TabPage Text="Öğrenci Portföy Bilgileri">
+                <EnabizOperationDetail UserType="UserType.Student" />
+            </TabPage>
+            <TabPage Text="Eğitici Portföy Bilgileri">
+                <EnabizOperationDetail UserType="UserType.Educator" />
+            </TabPage>
+            <TabPage Text="Uzman Portföy Bilgileri">
+                <EnabizOperationDetail UserType="UserType.Specialist" />
+            </TabPage>
+        </TabControl>
+    </Content>
+</AppContent>

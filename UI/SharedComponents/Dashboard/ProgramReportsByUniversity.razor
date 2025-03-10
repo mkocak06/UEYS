@@ -1,0 +1,31 @@
+﻿@using ApexCharts;
+@using UI.SharedComponents.Dashboard;
+@using Shared.ResponseModels.Program;
+@inherits FluxorComponent
+
+@if (_chartLoaded)
+{
+    <div class="card card-custom card-stretch gutter-b bg-diagonal bg-diagonal-light-success">
+        <div class="card-body">
+            <div style="overflow-x:auto;overflow-y:auto">
+                <ApexChart @ref=_apexChart TItem="ProgramsCountByUniversityTypeModel"
+                           Title="Üniversite Tipine Bağlı Program Sayısı"
+                           Options=options>
+
+                    <ApexPointSeries TItem="ProgramsCountByUniversityTypeModel"
+                                     Items="_programsCounts"
+                                     Name="Program Sayısı"
+                                     SeriesType="SeriesType.Donut"
+                                     XValue="@(e => e.IsPrivate == true ? "Vakıf Üniversitesi" : (e.IsPrivate == false ? "Devlet Üniversitesi" : "Diğer"))"
+                                     YValue="@(e => e.Count)"
+                                     OrderByDescending="e=>e.Y" />
+                 </ApexChart>
+
+             </div>
+         </div>
+     </div>
+}
+else
+{
+    <ChartLoading />
+}

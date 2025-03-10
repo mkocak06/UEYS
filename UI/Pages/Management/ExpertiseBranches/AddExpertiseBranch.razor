@@ -1,0 +1,128 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/expertise/add-branch"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="ExpertiseBranchValidator"></FluentValidator>
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["_name", L["Expertise Training Program"]]</label>
+                                <InputText @ref="_focusTarget" class="form-control" @bind-Value="_branch.Name" />
+                                <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                <ValidationMessage For="() => _branch.Name"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Expertise Branch"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchFaculties"
+                                                   TItem="ProfessionResponseDTO"
+                                                   TValue="ProfessionResponseDTO"
+                                                   Value="_branch.Profession"
+                                                   ValueExpression="() => _branch.Profession"
+                                                   ValueChanged="OnChangeFaculty"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                    <SelectedTemplate Context="faculty">
+                                        @faculty.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="faculty">
+                                        @faculty.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Explanation"]</label>
+                                <InputTextArea class="form-control" @bind-Value="_branch.Details" />
+                                <ValidationMessage For="() => _branch.Details"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label> @L["Principal Branch"]/ @L["Sub Branch"]</label>
+                                    <div class="radio-inline">
+                                        <label class="radio radio-lg">
+                                            <input type="radio" checked="@(_isPrincipalBranch == true)" @onchange="OnChangeIsPrincipalBranch" name="radios3_1" />
+                                            <span></span>
+                                            @L["Principal Branch"]
+                                        </label>
+                                        <label class="radio radio-lg">
+                                            <input type="radio" @onchange="OnChangeIsPrincipalBranch" name="radios3_1" />
+                                            <span></span>
+                                            @L["Sub Branch"]
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="separator separator-dashed separator-success my-5"></div>
+                                @if (_isPrincipalBranch)
+                                {
+                                    <label>@L["Sub Branches"]</label>
+                                    <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                                   Values="_branch.SubBranches"
+                                                   ValuesExpression="() => _branch.SubBranches"
+                                                   ValuesChanged="(IList<RelatedExpertiseBranchResponseDTO> values)=>OnChangeSubBranches(values)"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   placeholder="@L["Search by {0}",L["Sub Branch"]]">
+                                        <SelectedTemplate Context="branch">
+                                            @branch.SubBranch.Name
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 1 character to search."]
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L["Could not find an item named"]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="branch">
+                                            @branch.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                }
+                                else
+                                {
+                                    <label>@L["Principal Branch"]</label>
+                                    <BlazoredTypeahead SearchMethod="SearchExpertiseBranchesForPrincipal"
+                                                   Values="_branch.PrincipalBranches"
+                                                   ValuesExpression="() => _branch.PrincipalBranches"
+                                                   ValuesChanged="(IList<RelatedExpertiseBranchResponseDTO> values)=>OnChangePrincipalBranches(values)"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   placeholder="@L["Search by {0}",L["Principal Branch"]]">
+                                        <SelectedTemplate Context="branch">
+                                            @branch.PrincipalBranch.Name
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 1 character to search."]
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L["Could not find an item named"]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="branch">
+                                            @branch.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>

@@ -1,0 +1,251 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-1 mr-20">
+    <div class="d-flex self-align-end">
+        <div class="text-center mt-5">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                <button @onclick="OnRotationAddList" class="btn btn-outline-primary">@L["add_new", L["Rotation"]]</button>
+            </PermissionWrapper>
+        </div>
+    </div>
+</div>
+<div class="card card-custom">
+    <div class="card-body">
+        @if (_rotations != null)
+        {
+            <Grid IsFilter="false" Items="_rotations" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn Sort="Rotation.ExpertiseBranch.Name" TRowData="RotationResponseDTO" Title="@L["Rotation Branch"]">
+                    <ChildContent>
+                        @context.ExpertiseBranch?.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Rotation.Duration" TRowData="RotationResponseDTO" Expression="c => c.Duration" Title="@L["Rotation Time (Day)"]">
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Rotation.IsRequired" TRowData="RotationResponseDTO" Title="@L["Is Required"]">
+                    <ChildContent>
+                        @if (context.IsRequired == false)
+                        {
+                            <span class='label label-warning label-inline font-weight-lighter mr-2'>@L["Selective"]</span>
+                        }
+                        else if (context.IsRequired == true)
+                        {
+                            <span class='label label-primary label-inline font-weight-lighter mr-2'>@L["Compulsory"]</span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="d-flex align-items-center justify-content-around mt-2">
+                                <label class="checkbox checkbox-lg">
+                                    <input type="checkbox" name="@filter" @onchange='(args) => OnChangeCheckBoxFilter(args, filter)' />
+                                    <span></span>
+                                </label>
+                                @if (IsFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                        <i class="flaticon2-cross text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-lg"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn class="max-w-50px align-middle" TRowData="RotationResponseDTO" Title="@L["Transactions"]">
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate, PermissionEnum.PerfectionGetListPagination}">
+                        <a @onclick="() => OnRotationDetailListAsync(context)" class="btn btn-light-success btn-icon btn-sm"><i class="fas fa-edit"></i></a>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                        <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                    </PermissionWrapper>
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                        DefaultPageSize="10" Loading="_loading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+<MyModal @ref="_rotationAddModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_rotationEc">
+            <div class="row">
+                <div class="col-12 col-lg-12">
+                    <div class="form-group">
+                        <label>@L["Rotation Branch"]</label>
+                        <div class="form-group">
+                            <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                               TItem="ExpertiseBranchResponseDTO"
+                                               TValue="ExpertiseBranchResponseDTO"
+                                               Value="_rotation.ExpertiseBranch"
+                                               ValueExpression="()=> _rotation.ExpertiseBranch"
+                                               ValueChanged="OnChangeExpertiseBranch"
+                                               EnableDropDown="true"
+                                               MinimumLength="1">
+                                <SelectedTemplate Context="expertisebranch">
+                                    @expertisebranch.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="expertisebranch">
+                                    @expertisebranch.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                            <ValidationMessage For="() => _rotation.ExpertiseBranchId" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Rotation Time (Day)"]</label>
+                        <InputText class="form-control" @bind-Value="_rotation.Duration" />
+                        <ValidationMessage For="() => _rotation.Duration"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-group">
+                            <label><b>@L["Compulsory"]/ @L["Selective"]</b></label>
+                            <div></div>
+                            <div class="radio-inline">
+                                <label class="radio radio-lg">
+                                    <input type="radio" checked="@(_isrequired == true)" @onchange="OnChangeIsRequired" name="radios3_1" />
+                                    <span></span>
+                                    @L["Compulsory"]
+                                </label>
+                                <label class="radio radio-lg">
+                                    <input type="radio" checked="@(_isrequired == false)" @onchange="OnChangeIsRequired" name="radios3_1" />
+                                    <span></span>
+                                    @L["Selective"]
+                                </label>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button @onclick="AddRotation" class="btn btn-clean btn-primary"> @L["Save"]</button>
+        </EditForm>
+    </Body>
+</MyModal>
+<MyModal @ref="_rotationDetailModal" ShowFooter="false" ShowHeader="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        @if (_loaded && _rotation != null)
+        {
+            <EditForm EditContext="_rotationEc" OnSubmit="(()=>{})">
+                <FluentValidator TValidator="RotationValidator"></FluentValidator>
+                <div class="form-group">
+                    <label>@L["Rotation Branch"]</label>
+                    <div class="form-group">
+
+                        <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                           TItem="ExpertiseBranchResponseDTO"
+                                           TValue="ExpertiseBranchResponseDTO"
+                                           Value="_rotation.ExpertiseBranch"
+                                           ValueExpression="() => _rotation.ExpertiseBranch"
+                                           ValueChanged="OnChangeExpertiseBranch"
+                                           EnableDropDown="true"
+                                           MinimumLength="1">
+                            <SelectedTemplate Context="expertisebranch">
+                                @expertisebranch.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="expertisebranch">
+                                @expertisebranch.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _rotation.ExpertiseBranchId" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>@(L["Rotation Time (Day)"])</label>
+                    <InputText class="form-control" @bind-Value="_rotation.Duration" />
+                    <ValidationMessage For="() => _rotation.Duration"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label><b>@L["Compulsory"]/ @L["Selective"]</b></label>
+                    <div></div>
+                    <div class="radio-inline">
+                        <InputRadioGroup @bind-Value="_rotation.IsRequired">
+                            <label class="radio radio-success">
+                                <InputRadio Value="true"></InputRadio>
+                                <span></span>@L["Compulsory"]
+                            </label>
+                            <label class="radio radio-danger">
+                                <InputRadio Value="false"></InputRadio>
+                                <span></span>@L["Selective"]
+                            </label>
+                        </InputRadioGroup>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <CurriculumPerfections CurriculumId="CurriculumId" RotationId="(long)_rotation.Id" />
+                </div>
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+                <button type="button" @onclick="UpdateRotation" class="btn btn-clean btn-primary"> @L["Save"]</button>
+                </PermissionWrapper>
+            </EditForm>
+        }
+    </Body>
+</MyModal>

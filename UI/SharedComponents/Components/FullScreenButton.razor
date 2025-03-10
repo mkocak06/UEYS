@@ -1,0 +1,19 @@
+﻿@if (Active && !string.IsNullOrEmpty(TargetId))
+{
+    <button @onclick="ToggleFullScreen" class="btn btn-icon" disabled="@Disabled">
+        <i class="fa fa-expand"></i>
+    </button>
+}
+
+@code {
+    [Parameter] public string TargetId { get; set; }
+    [Parameter] public bool Active { get; set; } = false;
+    [Parameter] public bool Disabled { get; set; } = false;
+    [Inject] private IJSRuntime JSRuntime { get; set; }
+
+    private async Task ToggleFullScreen()
+    {
+        await JSRuntime.InvokeVoidAsync("ToggleFullScreenElement", TargetId);
+    }
+
+}

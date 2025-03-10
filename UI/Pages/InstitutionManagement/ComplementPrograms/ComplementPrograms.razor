@@ -1,0 +1,199 @@
+﻿@using Shared.ResponseModels.ProtocolProgram;
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/complement-programs"
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="true" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramAdd}">
+            <a href="/institution-management/complement-programs/add-complement-program" type="button" class="btn btn-outline-primary mr-3">
+                <i class="fas fa-plus"></i>@L["add_new", L["Complement Program"]]
+            </a>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_complementPrograms != null)
+                {
+                    <Grid IsFilter="true" Items="_complementPrograms" class="table table-hover table-bordered text-center" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => row.CancelingProtocolNo != null ? "table-danger" : ""'>
+                        <GridColumn Sort="ProtocolNo" TRowData="ProtocolProgramPaginatedResponseDTO" Title="@L["Complement Program No"]">
+                            <ChildContent>
+                                @(context.ProtocolNo ?? "-")
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Province" TRowData="ProtocolProgramPaginatedResponseDTO" Title="@L["Province"]">
+                            <ChildContent>
+                                @(context.Province ?? "-")
+
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Faculty" TRowData="ProtocolProgramPaginatedResponseDTO" Title="@L["Educational Institution / Faculty"]">
+                            <ChildContent>
+                                @(context.Faculty ?? "-")
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Hospital" TRowData="ProtocolProgramPaginatedResponseDTO" Title="@L["Hospital Name"]">
+                            <ChildContent>
+                                @(context.Hospital ?? "-")
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="ExpertiseBranch" TRowData="ProtocolProgramPaginatedResponseDTO" Title="@L["Expertise Training Program"]">
+                            <ChildContent>
+                                @(context.ExpertiseBranch ?? "-")
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="RelatedProgramsCount" TRowData="ProtocolProgramPaginatedResponseDTO" Title="@L["Dependent Programs"]">
+                            <ChildContent>
+                                @(context.RelatedProgramsCount)
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn class="min-w-100px align-middle" TRowData="ProtocolProgramPaginatedResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramGetById}">
+                            <a href="/institution-management/complement-programs/@context.Id" class="btn btn-light-success btn-icon btn-sm">
+                                <i class="far fa-edit"></i>
+                            </a>
+                            </PermissionWrapper>
+                            @if (context.CancelingProtocolNo == null)
+                            {
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProtocolProgramDelete}">
+                                <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                                </PermissionWrapper>
+                            }
+                        </GridColumn>
+                    </Grid>
+                    <p class="font-size-sm font-weight-light">*Kırmızı renkli satırlar iptal edilen protokollerdir.</p>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+        <MyModal @ref="_deleteModal" ShowFooter="false" ShowHeader="false">
+            <Body>
+                <div id="form-exams-list">
+                    <div id="authorization-form">
+                        <div class="form-group">
+                            <label>@L["Canceling Date"]</label>
+                            <InputDate class="form-control" @bind-Value="_complementProgram.CancelingDate" TValue="DateTime?" />
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Canceling Decision Number"]</label>
+                            <InputText type="text" class="form-control" @bind-Value="_complementProgram.CancelingProtocolNo" />
+                        </div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(_dateValidatorMessage))
+                {
+                    <div class="validation-message">@_dateValidatorMessage</div>
+                }
+                <button @onclick="DeleteComplementProgram" class="btn btn-clean btn-primary"> @L["Cancel Protocol"]</button>
+            </Body>
+        </MyModal>
+    </Content>
+</AppContent>

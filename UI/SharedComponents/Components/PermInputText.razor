@@ -1,0 +1,28 @@
+﻿@using Shared.Types;
+@inject IAuthenticationService _authenticationService
+<input type="text" class="@BaseClass" @bind-value:event="oninput" disabled="@(!IsPermitted())" @bind-value="Value" />
+
+@code {
+    [Parameter]
+    public string Value
+    {
+        get => _value;
+
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            if (IsPermitted())
+                ValueChanged.InvokeAsync(Value);
+
+        }
+    }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public List<PermissionEnum> Permissions { get; set; }
+    private string _value;
+
+    public bool IsPermitted()
+    {
+        return  _authenticationService.IsPermitted(Permissions);
+    }
+}

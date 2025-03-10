@@ -1,0 +1,36 @@
+﻿@using Shared.Types
+<div class="@(GetAlignment())">
+    <div class="spinner spinner-@(SelectedColorType.ToString().ToLower()) @(GetSize()) mr-12"></div>
+</div>
+
+@code{
+    // 0: large (default)
+    // 1: normal
+    // 2: small
+    [Parameter] public int Size { get; set; } = 0;
+    [Parameter] public ColorType SelectedColorType { get; set; } = ColorType.Primary;
+    // 0: Global
+    // 1: Inline
+    [Parameter] public int Alignment { get; set; } = 0;
+
+    private string GetSize()
+    {
+        return Size switch {
+            0 => "spinner-lg",
+            1 => "",
+            2 => "spinner-sm",
+            _ => "spinner-lg",
+        };
+    }
+
+    private string GetAlignment()
+    {
+        return Alignment switch
+        {
+            0 => "d-flex align-items-center justify-content-center m-auto h-100 w-100",
+            1 => "badge",
+            _ => "d-flex align-items-center justify-content-center m-auto h-100 w-100"
+        };
+    }
+
+}

@@ -1,0 +1,327 @@
+﻿@page "/student/educator-tag/{Id:long?}"
+@using Shared.ResponseModels
+@using Shared.Extensions;
+@inherits FluxorComponent
+
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="flaticon2-pin text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@L["_Information", L["Educator"]]</h3>
+                </div>
+            </div>
+            @if (!_loading)
+            {
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="timeline timeline-justified timeline-4 position-sticky" style="top:140px;">
+                                <div class="timeline-bar"></div>
+                                <div class="timeline-items">
+                                    @if (Educator?.User is not null)
+                                    {
+                                        <div class="timeline-item">
+                                            <div class="timeline-badge">
+                                                <div class="bg-success"></div>
+                                            </div>
+                                            <div class="timeline-label">
+                                                <span class="text-success font-weight-bold">@L["_Information", L["User"]]</span>
+                                            </div>
+                                            <div class="timeline-content">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="p-0 w-250px"></th>
+                                                            <th class="p-0"></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="font-weight-bolder">@L["T.R. Identity Number"]</td>
+                                                            <td>@Educator.User.IdentityNo</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="font-weight-bolder">@L["Name Surname"]</td>
+                                                            <td>@Educator.User.Name</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="font-weight-bolder">@L["Email"]</td>
+                                                            <td>@Educator.User.Email</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="font-weight-bolder">@L["Phone"]</td>
+                                                            <td>
+                                                                @if (!string.IsNullOrEmpty(Educator.User?.Phone))
+                                                                {
+                                                                    @("(" + Educator.User?.Phone.Substring(0, 3) + ")" + " " + Educator.User?.Phone.Substring(3, 3) + " " + Educator.User?.Phone.Substring(6, 4))
+                                                                }
+                                                                else
+                                                                {
+                                                                    @("-")
+                                                                }
+                                                            </td>
+                                                        </tr>
+                                                        @*<tr>
+                                                <td class="font-weight-bolder">@L["Address"]</td>
+                                                <td>@Educator.User.Address</td>
+                                                </tr>*@
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="timeline-item">
+                                        <div class="timeline-badge">
+                                            <div class="bg-success"></div>
+                                        </div>
+                                        <div class="timeline-label">
+                                            <span class="text-success font-weight-bold">@L["_Information", L["Staff"]]</span>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <table class="table">
+                                                @if (Educator.StaffParentInstitutions != null)
+                                                {
+                                                    <tbody>
+                                                        <tr>
+                                                            <th class="p-0">@L["Staff Parent Institution"]</th>
+                                                            <th class="p-0">@L["Start Date"]</th>
+                                                            <th class="p-0">@L["End Date"]</th>
+                                                        </tr>
+                                                        @foreach (var item in Educator.StaffParentInstitutions)
+                                                        {
+                                                            <tr>
+                                                                <td>@(item.StaffParentInstitution?.Name ?? "-")</td>
+                                                                <td>@(item.StartDate?.ToShortDateString() ?? "-")</td>
+                                                                <td>@(item.EndDate?.ToShortDateString() ?? "-")</td>
+                                                            </tr>
+                                                        }
+                                                        <tr>
+                                                            <th class="p-0">@L["Staff Institution"]</th>
+                                                            <th class="p-0">@L["Start Date"]</th>
+                                                            <th class="p-0">@L["End Date"]</th>
+                                                        </tr>
+                                                        @if (Educator.StaffInstitutions != null)
+                                                        {
+                                                            @foreach (var item in Educator.StaffInstitutions)
+                                                            {
+                                                                <tr>
+                                                                    <td>@(item.StaffInstitution?.Name ?? "-")</td>
+                                                                    <td>@(item.StartDate?.ToShortDateString() ?? "-")</td>
+                                                                    <td>@(item.EndDate?.ToShortDateString() ?? "-")</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    </tbody>
+                                                }
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-badge">
+                                            <div class="bg-success"></div>
+                                        </div>
+                                        <div class="timeline-label">
+                                            <span class="text-success font-weight-bold">@L["_Information", L["Title"]]</span>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="p-0 w-250px"></th>
+                                                        <th class="p-0"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="font-weight-bolder">@L["Academic Title"]</td>
+                                                        <td>@(Educator.AcademicTitle?.Name ?? "-")</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="font-weight-bolder">@L["Staff Title"]</td>
+                                                        <td>@(Educator.StaffTitle?.Name ?? "-")</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="font-weight-bolder">@L["Administrative Mission"]</td>
+                                                        <td>@(Educator.AdministrativeTitlesForEducatorTag ?? "-")</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="font-weight-bolder">@L["Is Conditional Educator?"]</td>
+                                                        <td>@(Educator.IsConditionalEducator == true ? L["Yes"] : L["No"])</td>
+                                                    </tr>
+                                                    @if (Educator.IsConditionalEducator == true)
+                                                    {
+                                                        <tr>
+                                                            <td class="font-weight-bolder">@L["Title Date"]</td>
+                                                            <td>@(Educator.TitleDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item">
+                                        <div class="timeline-badge">
+                                            <div class="bg-success"></div>
+                                        </div>
+                                        <div class="timeline-label">
+                                            <span class="text-success font-weight-bold">@L["Graduation Information"]</span>
+                                        </div>
+                                        @if (Educator.GraduationDetails != null)
+                                        {
+                                            foreach (var item in Educator.GraduationDetails)
+                                            {
+                                                <div class="timeline-content">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-0 w-250px"></th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["University of Graduation"]</td>
+                                                                <td>@(item.GraduationUniversity ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Faculty/Institute of Graduation"]</td>
+                                                                <td>@(item.GraduationFaculty ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Field of Graduation"]</td>
+                                                                <td>@(item.GraduationField ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Graduation Date"]</td>
+                                                                <td>@(item.GraduationDate ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Higher Education Information"]</td>
+                                                                <td>@(item.HigherEducationDetail ?? "-")</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            }
+                                        }
+
+                                    </div>
+                                    @if (Educator.EducatorExpertiseBranches != null && Educator.EducatorExpertiseBranches.Count > 0)
+                                    {
+                                        foreach (var item in Educator.EducatorExpertiseBranches)
+                                        {
+                                            <div class="timeline-item">
+                                                <div class="timeline-badge">
+                                                    <div class="bg-success"></div>
+                                                </div>
+                                                <div class="timeline-label">
+                                                    <span class="text-success font-weight-bold">@(item.ExpertiseBranch?.IsPrincipal == true ? L["_Information", L["Principal Branch"]] : L["_Information", L["Sub Branch"]])</span>
+                                                </div>
+                                                <div class="timeline-content">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-0 w-250px"></th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Expertise Branch"]</td>
+                                                                <td>@(item.ExpertiseBranchName ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Registration Branch Name"]</td>
+                                                                <td>@(item.RegistrationBranchName ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Graduated School"]</td>
+                                                                <td>@(item.RegistrationGraduationSchool ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Registration Date"]</td>
+                                                                <td>@(item.RegistrationDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Registration Number"]</td>
+                                                                <td>@(item.RegistrationNo ?? "-")</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    @if (Educator.EducatorPrograms != null && Educator.EducatorPrograms.Count > 0)
+                                    {
+                                        foreach (var item in Educator.EducatorPrograms)
+                                        {
+                                            <div class="timeline-item">
+                                                <div class="timeline-badge">
+                                                    <div class="bg-success"></div>
+                                                </div>
+                                                <div class="timeline-label">
+                                                    <span class="text-success font-weight-bold">@L["_Information", L["Program"]]</span>
+                                                </div>
+                                                <div class="timeline-content">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-0 w-250px"></th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Program"]</td>
+                                                                <td>@(item.Program?.Name ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Is Education Officer?"]</td>
+                                                                @if (Educator.EducationOfficers?.Count > 0)
+                                                                {
+                                                                    <td>@L["Yes"]</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>@L["No"]</td>
+                                                                }
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Place of Duty"]</td>
+                                                                <td>@L[item.DutyType?.GetDescription()??"-"]</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Duty Start Date"]</td>
+                                                                <td>@(item.DutyStartDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Duty End Date"]</td>
+                                                                <td>@(item.DutyEndDate?.ToString("dd.MM.yyyy") ?? "-")</td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <Spinner></Spinner>
+            }
+        </div>
+    </Content>
+</AppContent>

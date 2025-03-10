@@ -1,0 +1,4020 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Login" xml:space="preserve">
+    <value>Giriş Yap</value>
+  </data>
+	<data name="Hospital" xml:space="preserve">
+    <value>Hastane</value>
+  </data>
+	<data name="Program" xml:space="preserve">
+    <value>Program</value>
+  </data>
+	<data name="University" xml:space="preserve">
+    <value>Üniversite</value>
+  </data>
+	<data name="add_new" xml:space="preserve">
+    <value>Yeni {0} Ekle</value>
+  </data>
+	<data name="Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+	<data name="Address" xml:space="preserve">
+    <value>Adres</value>
+  </data>
+	<data name="Graduated School" xml:space="preserve">
+    <value>Mezun Olduğu Okul</value>
+  </data>
+	<data name="Graduated Date" xml:space="preserve">
+    <value>Mezuniyet Tarihi</value>
+  </data>
+	<data name="Graduation" xml:space="preserve">
+    <value>Mezuniyet</value>
+  </data>
+	<data name="Affiliation" xml:space="preserve">
+    <value>Birlikte Kullanım</value>
+  </data>
+	<data name="Authorization Category" xml:space="preserve">
+    <value>Yetki Kategorisi</value>
+  </data>
+	<data name="Authorization Category Color" xml:space="preserve">
+    <value>Yetki Kategorisi Rengi</value>
+  </data>
+	<data name="Email" xml:space="preserve">
+    <value>Eposta</value>
+  </data>
+	<data name="E-mail" xml:space="preserve">
+    <value>E-posta</value>
+  </data>
+	<data name="Email is already taken" xml:space="preserve">
+    <value>Bu Eposta sistemde kayıtlıdır</value>
+  </data>
+	<data name="Expertise Branch" xml:space="preserve">
+    <value>Uzmanlık Alanı</value>
+  </data>
+	<data name="Faculty" xml:space="preserve">
+    <value>Fakülte</value>
+  </data>
+	<data name="Institution" xml:space="preserve">
+    <value>Kurum</value>
+  </data>
+	<data name="Province" xml:space="preserve">
+    <value>İl</value>
+  </data>
+	<data name="Telephone Number" xml:space="preserve">
+    <value>Telefon Numarası</value>
+  </data>
+	<data name="s" xml:space="preserve">
+    <value>Web Adresi</value>
+  </data>
+	<data name="_name" xml:space="preserve">
+    <value>{0} İsmi</value>
+  </data>
+	<data name="Authorization" xml:space="preserve">
+    <value>Yetki</value>
+  </data>
+	<data name="Authorization Categories" xml:space="preserve">
+    <value>Yetki Kategorileri</value>
+  </data>
+	<data name="Expertise Branches" xml:space="preserve">
+    <value>Uzmanlık Alanları</value>
+  </data>
+	<data name="Export" xml:space="preserve">
+    <value>Dışarı Aktar</value>
+  </data>
+	<data name="Faculties" xml:space="preserve">
+    <value>Fakülteler</value>
+  </data>
+	<data name="Institutions" xml:space="preserve">
+    <value>Kurumlar</value>
+  </data>
+	<data name="Loading..." xml:space="preserve">
+    <value>Yükleniyor...</value>
+  </data>
+	<data name="Log out" xml:space="preserve">
+    <value>Çıkış Yap</value>
+  </data>
+	<data name="Provinces" xml:space="preserve">
+    <value>İller</value>
+  </data>
+	<data name="Universities" xml:space="preserve">
+    <value>Üniversiteler</value>
+  </data>
+	<data name="Year" xml:space="preserve">
+    <value>Yıl</value>
+  </data>
+	<data name="_Date" xml:space="preserve">
+    <value>{0} Tarihi</value>
+  </data>
+	<data name="_Detail" xml:space="preserve">
+    <value>{0} Detay</value>
+  </data>
+	<data name="Import" xml:space="preserve">
+    <value>İçeri Aktar</value>
+  </data>
+	<data name="Visit" xml:space="preserve">
+    <value>Ziyaret</value>
+  </data>
+	<data name="_Details" xml:space="preserve">
+    <value>{0} Detayları</value>
+  </data>
+	<data name="Affiliated Institution" xml:space="preserve">
+    <value>Bağlı Olduğu Kurum</value>
+  </data>
+	<data name="Could not find an item named" xml:space="preserve">
+    <value>isminde bir öge bulunamadı.</value>
+  </data>
+	<data name="End" xml:space="preserve">
+    <value>Bitiş</value>
+  </data>
+	<data name="Foundation University" xml:space="preserve">
+    <value>Vakıf Üniversitesi</value>
+  </data>
+	<data name="Please enter at least 1 character to search." xml:space="preserve">
+    <value>Arama yapmak için lütfen en az 1 karakter girin.</value>
+  </data>
+	<data name="Remove" xml:space="preserve">
+    <value>Kaldır</value>
+  </data>
+	<data name="Select a color" xml:space="preserve">
+    <value>Lütfen Renk Seçiniz</value>
+  </data>
+	<data name="Update" xml:space="preserve">
+    <value>Güncelle</value>
+  </data>
+	<data name="_Description" xml:space="preserve">
+    <value>{0} Tanımı</value>
+  </data>
+	<data name="_Not Defined" xml:space="preserve">
+    <value>{0} Tanımlanmamıştır.</value>
+  </data>
+	<data name="Affiliate Institution" xml:space="preserve">
+    <value>Birlikte Kullanım Kurum</value>
+  </data>
+	<data name="Affiliations" xml:space="preserve">
+    <value>Birlikte Kullanımlar</value>
+  </data>
+	<data name="Authorization Color" xml:space="preserve">
+    <value>Yetki Rengi</value>
+  </data>
+	<data name="Authorization Decision Number" xml:space="preserve">
+    <value>Yetki Karar Numarası</value>
+  </data>
+	<data name="Birthplace" xml:space="preserve">
+    <value>Doğum Yeri</value>
+  </data>
+	<data name="Correspondence Address" xml:space="preserve">
+    <value>Yazışma Adresi</value>
+  </data>
+	<data name="Date of birth" xml:space="preserve">
+    <value>Doğum Tarihi</value>
+  </data>
+	<data name="Educators" xml:space="preserve">
+    <value>Eğiticiler</value>
+  </data>
+	<data name="Gender" xml:space="preserve">
+    <value>Cinsiyet</value>
+  </data>
+	<data name="Identification Number" xml:space="preserve">
+    <value>Kimlik Numarası</value>
+  </data>
+	<data name="Educational Institution / Faculty" xml:space="preserve">
+    <value>Eğitim Kurumu / Fakülte</value>
+  </data>
+	<data name="Last 6 Months Remaining" xml:space="preserve">
+    <value>Son 6 Ayı Kalan</value>
+  </data>
+	<data name="Name Surname" xml:space="preserve">
+    <value>Adı Soyadı</value>
+  </data>
+	<data name="Nationality" xml:space="preserve">
+    <value>Uyruk</value>
+  </data>
+	<data name="Number of Educators" xml:space="preserve">
+    <value>Eğitici Sayısı</value>
+  </data>
+	<data name="Number of Students" xml:space="preserve">
+    <value>Öğrenci Sayısı</value>
+  </data>
+	<data name="Programs" xml:space="preserve">
+    <value>Programlar</value>
+  </data>
+	<data name="Protocol" xml:space="preserve">
+    <value>Protokol</value>
+  </data>
+	<data name="Province of Education" xml:space="preserve">
+    <value>Eğitim Verilen İl</value>
+  </data>
+	<data name="Query" xml:space="preserve">
+    <value>Sorgula</value>
+  </data>
+	<data name="Start" xml:space="preserve">
+    <value>Başlangıç</value>
+  </data>
+	<data name="Specialization Students" xml:space="preserve">
+    <value>Uzmanlık Öğrencileri</value>
+  </data>
+	<data name="_Information" xml:space="preserve">
+    <value>{0} Bilgileri</value>
+  </data>
+	<data name="Information" xml:space="preserve">
+    <value>Bilgi</value>
+  </data>
+	<data name="Successfully Added" xml:space="preserve">
+    <value>Başarıyla Eklendi</value>
+  </data>
+	<data name="Successfully Deleted" xml:space="preserve">
+    <value>Başarıyla Silindi</value>
+  </data>
+	<data name="Are you sure?" xml:space="preserve">
+    <value>Emin misiniz?</value>
+  </data>
+	<data name="Programs Provided Education at the Ministry / University" xml:space="preserve">
+    <value>Bakanlıkta / Üniversitede Eğitim Verilen Programlar</value>
+  </data>
+	<data name="Protocol Program" xml:space="preserve">
+    <value>Protokollü Program</value>
+  </data>
+	<data name="University Hospitals" xml:space="preserve">
+    <value>Üniversite Hastaneleri</value>
+  </data>
+	<data name="Are you sure you want to delete this item? This action cannot be undone." xml:space="preserve">
+    <value>Bu öğeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</value>
+  </data>
+	<data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+	<data name="Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+	<data name="Item Deleted!" xml:space="preserve">
+    <value>Öğe Silindi!</value>
+  </data>
+	<data name="YUEP Transactions" xml:space="preserve">
+    <value>YUEP İşlemleri</value>
+  </data>
+	<data name="Ok" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+	<data name="Page Not Found!" xml:space="preserve">
+    <value>Sayfa Bulunamadı!</value>
+  </data>
+	<data name="Hospitals" xml:space="preserve">
+    <value>Hastaneler</value>
+  </data>
+	<data name="Management Module" xml:space="preserve">
+    <value>Yönetim Modülü</value>
+  </data>
+	<data name="Specialization Training Programs" xml:space="preserve">
+    <value>Uzmanlık Eğitim Programları</value>
+  </data>
+	<data name="Successfully Updated!" xml:space="preserve">
+    <value>Başarıyla Güncellendi!</value>
+  </data>
+	<data name="_List" xml:space="preserve">
+    <value>{0} Listesi</value>
+  </data>
+	<data name="Academic Title" xml:space="preserve">
+    <value>Eğitici Ünvanı(Akademik Ünvanı)</value>
+  </data>
+	<data name="Added" xml:space="preserve">
+    <value>Eklendi</value>
+  </data>
+	<data name="Affiliated Parent Institution" xml:space="preserve">
+    <value>Bağlı Olduğu Üst Kurum</value>
+  </data>
+	<data name="Associate professor" xml:space="preserve">
+    <value>Doçent</value>
+  </data>
+	<data name="Asst. Prof. Dr." xml:space="preserve">
+    <value>Doktor Öğretim Üyesi</value>
+  </data>
+	<data name="Candidate Trainer" xml:space="preserve">
+    <value>Aday Eğitici</value>
+  </data>
+	<data name="Chief assistant" xml:space="preserve">
+    <value>Başasistan</value>
+  </data>
+	<data name="Chief Doctor" xml:space="preserve">
+    <value>Başhekim</value>
+  </data>
+	<data name="Clean" xml:space="preserve">
+    <value>Temizle</value>
+  </data>
+	<data name="Common Entry Point" xml:space="preserve">
+    <value>Ortak Giriş Noktası</value>
+  </data>
+	<data name="Common Entry Point could not be logged on" xml:space="preserve">
+    <value>Ortak Giriş Noktası oturum açılamadı</value>
+  </data>
+	<data name="Contact" xml:space="preserve">
+    <value>İletişim</value>
+  </data>
+	<data name="Control" xml:space="preserve">
+    <value>Denetim</value>
+  </data>
+	<data name="Corporate Report Card" xml:space="preserve">
+    <value>Kurum Karnesi</value>
+  </data>
+	<data name="Curriculum" xml:space="preserve">
+    <value>Müfredat</value>
+  </data>
+	<data name="Curriculum Type" xml:space="preserve">
+    <value>Müfredat Türü</value>
+  </data>
+	<data name="Dean" xml:space="preserve">
+    <value>Dekan</value>
+  </data>
+	<data name="Educator" xml:space="preserve">
+    <value>Eğitici</value>
+  </data>
+	<data name="First" xml:space="preserve">
+    <value>Birinci</value>
+  </data>
+	<data name="Forgot password?" xml:space="preserve">
+    <value>Parolanızı mı unuttunuz?</value>
+  </data>
+	<data name="Institution code" xml:space="preserve">
+    <value>Kurum Kodu</value>
+  </data>
+	<data name="Institution Manager" xml:space="preserve">
+    <value>Kurum Yöneticisi</value>
+  </data>
+	<data name="No" xml:space="preserve">
+    <value>Hayır</value>
+  </data>
+	<data name="No Records Found" xml:space="preserve">
+    <value>Kayıt Bulunamadı</value>
+  </data>
+	<data name="Page Content" xml:space="preserve">
+    <value>Sayfa İçeriği</value>
+  </data>
+	<data name="Institution of Education" xml:space="preserve">
+    <value>Eğitimin Verildiği Kurum</value>
+  </data>
+	<data name="Institutions of Education" xml:space="preserve">
+    <value>Eğitimin Verildiği Kurumlar</value>
+  </data>
+	<data name="Professor" xml:space="preserve">
+    <value>Profesör</value>
+  </data>
+	<data name="Program Educators" xml:space="preserve">
+    <value>Program Eğiticileri</value>
+  </data>
+	<data name="Program Manager" xml:space="preserve">
+    <value>Program Yöneticisi</value>
+  </data>
+	<data name="Record Found" xml:space="preserve">
+    <value>Kayıt Bulundu</value>
+  </data>
+	<data name="Registration" xml:space="preserve">
+    <value>Tescil</value>
+  </data>
+	<data name="Search" xml:space="preserve">
+    <value>Arama Yapınız</value>
+  </data>
+	<data name="Second" xml:space="preserve">
+    <value>İkinci</value>
+  </data>
+	<data name="Select" xml:space="preserve">
+    <value>Seçiniz</value>
+  </data>
+	<data name="Specialist Doctor" xml:space="preserve">
+    <value>Uzman Doktor</value>
+  </data>
+	<data name="Staff Title" xml:space="preserve">
+    <value>Kadro Ünvanı</value>
+  </data>
+	<data name="Trainer Portfolio" xml:space="preserve">
+    <value>Eğitici Portföyü</value>
+  </data>
+	<data name="Training Location" xml:space="preserve">
+    <value>Eğitim Yeri</value>
+  </data>
+	<data name="Training Officer" xml:space="preserve">
+    <value>Eğitim Görevlisi</value>
+  </data>
+	<data name="Type of Parent Institution" xml:space="preserve">
+    <value>Bağlı Olduğu Üst Kurum Türü</value>
+  </data>
+	<data name="User Group" xml:space="preserve">
+    <value>Kullanıcı Grubu</value>
+  </data>
+	<data name="User Role" xml:space="preserve">
+    <value>Kullanıcı Rolü</value>
+  </data>
+	<data name="Yes" xml:space="preserve">
+    <value>Evet</value>
+  </data>
+	<data name="you can login to the system using" xml:space="preserve">
+    <value>kullanarak sisteme giriş yapabilirsiniz</value>
+  </data>
+	<data name="Your session ended successfully" xml:space="preserve">
+    <value>Oturumunuz başarı ile sonlandı</value>
+  </data>
+	<data name="_Major" xml:space="preserve">
+    <value>{0] Ana Dal</value>
+  </data>
+	<data name="Contact Info" xml:space="preserve">
+    <value>İletişim Bilgileri</value>
+  </data>
+	<data name="Educator Info" xml:space="preserve">
+    <value>Eğitici Bilgileri</value>
+  </data>
+	<data name="Specialization Student Info" xml:space="preserve">
+    <value>Uzmanlık Öğrencisi Bilgileri</value>
+  </data>
+	<data name="Assistants" xml:space="preserve">
+    <value>Asistanlar</value>
+  </data>
+	<data name="There is no record belong to this field" xml:space="preserve">
+    <value>Bu alana ait kayıt bulunmamaktadır</value>
+  </data>
+	<data name="Affiliated Faculty" xml:space="preserve">
+    <value>Afiliye Fakülte</value>
+  </data>
+	<data name="Affiliated Faculties" xml:space="preserve">
+    <value>Birlikte Kullanım Fakülteleri</value>
+  </data>
+	<data name="New Member Hospital" xml:space="preserve">
+    <value>Yeni Üye Hastane</value>
+  </data>
+	<data name="Protocol Date" xml:space="preserve">
+    <value>Protokol Tarihi</value>
+  </data>
+	<data name="Protocol No" xml:space="preserve">
+    <value>Protokol Numarası</value>
+  </data>
+	<data name="Displaying {0} - {1} of {2} records" xml:space="preserve">
+    <value>{0} - {1} / {2} adet kayıt</value>
+  </data>
+	<data name="Add" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+	<data name="_add" xml:space="preserve">
+    <value>{0} Ekle</value>
+  </data>
+	<data name="Identity Number" xml:space="preserve">
+    <value>Kimlik Numarası</value>
+  </data>
+	<data name="Manager" xml:space="preserve">
+    <value>Yönetici</value>
+  </data>
+	<data name="Please enter a valid identity number" xml:space="preserve">
+    <value>Lütfen geçerli bir TC numarası giriniz</value>
+  </data>
+	<data name="Program Details" xml:space="preserve">
+    <value>Program Detayları</value>
+  </data>
+	<data name="Dependent Programs" xml:space="preserve">
+    <value>Bağlı Programlar</value>
+  </data>
+	<data name="There is no sub program record for this program" xml:space="preserve">
+    <value>Bu programa ait alt program kaydı bulunmamaktadır.</value>
+  </data>
+	<data name="There is no authorization record for this protocol" xml:space="preserve">
+    <value>Bu protokol için yetki kaydı yok</value>
+  </data>
+	<data name="Add Authorization Detail" xml:space="preserve">
+    <value>Yetki Detayı Ekle</value>
+  </data>
+	<data name="Add Dependent Program" xml:space="preserve">
+    <value>Bağlı Program Ekle</value>
+  </data>
+	<data name="Affiliated Hospital" xml:space="preserve">
+    <value>Afiliye Hastane</value>
+  </data>
+	<data name="Affiliation Detail" xml:space="preserve">
+    <value>Birlikte Kullanım Detay</value>
+  </data>
+	<data name="Expertise Training Program" xml:space="preserve">
+    <value>Uzmanlık Eğitim Programı</value>
+  </data>
+	<data name="Expertise Training Programs" xml:space="preserve">
+    <value>Uzmanlık Eğitim Programları</value>
+  </data>
+	<data name="This field is required" xml:space="preserve">
+    <value>Bu alan zorunludur</value>
+  </data>
+	<data name="Location" xml:space="preserve">
+    <value>Konum</value>
+  </data>
+	<data name="Authorization End Date" xml:space="preserve">
+    <value>Yetki Bitiş Tarihi</value>
+  </data>
+	<data name="Specialization Training Program" xml:space="preserve">
+    <value>Uzmanlık Eğitim Programı</value>
+  </data>
+	<data name="Current Authorization Category" xml:space="preserve">
+    <value>Güncel Yetki Kategorisi</value>
+  </data>
+	<data name="Current Authorization Decision Date" xml:space="preserve">
+    <value>Güncel Yetkilendirme Karar Tarihi</value>
+  </data>
+	<data name="Current Authorization Decision No" xml:space="preserve">
+    <value>Güncel Yetkilendirme Karar No</value>
+  </data>
+	<data name="Current Date of Visit" xml:space="preserve">
+    <value>Güncel Ziyaret Tarihi</value>
+  </data>
+	<data name="Description" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+	<data name="Other" xml:space="preserve">
+    <value>Diğer</value>
+  </data>
+	<data name="Archive" xml:space="preserve">
+    <value>Arşiv</value>
+  </data>
+	<data name="Deleted Universities" xml:space="preserve">
+    <value>Silinmiş Üniversiteler</value>
+  </data>
+	<data name="Take Back" xml:space="preserve">
+    <value>Geri Al</value>
+  </data>
+	<data name="Are you sure you want to take back this item?" xml:space="preserve">
+    <value>Bu öğeyi geri almak istediğinize emin misiniz?</value>
+  </data>
+	<data name="Item Took Back!" xml:space="preserve">
+    <value>Öğe Geri Alındı!</value>
+  </data>
+	<data name="Deleted Hospitals" xml:space="preserve">
+    <value>Silinmiş Hastaneler</value>
+  </data>
+	<data name="Deleted Programs" xml:space="preserve">
+    <value>Silinmiş Programlar</value>
+  </data>
+	<data name="_Search" xml:space="preserve">
+    <value>{0} Ara</value>
+  </data>
+	<data name="Dependent Program" xml:space="preserve">
+    <value>Bağlı Program</value>
+  </data>
+	<data name="Authorization Details" xml:space="preserve">
+    <value>Yetki Detayları</value>
+  </data>
+	<data name="Protocol Programs" xml:space="preserve">
+    <value>Protokollü Programlar</value>
+  </data>
+	<data name="Advisor" xml:space="preserve">
+    <value>Danışman</value>
+  </data>
+	<data name="Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+	<data name="Program Info" xml:space="preserve">
+    <value>Program Bilgileri</value>
+  </data>
+	<data name="Task Start Date" xml:space="preserve">
+    <value>Göreve Başlama Tarihi</value>
+  </data>
+	<data name="Latitude" xml:space="preserve">
+    <value>Enlem</value>
+  </data>
+	<data name="Longitude" xml:space="preserve">
+    <value>Boylam</value>
+  </data>
+	<data name="Search by {0}" xml:space="preserve">
+    <value>{0} ile arama yap</value>
+  </data>
+	<data name="University Name" xml:space="preserve">
+    <value>Üniversite Adı</value>
+  </data>
+	<data name="Search In Detail" xml:space="preserve">
+    <value>Detaylı Ara</value>
+  </data>
+	<data name="At least one field must be entered" xml:space="preserve">
+    <value>En az bir alan dolu olmalıdır</value>
+  </data>
+	<data name="Hospital Name" xml:space="preserve">
+    <value>Hastane Adı</value>
+  </data>
+	<data name="Reset" xml:space="preserve">
+    <value>Sıfırla</value>
+  </data>
+	<data name="Details" xml:space="preserve">
+    <value>Detaylar</value>
+  </data>
+	<data name="Duration" xml:space="preserve">
+    <value>Süre</value>
+  </data>
+	<data name="Explanation" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+	<data name="Branch Type" xml:space="preserve">
+    <value>Uzmanlık Dalı Tipi</value>
+  </data>
+	<data name="Principal Branch" xml:space="preserve">
+    <value>Ana Dal</value>
+  </data>
+	<data name="Sub Branch" xml:space="preserve">
+    <value>Yan Dal</value>
+  </data>
+	<data name="Principal Branch / Sub Branch" xml:space="preserve">
+    <value>Ana Dal / Yan Dal</value>
+  </data>
+	<data name="Sub Branches" xml:space="preserve">
+    <value>Yan Dallar</value>
+  </data>
+	<data name="Homepage" xml:space="preserve">
+    <value>Anasayfa</value>
+  </data>
+	<data name="Perfection" xml:space="preserve">
+    <value>Yetkinlik</value>
+  </data>
+	<data name="Rotation" xml:space="preserve">
+    <value>Rotasyon</value>
+  </data>
+	<data name="Title" xml:space="preserve">
+    <value>Ünvan</value>
+  </data>
+	<data name="Curriculums" xml:space="preserve">
+    <value>Müfredatlar</value>
+  </data>
+	<data name="Education Field" xml:space="preserve">
+    <value>Eğitim Alanı</value>
+  </data>
+	<data name="Group" xml:space="preserve">
+    <value>Grup</value>
+  </data>
+	<data name="Level" xml:space="preserve">
+    <value>Düzey</value>
+  </data>
+	<data name="Method" xml:space="preserve">
+    <value>Yöntem</value>
+  </data>
+	<data name="Seniorty" xml:space="preserve">
+    <value>Kıdem</value>
+  </data>
+	<data name="Status" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+	<data name="Version" xml:space="preserve">
+    <value>Versiyon</value>
+  </data>
+	<data name="Active" xml:space="preserve">
+    <value>Aktif</value>
+  </data>
+	<data name="Passive" xml:space="preserve">
+    <value>Pasif</value>
+  </data>
+	<data name="Active/Passive" xml:space="preserve">
+    <value>Aktif/Pasif</value>
+  </data>
+	<data name="Type" xml:space="preserve">
+    <value>Türü</value>
+  </data>
+	<data name="Title Type" xml:space="preserve">
+    <value>Ünvan Tipi</value>
+  </data>
+	<data name="Academic" xml:space="preserve">
+    <value>Akademik</value>
+  </data>
+	<data name="Staff" xml:space="preserve">
+    <value>Kadro</value>
+  </data>
+	<data name="Titles" xml:space="preserve">
+    <value>Ünvanlar</value>
+  </data>
+	<data name="Is Required" xml:space="preserve">
+    <value>Zorunlu mu?</value>
+  </data>
+	<data name="Rotation Branch" xml:space="preserve">
+    <value>Rotasyon Dalı</value>
+  </data>
+	<data name="Rotation Time" xml:space="preserve">
+    <value>Rotasyon Süresi</value>
+  </data>
+	<data name="Rotation Time (Day)" xml:space="preserve">
+    <value>Rotasyon Süresi (Gün)</value>
+  </data>
+	<data name="Invalid {0}" xml:space="preserve">
+    <value>Geçersiz {0}</value>
+  </data>
+	<data name="Compulsory" xml:space="preserve">
+    <value>Zorunlu</value>
+  </data>
+	<data name="Selective" xml:space="preserve">
+    <value>Seçmeli</value>
+  </data>
+	<data name="Clinic Perfection" xml:space="preserve">
+    <value>Klinik Yetkinlik</value>
+  </data>
+	<data name="Institution Profile" xml:space="preserve">
+    <value>Kurum Profili</value>
+  </data>
+	<data name="Is it active?" xml:space="preserve">
+    <value>Aktif mi?</value>
+  </data>
+	<data name="Save and Next" xml:space="preserve">
+    <value>Kaydet ve İlerle</value>
+  </data>
+	<data name="Specialization Student Informations" xml:space="preserve">
+    <value>Uzmanlık Öğrencisi Bilgileri</value>
+  </data>
+	<data name="Students Sent for Registration" xml:space="preserve">
+    <value>Tescile Gönderilen Öğrenciler</value>
+  </data>
+	<data name="Student Sent for Registration" xml:space="preserve">
+    <value>Tescile Gönderilen Öğrenci</value>
+  </data>
+	<data name="Graduated Students" xml:space="preserve">
+    <value>Mezun Olmuş Öğrenciler</value>
+  </data>
+	<data name="Graduated Student" xml:space="preserve">
+    <value>Mezun Öğrenci</value>
+  </data>
+	<data name="Students Who Completed Specialization Education" xml:space="preserve">
+    <value>Uzmanlık Eğitimini Tamamlayan Öğrenciler</value>
+  </data>
+	<data name="Student Who Completed Education" xml:space="preserve">
+    <value>Eğitimi Tamamlayan Öğrenci</value>
+  </data>
+	<data name="Specialization Training User Transactions" xml:space="preserve">
+    <value>Uzmanlık Eğitimi Kullanıcı İşlemleri</value>
+  </data>
+	<data name="Specialization Student" xml:space="preserve">
+    <value>Uzmanlık Öğrencisi</value>
+  </data>
+	<data name="Specialization Student's Name Surname" xml:space="preserve">
+    <value>Uzmanlık Öğrencisi Adı Soyadı</value>
+  </data>
+	<data name="T.R. Identity Number" xml:space="preserve">
+    <value>T.C. Kimlik Numarası</value>
+  </data>
+	<data name="Old T.R. Identity Number" xml:space="preserve">
+    <value>Eski T.C. Kimlik Numarası</value>
+  </data>
+	<data name="New T.R. Identity Number" xml:space="preserve">
+    <value>Yeni T.C. Kimlik Numarası</value>
+  </data>
+	<data name="Total" xml:space="preserve">
+    <value>Toplam</value>
+  </data>
+	<data name="Successfully Fetched" xml:space="preserve">
+    <value>Başarıyla Getirildi</value>
+  </data>
+	<data name="Fetch" xml:space="preserve">
+    <value>Getir</value>
+  </data>
+	<data name="Birth Date" xml:space="preserve">
+    <value>Doğum Tarihi</value>
+  </data>
+	<data name="Curriculum Info" xml:space="preserve">
+    <value>Müfredat Bilgileri</value>
+  </data>
+	<data name="Rotation Goals" xml:space="preserve">
+    <value>Rotasyon Hedefleri</value>
+  </data>
+	<data name="Start and End Dates" xml:space="preserve">
+    <value>Başlangıç ve Bitiş Tarihleri</value>
+  </data>
+	<data name="Perfection Goals" xml:space="preserve">
+    <value>Yetkinlik Hedefleri</value>
+  </data>
+	<data name="Protocol End Date" xml:space="preserve">
+    <value>Protokol Bitiş Tarihi</value>
+  </data>
+	<data name="Name" xml:space="preserve">
+    <value>İsim</value>
+  </data>
+	<data name="Authorization Decision Date" xml:space="preserve">
+    <value>Yetkilendirme Karar Tarihi</value>
+  </data>
+	<data name="Authorization Decision No" xml:space="preserve">
+    <value>Yetkilendirme Karar No</value>
+  </data>
+	<data name="Date of Visit" xml:space="preserve">
+    <value>Ziyaret Tarihi</value>
+  </data>
+	<data name="Transactions" xml:space="preserve">
+    <value>İşlemler</value>
+  </data>
+	<data name="User" xml:space="preserve">
+    <value>Kullanıcı</value>
+  </data>
+	<data name="Account" xml:space="preserve">
+    <value>Hesap</value>
+  </data>
+	<data name="User Transactions" xml:space="preserve">
+    <value>Kullanıcı İşlemleri</value>
+  </data>
+	<data name="Users" xml:space="preserve">
+    <value>Kullanıcılar</value>
+  </data>
+	<data name="Hospitals by Expertise Branch" xml:space="preserve">
+    <value>Uzmanlık Alanına Göre Hastaneler</value>
+  </data>
+	<data name="Welcome," xml:space="preserve">
+    <value>Hoş Geldin,</value>
+  </data>
+	<data name="Password" xml:space="preserve">
+    <value>Şifre</value>
+  </data>
+	<data name="Role" xml:space="preserve">
+    <value>Rol</value>
+  </data>
+	<data name="Return Home" xml:space="preserve">
+    <value>Anasayfaya Dön</value>
+  </data>
+	<data name="Is Admin Program?" xml:space="preserve">
+    <value>Yönetici Program mı?</value>
+  </data>
+	<data name="Return Back" xml:space="preserve">
+    <value>Geri Dön</value>
+  </data>
+	<data name="Download as Excel File" xml:space="preserve">
+    <value>Excel Dosyası Olarak İndir</value>
+  </data>
+	<data name="Begin and End Date" xml:space="preserve">
+    <value>Başlangıç ve Bitiş Tarihi</value>
+  </data>
+	<data name="Students" xml:space="preserve">
+    <value>Öğrenciler</value>
+  </data>
+	<data name="BirthDate" xml:space="preserve">
+    <value>Doğum Tarihi</value>
+  </data>
+	<data name="Upload Affiliation File" xml:space="preserve">
+    <value>Birlikte Kullanım Dosyası Yükle</value>
+  </data>
+	<data name="An error has occurred." xml:space="preserve">
+    <value>Bir hata oluştu.</value>
+  </data>
+	<data name="An Error Occured." xml:space="preserve">
+    <value>Bir Hata Oluştu.</value>
+  </data>
+	<data name="An error occurred during Curriculum Target deletion." xml:space="preserve">
+    <value>Müfredat Hedefi silinmesi sırasında hata oluştu.</value>
+  </data>
+	<data name="An error occurred during the installation of Curriculum Targets." xml:space="preserve">
+    <value>Müfredat Hedefleri yüklenmesi sırasında hata oluştu.</value>
+  </data>
+	<data name="An error occurred during the loading of Curriculum Information." xml:space="preserve">
+    <value>Müfredat Bilgileri yüklenmesi sırasında hata oluştu.</value>
+  </data>
+	<data name="An error occurred while adding a Curriculum Target." xml:space="preserve">
+    <value>Müfredat Hedefi eklenmesi sırasında hata oluştu.</value>
+  </data>
+	<data name="Curriculum Information has been successfully loaded." xml:space="preserve">
+    <value>Müfredat Bilgileri başarı ile yüklendi.</value>
+  </data>
+	<data name="Curriculum Objectives have been successfully loaded." xml:space="preserve">
+    <value>Müfredat Hedefleri başarı ile yüklendi.</value>
+  </data>
+	<data name="End Date" xml:space="preserve">
+    <value>Bitiş Tarihi</value>
+  </data>
+	<data name="Please enter your T.C ID identification." xml:space="preserve">
+    <value>Lütfen T.C kimlik giriniz.</value>
+  </data>
+	<data name="Please select a Curriculum." xml:space="preserve">
+    <value>Lütfen Müfredat seçiniz.</value>
+  </data>
+	<data name="Please select a Program first, then select a Curriculum." xml:space="preserve">
+    <value>Lütfen Önce Program seçiniz, daha sonra Müfredat seçiniz.</value>
+  </data>
+	<data name="Program Not Found!" xml:space="preserve">
+    <value>Program Bulunamadı!</value>
+  </data>
+	<data name="Start and End dates must be compatible!" xml:space="preserve">
+    <value>Başlangıç ve Bitiş tarihleri uyumlu olmalı!</value>
+  </data>
+	<data name="Start Date" xml:space="preserve">
+    <value>Başlangıç Tarihi</value>
+  </data>
+	<data name="Start or End dates cannot be empty!" xml:space="preserve">
+    <value>Başlangıç veya Bitiş tarihleri boş olamaz!</value>
+  </data>
+	<data name="This field must be filled!" xml:space="preserve">
+    <value>Bu alan doldurulmalıdır!</value>
+  </data>
+	<data name="Completed" xml:space="preserve">
+    <value>Tamamlandı</value>
+  </data>
+	<data name="Complete" xml:space="preserve">
+    <value>Tamamla</value>
+  </data>
+	<data name="Authorization Detail" xml:space="preserve">
+    <value>Yetki Detayı</value>
+  </data>
+	<data name="Deleted Protocol Programs" xml:space="preserve">
+    <value>Silinmiş Protokollü Programlar</value>
+  </data>
+	<data name="Decision Number" xml:space="preserve">
+    <value>Karar Numarası</value>
+  </data>
+	<data name="Decision Date" xml:space="preserve">
+    <value>Karar Tarihi</value>
+  </data>
+	<data name="Principal Branches" xml:space="preserve">
+    <value>Ana Dallar</value>
+  </data>
+	<data name="Student" xml:space="preserve">
+    <value>Öğrenci</value>
+  </data>
+	<data name="Assessment" xml:space="preserve">
+    <value>Değerlendirme</value>
+  </data>
+	<data name="Ministry / University" xml:space="preserve">
+    <value>Bakanlık / Üniversite</value>
+  </data>
+	<data name="Ministries / Universities" xml:space="preserve">
+    <value>Bakanlıklar / Üniversiteler</value>
+  </data>
+	<data name="Protocol Status" xml:space="preserve">
+    <value>Protokol Durumu</value>
+  </data>
+	<data name="Admin Program" xml:space="preserve">
+    <value>Yönetici Program</value>
+  </data>
+	<data name="Canceling Date" xml:space="preserve">
+    <value>İptal Tarihi</value>
+  </data>
+	<data name="Canceling Date and Canceling Decision No cannot be empty!" xml:space="preserve">
+    <value>İptal Tarihi ve İptal Protokol Numarası boş olamaz!</value>
+  </data>
+	<data name="Deleting Reason cannot be empty!" xml:space="preserve">
+    <value>Silme Nedeni boş olamaz!</value>
+  </data>
+	<data name="Explanation cannot be empty!" xml:space="preserve">
+    <value>Açıklama boş olamaz!</value>
+  </data>
+	<data name="Canceling Decision Number" xml:space="preserve">
+    <value>İptal Protokol Numarası</value>
+  </data>
+	<data name="Advisor Assign Date" xml:space="preserve">
+    <value>Danışman Atama Tarihi</value>
+  </data>
+	<data name="Subject Determine Date" xml:space="preserve">
+    <value>Konu Belirleme Tarihi</value>
+  </data>
+	<data name="Thesis" xml:space="preserve">
+    <value>Tez</value>
+  </data>
+	<data name="Thesis Advisor" xml:space="preserve">
+    <value>Tez Danışmanı</value>
+  </data>
+	<data name="Thesis Dead Line" xml:space="preserve">
+    <value>Tez Son Teslim Tarihi</value>
+  </data>
+	<data name="Thesis Result" xml:space="preserve">
+    <value>Tez Sonucu</value>
+  </data>
+	<data name="Thesis Subject" xml:space="preserve">
+    <value>Tez Konusu</value>
+  </data>
+	<data name="Thesis Upload Date" xml:space="preserve">
+    <value>Tez Yükleme Tarihi</value>
+  </data>
+	<data name="Student Info" xml:space="preserve">
+    <value>Asistan Öğrenci Bilgileri</value>
+  </data>
+	<data name="Principal Branch Registration Date" xml:space="preserve">
+    <value>Ana Dal Tescil Tarihi</value>
+  </data>
+	<data name="Registration Date" xml:space="preserve">
+    <value>Tescil Tarihi</value>
+  </data>
+	<data name="Graduation Registration Date" xml:space="preserve">
+    <value>Mezuniyet Tescil Tarihi</value>
+  </data>
+	<data name="Sub Branch Registration Date" xml:space="preserve">
+    <value>Yan Dal Tescil Tarihi</value>
+  </data>
+	<data name="Failed" xml:space="preserve">
+    <value>Başarısız</value>
+  </data>
+	<data name="Administrative" xml:space="preserve">
+    <value>İdari</value>
+  </data>
+	<data name="Administrative Mission" xml:space="preserve">
+    <value>İdari Görevi</value>
+  </data>
+	<data name="Successful" xml:space="preserve">
+    <value>Başarılı</value>
+  </data>
+	<data name="Assessment Goals" xml:space="preserve">
+    <value>Değerlendirme Hedefleri</value>
+  </data>
+	<data name="Rating Date" xml:space="preserve">
+    <value>Değerlendirme Tarihi</value>
+  </data>
+	<data name="Rating Period" xml:space="preserve">
+    <value>Değerlendirme Dönemi</value>
+  </data>
+	<data name="Rating Result" xml:space="preserve">
+    <value>Değerlendirme Sonuçları</value>
+  </data>
+	<data name="Rating Year" xml:space="preserve">
+    <value>Değerlendirme Yılı</value>
+  </data>
+	<data name="An error occurred during the loading of Perfection Information." xml:space="preserve">
+    <value>Yetkinlik bilgileri yüklenirken bir hata oluştu.</value>
+  </data>
+	<data name="Perfection Information has been successfully loaded." xml:space="preserve">
+    <value>Yetkinlik bilgileri başarı ile yüklendi.</value>
+  </data>
+	<data name="An error occurred during perfection target deletion." xml:space="preserve">
+    <value>Yetkinlik Hedefi silinirken bir hata oluştu.</value>
+  </data>
+	<data name="An error occurred during Rotation  deletion." xml:space="preserve">
+    <value>Rotasyon silme sırasında bir hata oluştu.</value>
+  </data>
+	<data name="An error occurred during the loading of Rotation Information." xml:space="preserve">
+    <value>Rotasyon Bilgisi yüklenirken bir hata oluştu.</value>
+  </data>
+	<data name="An error occurred during Thesis deletion." xml:space="preserve">
+    <value>Tez silme sırasında bir hata oluştu.</value>
+  </data>
+	<data name="An error occurred while adding a Perfection Target." xml:space="preserve">
+    <value>Yetkinlik Hedefi eklenirken bir hata oluştu.</value>
+  </data>
+	<data name="An error occurred while adding a Thesis." xml:space="preserve">
+    <value>Tez eklenirken bir hata oluştu.</value>
+  </data>
+	<data name="Rotation Information has been successfully loaded." xml:space="preserve">
+    <value>Rotasyon Bilgileri başarı ile yüklendi.</value>
+  </data>
+	<data name="Thesis Information has been successfully loaded." xml:space="preserve">
+    <value>Tez Bilgileri başarı ile yüklendi.</value>
+  </data>
+	<data name="Educator Informations" xml:space="preserve">
+    <value>Eğitici Bilgileri</value>
+  </data>
+	<data name="Educator's Name Surname" xml:space="preserve">
+    <value>Eğitici Adı Soyadı</value>
+  </data>
+	<data name="Principal Branch Duty Place" xml:space="preserve">
+    <value>Ana Dal Görev Yeri</value>
+  </data>
+	<data name="Sub Branch Duty Place" xml:space="preserve">
+    <value>Yan Dal Görev Yeri</value>
+  </data>
+	<data name="Female" xml:space="preserve">
+    <value>Kadın</value>
+  </data>
+	<data name="Male" xml:space="preserve">
+    <value>Erkek</value>
+  </data>
+	<data name="Educator Name" xml:space="preserve">
+    <value>Eğitici İsmi</value>
+  </data>
+	<data name="Educator Phone" xml:space="preserve">
+    <value>Eğitici Telefon</value>
+  </data>
+	<data name="Add Educator" xml:space="preserve">
+    <value>Eğitici Ekle</value>
+  </data>
+	<data name="Additional Explanations" xml:space="preserve">
+    <value>Ek Açıklamalar</value>
+  </data>
+	<data name="Negative" xml:space="preserve">
+    <value>Olumsuz</value>
+  </data>
+	<data name="Positive" xml:space="preserve">
+    <value>Olumlu</value>
+  </data>
+	<data name="Program Director" xml:space="preserve">
+    <value>Program Yöneticisi</value>
+  </data>
+	<data name="Deleted Curriculums" xml:space="preserve">
+    <value>Silinmiş Müfredatlar</value>
+  </data>
+	<data name="Private University" xml:space="preserve">
+    <value>Özel Üniversite</value>
+  </data>
+	<data name="Public University" xml:space="preserve">
+    <value>Devlet Üniversitesi</value>
+  </data>
+	<data name="Create Date" xml:space="preserve">
+    <value>Oluşturulma Tarihi</value>
+  </data>
+	<data name="Protocol Program No" xml:space="preserve">
+    <value>Protokol Program Numarası</value>
+  </data>
+	<data name="Unsuccessful" xml:space="preserve">
+    <value>Başarısız</value>
+  </data>
+	<data name="Could not find an item" xml:space="preserve">
+    <value>Bir öge bulunamadı</value>
+  </data>
+	<data name="1st semester" xml:space="preserve">
+    <value>1.Dönem</value>
+  </data>
+	<data name="2nd semester" xml:space="preserve">
+    <value>2.Dönem</value>
+  </data>
+	<data name="Upload File" xml:space="preserve">
+    <value>Dosya Yükle</value>
+  </data>
+	<data name="Files" xml:space="preserve">
+    <value>Dosyalar</value>
+  </data>
+	<data name="Close" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+	<data name="Drop a file or paste an image from the clipboard or select a file using the input" xml:space="preserve">
+    <value>Yüklemek istediğiniz dosyaları sürükleyip bırakın veya dosya seçe tıklayarak dosyalarınızı seçin</value>
+  </data>
+	<data name="File Upload" xml:space="preserve">
+    <value>Dosya Yükleme</value>
+  </data>
+	<data name="No files found" xml:space="preserve">
+    <value>Hiç bir dosya bulunamadı</value>
+  </data>
+	<data name="Start uploading a new file" xml:space="preserve">
+    <value>İlk dosyanızı yükleyerek başlayabilirsiniz!</value>
+  </data>
+	<data name="Download" xml:space="preserve">
+    <value>İndir</value>
+  </data>
+	<data name="This file will be deleted. You cannot undo this action!" xml:space="preserve">
+    <value>Dosya kalıcı olarak silinecektir. Bu işlemi geri alamazsınız!</value>
+  </data>
+	<data name="Training time extension information must be entered." xml:space="preserve">
+    <value>Eğitim Süresi Uzatma Bilgisi Girilmesi Gerekmektedir.</value>
+  </data>
+	<data name="Complementary Programs" xml:space="preserve">
+    <value>Tamamlayıcı Programlar</value>
+  </data>
+	<data name="Affiliation Information has been successfully loaded." xml:space="preserve">
+    <value>Birlikte Kullanım Bilgileri başarıyla yüklendi.</value>
+  </data>
+	<data name="Protocol Information has been successfully loaded." xml:space="preserve">
+    <value>Protokol Bilgileri başarıyla yüklendi.</value>
+  </data>
+	<data name="This program is not a protocol program." xml:space="preserve">
+    <value>Bu program protokollü program değildir.</value>
+  </data>
+	<data name="User with this identity number already exists" xml:space="preserve">
+    <value>Bu kimlik numarasına sahip kullanıcı zaten var</value>
+  </data>
+	<data name="Student already exists" xml:space="preserve">
+    <value>Öğrenci zaten var</value>
+  </data>
+	<data name="This student has already been added to a program" xml:space="preserve">
+    <value>Bu öğrenci zaten bir programa eklenmiş</value>
+  </data>
+	<data name="Complement Program" xml:space="preserve">
+    <value>Tamamlayıcı Program</value>
+  </data>
+	<data name="Complement Program No" xml:space="preserve">
+    <value>Tamamlayıcı Program Numarası</value>
+  </data>
+	<data name="Complement Protocol No" xml:space="preserve">
+    <value>Tamamlayıcı Protokol Numarası</value>
+  </data>
+	<data name="Complement Programs" xml:space="preserve">
+    <value>Tamamlayıcı Programlar</value>
+  </data>
+	<data name="Duration (Month)" xml:space="preserve">
+    <value>Süre (Ay)</value>
+  </data>
+	<data name="Month" xml:space="preserve">
+    <value>Ay</value>
+  </data>
+	<data name="Parent Institution" xml:space="preserve">
+    <value>Üst Kurum</value>
+  </data>
+	<data name="Select point" xml:space="preserve">
+    <value>Puan seçiniz</value>
+  </data>
+	<data name="Delete Reason" xml:space="preserve">
+    <value>Silme Nedeni</value>
+  </data>
+	<data name="Education Time Tracking" xml:space="preserve">
+    <value>Eğitim Süre Takibi</value>
+  </data>
+	<data name="Additional Days(Day)" xml:space="preserve">
+    <value>Süre (Gün)</value>
+  </data>
+	<data name="Additional Days(Month)" xml:space="preserve">
+    <value>Süre (Ay)</value>
+  </data>
+	<data name="Process Date" xml:space="preserve">
+    <value>İşlem Tarihi</value>
+  </data>
+	<data name="Process Type" xml:space="preserve">
+    <value>İşlem Türü</value>
+  </data>
+	<data name="Reason" xml:space="preserve">
+    <value>Nedeni</value>
+  </data>
+	<data name="In Progress" xml:space="preserve">
+    <value>Devam ediyor.</value>
+  </data>
+	<data name="Specialization training has been terminated." xml:space="preserve">
+    <value>Uzmanlık eğitimi sonlandırılmıştır.</value>
+  </data>
+	<data name="Successful." xml:space="preserve">
+    <value>Başarılı.</value>
+  </data>
+	<data name="Thesis advisor has been appointed." xml:space="preserve">
+    <value>Tez danışmanı belirlenmiştir.</value>
+  </data>
+	<data name="Thesis pre research has been done." xml:space="preserve">
+    <value>Tez ön araştırması yapılmıştır.</value>
+  </data>
+	<data name="Thesis subject has been determined." xml:space="preserve">
+    <value>Tez konusu belirlenmiştir.</value>
+  </data>
+	<data name="Time extension has been applied." xml:space="preserve">
+    <value>Süre uzatımı uygulandı.</value>
+  </data>
+	<data name="Ethic Committee Decision" xml:space="preserve">
+    <value>Etik Kurul Kararı</value>
+  </data>
+	<data name="Subject" xml:space="preserve">
+    <value>Konu</value>
+  </data>
+	<data name="Thesis Title" xml:space="preserve">
+    <value>Tez Başlığı</value>
+  </data>
+	<data name="Thesis Advisors" xml:space="preserve">
+    <value>Tez Danışmanları</value>
+  </data>
+	<data name="Deleted Thesis Advisors" xml:space="preserve">
+    <value>Silinen Tez Danışmanları</value>
+  </data>
+	<data name="Thesis title has been determined." xml:space="preserve">
+    <value>Tez başlığı belirlenmiştir</value>
+  </data>
+	<data name="Finish" xml:space="preserve">
+    <value>Bitiş</value>
+  </data>
+	<data name="Time Decreasing" xml:space="preserve">
+    <value>Süre Kısaltma</value>
+  </data>
+	<data name="Time Increasing" xml:space="preserve">
+    <value>Süre Uzatma</value>
+  </data>
+	<data name="Estimated Finish of Education" xml:space="preserve">
+    <value>Eğitimin Tahmini Bitişi</value>
+  </data>
+	<data name="Estimated Finish Date of Education" xml:space="preserve">
+    <value>Eğitimin Tahmini Bitiş Tarihi</value>
+  </data>
+	<data name="Alternate" xml:space="preserve">
+    <value>Yedek</value>
+  </data>
+	<data name="Core" xml:space="preserve">
+    <value>Asil</value>
+  </data>
+	<data name="Thesis Type" xml:space="preserve">
+    <value>Tez Tipi</value>
+  </data>
+	<data name="Thesis Type-1" xml:space="preserve">
+    <value>Tez Türü-1</value>
+  </data>
+	<data name="Thesis Type-2" xml:space="preserve">
+    <value>Tez Türü-2</value>
+  </data>
+	<data name="Animal Studies" xml:space="preserve">
+    <value>Hayvan Çalışmaları</value>
+  </data>
+	<data name="Clinical Studies" xml:space="preserve">
+    <value>Klinik Çalışmalar</value>
+  </data>
+	<data name="Invitro (Inanimate) Studies" xml:space="preserve">
+    <value>Invitro (Cansız) Çalışmaları</value>
+  </data>
+	<data name="Insilico (Simulation) Studies" xml:space="preserve">
+    <value>Insilico (Simülasyon) Çalışmaları</value>
+  </data>
+	<data name="Laboratory Studies" xml:space="preserve">
+    <value>Laboratuvar Çalışmaları</value>
+  </data>
+	<data name="Effective Date" xml:space="preserve">
+    <value>Yürürlük Tarihi</value>
+  </data>
+	<data name="Is Program Manager?" xml:space="preserve">
+    <value>Program Yöneticisi Mi?</value>
+  </data>
+	<data name="Duration (Year)" xml:space="preserve">
+    <value>Süre (Yıl)</value>
+  </data>
+	<data name="Period" xml:space="preserve">
+    <value>Dönem</value>
+  </data>
+	<data name="Creator Educator" xml:space="preserve">
+    <value>Oluşturan Eğitici</value>
+  </data>
+	<data name="Evaluator Educator" xml:space="preserve">
+    <value>Değerlendiren Eğitici</value>
+  </data>
+	<data name="Overall Average" xml:space="preserve">
+    <value>Genel Ortalama</value>
+  </data>
+	<data name="Evaluator" xml:space="preserve">
+    <value>Değerlendiren</value>
+  </data>
+	<data name="Deleted Students" xml:space="preserve">
+    <value>Silinmiş Öğrenciler</value>
+  </data>
+	<data name="Scientific Studies" xml:space="preserve">
+    <value>Bilimsel Çalışmalar</value>
+  </data>
+	<data name="Perfection Type" xml:space="preserve">
+    <value>Yetkinlik Türü</value>
+  </data>
+	<data name="Education Year" xml:space="preserve">
+    <value>Eğitim Yılı</value>
+  </data>
+	<data name="Perfection Name" xml:space="preserve">
+    <value>Yetkinlik İsmi</value>
+  </data>
+	<data name="Education Officer" xml:space="preserve">
+    <value>Birim Eğitim Sorumlusu</value>
+  </data>
+	<data name="Is Education Officer?" xml:space="preserve">
+    <value>Birim Eğitim Sorumlusu Mu?</value>
+  </data>
+	<data name="Make Passive" xml:space="preserve">
+    <value>Pasife Al</value>
+  </data>
+	<data name="Program Start Date" xml:space="preserve">
+    <value>Programa Başlama Tarihi</value>
+  </data>
+	<data name="E-Report" xml:space="preserve">
+    <value>E-Karne</value>
+  </data>
+	<data name="Specialist Training Exit Examination" xml:space="preserve">
+    <value>Uzmanlık Eğitimi Bitirme Sınavı</value>
+  </data>
+	<data name="Warning" xml:space="preserve">
+    <value>Uyarı</value>
+  </data>
+	<data name="Result" xml:space="preserve">
+    <value>Sonuç</value>
+  </data>
+	<data name="Permissions" xml:space="preserve">
+    <value>Yetkiler</value>
+  </data>
+	<data name="Roles" xml:space="preserve">
+    <value>Roller</value>
+  </data>
+	<data name="Roles and Permissions" xml:space="preserve">
+    <value>Roller ve Yetkiler</value>
+  </data>
+	<data name="You cannot edit default roles!" xml:space="preserve">
+    <value>Sistem tarafından otomatik olarak oluşturulmuş roller düzenlenemez!</value>
+  </data>
+	<data name="Add Role" xml:space="preserve">
+    <value>Rol Ekle</value>
+  </data>
+	<data name="Role and Permission" xml:space="preserve">
+    <value>Rol ve Yetki</value>
+  </data>
+	<data name="Beginning Specialization Education" xml:space="preserve">
+    <value>Uzmanlık Eğitimine Başlama</value>
+  </data>
+	<data name="Branch Change" xml:space="preserve">
+    <value>Branş / Dal Değişikliği</value>
+  </data>
+	<data name="Counting Education Periods Due to Legislation" xml:space="preserve">
+    <value>Tâbi Olma Başvurusu ile Kısaltma (Müfredat / Mevzuat)</value>
+  </data>
+	<data name="Counting the Education Period with the Decision of the Academic Board" xml:space="preserve">
+    <value>Akademik Kurul Kararı ile Eğitim Süresi Saydırma</value>
+  </data>
+	<data name="Excused Transfer" xml:space="preserve">
+    <value>Mazeretli Nakil</value>
+  </data>
+	<data name="Extension by Application for Subjection (Curriculum)" xml:space="preserve">
+    <value>Tâbi Olma Başvurusu ile Uzatma (Müfredat / Mevzuat)</value>
+  </data>
+	<data name="Force Majeure" xml:space="preserve">
+    <value>Mücbir Sebepler</value>
+  </data>
+	<data name="Graduate" xml:space="preserve">
+    <value>Mezun</value>
+  </data>
+	<data name="Health Report" xml:space="preserve">
+    <value>Sağlık Raporu</value>
+  </data>
+	<data name="Death" xml:space="preserve">
+    <value>Vefat</value>
+  </data>
+	<data name="Left Due to Failure in the Final Exam" xml:space="preserve">
+    <value>2. Bitirme Sınavında Başarısızlık Nedeniyle Ayrıldı</value>
+  </data>
+	<data name="Left Due to Failure in Thesis" xml:space="preserve">
+    <value>Tezde Başarısızlık Nedeniyle Ayrıldı</value>
+  </data>
+	<data name="Left Due to Resignation" xml:space="preserve">
+    <value>İstifa Nedeniyle Ayrıldı</value>
+  </data>
+	<data name="Left with Consent" xml:space="preserve">
+    <value>Feragat ile Ayrıldı</value>
+  </data>
+	<data name="Maternity Leave" xml:space="preserve">
+    <value>Doğum İzni</value>
+  </data>
+	<data name="Marriage Leave" xml:space="preserve">
+    <value>Evlilik İzni</value>
+  </data>
+	<data name="Death Leave" xml:space="preserve">
+    <value>Ölüm İzni</value>
+  </data>
+	<data name="Paternity Leave" xml:space="preserve">
+    <value>Babalık İzni</value>
+  </data>
+	<data name="Accompaniment" xml:space="preserve">
+    <value>Refakat</value>
+  </data>
+	<data name="Due to Unusual Circumstances" xml:space="preserve">
+    <value>Olağan Dışı Haller Sebebiyle</value>
+  </data>
+	<data name="Military Leave" xml:space="preserve">
+    <value>Askerlik İzni</value>
+  </data>
+	<data name="Relocation and Time Extension Due to Negative Opinion" xml:space="preserve">
+    <value>Olumsuz Kanaat Nedeniyle Yer Değişikliği ve Süre Uzatımı</value>
+  </data>
+	<data name="Restarting Education by Judgment" xml:space="preserve">
+    <value>Yargı Kararı ile Eğitime Geri Başlatma</value>
+  </data>
+	<data name="Restarting Education with Amnesty Law" xml:space="preserve">
+    <value>Af Kanunu ile Eğitime Geri Başlatma</value>
+  </data>
+	<data name="Time Extension Due to Failure in Rotation and Return to Own Institution" xml:space="preserve">
+    <value>Rotasyonda Başarısızlık Nedeniyle Süre Uzatma ve Kendi Kurumuna Dönüş</value>
+  </data>
+	<data name="Transfer" xml:space="preserve">
+    <value>Nakil</value>
+  </data>
+	<data name="Unexcused Transfer" xml:space="preserve">
+    <value>Mazeretsiz Nakil</value>
+  </data>
+	<data name="Unpaid Vacation" xml:space="preserve">
+    <value>Ücretsiz İzin</value>
+  </data>
+	<data name="Couple Status" xml:space="preserve">
+    <value>Eş Durumu</value>
+  </data>
+	<data name="Health Status" xml:space="preserve">
+    <value>Sağlık Durumu</value>
+  </data>
+	<data name="Reason for Excuse" xml:space="preserve">
+    <value>Mazeret Nedeni</value>
+  </data>
+	<data name="Previous Expertise Training Program" xml:space="preserve">
+    <value>Önceki Uzmanlık Eğitim Programı</value>
+  </data>
+	<data name="Negative Opinion" xml:space="preserve">
+    <value>Olumsuz Kanaat</value>
+  </data>
+	<data name="Copy of curriculum has been successfully created." xml:space="preserve">
+    <value>Müfredat kopyası başarılı bir şekilde oluşturuldu.</value>
+  </data>
+	<data name="Create Copy" xml:space="preserve">
+    <value>Kopyasını Oluştur</value>
+  </data>
+	<data name="Number of Experience" xml:space="preserve">
+    <value>Tecrübe Sayısı</value>
+  </data>
+	<data name="Unsuccessful." xml:space="preserve">
+    <value>Başarısız.</value>
+  </data>
+	<data name="Select perfection" xml:space="preserve">
+    <value>Yetkinlik seçiniz</value>
+  </data>
+	<data name="Please Select" xml:space="preserve">
+    <value>Lütfen Seçiniz</value>
+  </data>
+	<data name="Place of Education" xml:space="preserve">
+    <value>Eğitim Verilen Yer</value>
+  </data>
+	<data name="Places of Education" xml:space="preserve">
+    <value>Eğitim Verilen Yerler</value>
+  </data>
+	<data name="Parent Institutions" xml:space="preserve">
+    <value>Üst Kurumlar</value>
+  </data>
+	<data name="Lack of Education" xml:space="preserve">
+    <value>Eğitim Yetersizliği</value>
+  </data>
+	<data name="Interventional Perfection" xml:space="preserve">
+    <value>Girişimsel Yetkinlik</value>
+  </data>
+	<data name="Basic Perfection" xml:space="preserve">
+    <value>Temel Yetkinlik</value>
+  </data>
+	<data name="Clinic Perfections" xml:space="preserve">
+    <value>Klinik Yetkinlikler</value>
+  </data>
+	<data name="Interventional Perfections" xml:space="preserve">
+    <value>Girişimsel Yetkinlikler</value>
+  </data>
+	<data name="Other Perfections" xml:space="preserve">
+    <value>Diğer Yetkinlikler</value>
+  </data>
+	<data name="Opinion" xml:space="preserve">
+    <value>Kanaat</value>
+  </data>
+	<data name="Opinion Form" xml:space="preserve">
+    <value>Kanaat Formu</value>
+  </data>
+	<data name="Complete All" xml:space="preserve">
+    <value>Hepsini Tamamla</value>
+  </data>
+	<data name="Portfolio" xml:space="preserve">
+    <value>Portföy</value>
+  </data>
+	<data name="Portfolio(Number of Transactions)" xml:space="preserve">
+    <value>Portföy(İşlem Sayısı)</value>
+  </data>
+
+	<data name="Registration Number" xml:space="preserve">
+    <value>Tescil Numarası</value>
+  </data>
+	<data name="Mobile Phone" xml:space="preserve">
+    <value>Cep Telefonu</value>
+  </data>
+	<data name="Educational Institutions of the Ministry / University" xml:space="preserve">
+    <value>Bakanlık / Üniversite Eğitimin Verildiği Kurumları</value>
+  </data>
+	<data name="Beginning Exam" xml:space="preserve">
+    <value>Yerleştirildiği Sınav</value>
+  </data>
+	<data name="Beginning Period" xml:space="preserve">
+    <value>Başladığı Dönem</value>
+  </data>
+	<data name="Assignment Status" xml:space="preserve">
+    <value>Görevlendirme / Eğitim Durumu</value>
+  </data>
+	<data name="Assignment" xml:space="preserve">
+    <value>Görevlendirme / Eğitim</value>
+  </data>
+	<data name="Leaving the Institution Due to Assignment" xml:space="preserve">
+    <value>Kendi Kurumundan Görevlendirme / Eğitim Sebebiyle Ayrılış</value>
+  </data>
+	<data name="Completion Of Assignment" xml:space="preserve">
+    <value>Görevlendirilmenin / Eğitimin Tamamlanması</value>
+  </data>
+	<data name="Completion Of Education Abroad" xml:space="preserve">
+    <value>Yurt Dışı Eğitim Tamamlanması</value>
+  </data>
+	<data name="Assignment Type" xml:space="preserve">
+    <value>Görevlendirme / Eğitim Türü</value>
+  </data>
+	<data name="Assignment Due To Increasing Knowledge" xml:space="preserve">
+    <value>Bilgi Görgü Artırma Nedeniyle Görevlendirme / Eğitim</value>
+  </data>
+	<data name="Increasing Knowledge Due To Lack Of Education" xml:space="preserve">
+    <value>Eğitim Yetersizliği Nedeniyle Bilgi Görgü Artırma</value>
+  </data>
+	<data name="External Rotation Due To Lack Of Education" xml:space="preserve">
+    <value>Eğitim Yetersizliği Nedeniyle Kurum Dışı Rotasyon</value>
+  </data>
+	<data name="Internal Rotation Due To Lack Of Education" xml:space="preserve">
+    <value>Eğitim Yetersizliği Nedeniyle Kurum İçi Rotasyon</value>
+  </data>
+	<data name="Assignment Due To Rotation(Outside Institution)" xml:space="preserve">
+    <value>Rotasyon Nedeniyle Görevlendirme / Eğitim (Kurum Dışı)</value>
+  </data>
+	<data name="Assignment Due To Rotation(Inside of Institution)" xml:space="preserve">
+    <value>Rotasyon Nedeniyle Görevlendirme / Eğitim (Kurum İçi)</value>
+  </data>
+	<data name="Assignment Due To Field Duty" xml:space="preserve">
+    <value>Saha Görevi Nedeniyle Görevlendirme / Eğitim</value>
+  </data>
+	<data name="Education Abroad" xml:space="preserve">
+    <value>Yurt Dışı Eğitim</value>
+  </data>
+	<data name="Leaving Date" xml:space="preserve">
+    <value>Kurumdan Ayrılış Tarihi</value>
+  </data>
+	<data name="NotGreaterThan360" xml:space="preserve">
+    <value>Zorunlu(360'dan büyük olamaz!)</value>
+  </data>
+	<data name="Institution To Return" xml:space="preserve">
+    <value>Geri Döneceği Kurum</value>
+  </data>
+	<data name="Exam Period" xml:space="preserve">
+    <value>Sınav Dönemi</value>
+  </data>
+	<data name="Placement Year" xml:space="preserve">
+    <value>Sınav Yılı</value>
+  </data>
+	<data name="Placement Score" xml:space="preserve">
+    <value>Yerleştirme Puanı</value>
+  </data>
+	<data name="Quota Type" xml:space="preserve">
+    <value>Kontenjan Türü</value>
+  </data>
+	<data name="QuotaType_1" xml:space="preserve">
+    <value>Kontenjan Türü-1</value>
+  </data>
+	<data name="QuotaType_2" xml:space="preserve">
+    <value>Kontenjan Türü-2</value>
+  </data>
+	<data name="Ministry Of Health" xml:space="preserve">
+    <value>Sağlık Bakanlığı</value>
+  </data>
+	<data name="EAH" xml:space="preserve">
+    <value>EAH-Eğitim ve Araştırma Hastanesi</value>
+  </data>
+	<data name="SBA(On behalf of the Ministry of Health)" xml:space="preserve">
+    <value>SBA(Sağlık Bakanlığı Adına)</value>
+  </data>
+	<data name="SB(Ministry Of Health)" xml:space="preserve">
+    <value>SB(Sağlık Bakanlığı)</value>
+  </data>
+	<data name="Uni" xml:space="preserve">
+    <value>ÜNİ</value>
+  </data>
+	<data name="University(State)" xml:space="preserve">
+    <value>ÜNİ-D / Üniversite (Devlet)</value>
+  </data>
+	<data name="University(Private)" xml:space="preserve">
+    <value>ÜNİ-V / Üniversite (Vakıf)</value>
+  </data>
+	<data name="YBU(Foreign National)" xml:space="preserve">
+    <value>YBU(Yabancı Uyruklu)</value>
+  </data>
+	<data name="KKTC" xml:space="preserve">
+    <value>KKTC</value>
+  </data>
+	<data name="KKTC Full Time" xml:space="preserve">
+    <value>KKTC-TS (Tam Süreli)</value>
+  </data>
+	<data name="KKTC Half Time" xml:space="preserve">
+    <value>KKTC-YS (Yarı Süreli)</value>
+  </data>
+	<data name="Ministry Of Interior" xml:space="preserve">
+    <value>İçişleri Bakanlığı</value>
+  </data>
+	<data name="Ministry Of Interior-JGK(Gendarmerie General Command)" xml:space="preserve">
+    <value>İçişleri Bakanlığı-JGK(Jandarma Genel Komutanlığı)</value>
+  </data>
+	<data name="MSB" xml:space="preserve">
+    <value>MSB-Milli Savunma Bakanlığı</value>
+  </data>
+	<data name="MSB(National Defense Department)-HKK(Air Force Command)" xml:space="preserve">
+    <value>MSB(Milli Savunma Bakanlığı)-HKK(Hava Kuvvetleri Komutanlığı)</value>
+  </data>
+	<data name="MSB(National Defense Department)-KKK(Land Forces Command)" xml:space="preserve">
+    <value>MSB(Milli Savunma Bakanlığı)-KKK(Kara Kuvvetleri Komutanlığı)</value>
+  </data>
+	<data name="MSB(National Defense Department)-DKK(Naval Forces Command)" xml:space="preserve">
+    <value>MSB(Milli Savunma Bakanlığı)-DKK(Deniz Kuvvetleri Komutanlığı)</value>
+  </data>
+	<data name="TDMM(Non-Medical Professionals)" xml:space="preserve">
+    <value>TDMM(Tıp Dışı Meslek Mensupları)</value>
+  </data>
+	<data name="Vet" xml:space="preserve">
+    <value>Veteriner</value>
+  </data>
+	<data name="Chemist" xml:space="preserve">
+    <value>Kimyager</value>
+  </data>
+	<data name="Pharmacist" xml:space="preserve">
+    <value>Eczacı</value>
+  </data>
+	<data name="ADL(Forensic Medicine Institute)" xml:space="preserve">
+    <value>ADL(Adli Tıp Kurumu)</value>
+  </data>
+	<data name="MAP(Guest Military Personnel)" xml:space="preserve">
+    <value>MAP(Misafir Askeri Personel)</value>
+  </data>
+	<data name="Please enter a value that between 0-100" xml:space="preserve">
+    <value>Lütfen 0-100 arasında bir değer giriniz</value>
+  </data>
+	<data name="Coordinator Thesis Advisor" xml:space="preserve">
+    <value>Koordinatör Tez Danışmanı</value>
+  </data>
+	<data name="Permanent Place of Duty" xml:space="preserve">
+    <value>Asli Görev Yeri</value>
+  </data>
+	<data name="Place of Duty" xml:space="preserve">
+    <value>Görev Yeri</value>
+  </data>
+	<data name="Temporary Place of Duty" xml:space="preserve">
+    <value>Geçici Görev Yeri</value>
+  </data>
+	<data name="Beginning to Assigned Institution" xml:space="preserve">
+    <value>Görevlendirildiği Kuruma Başlayış</value>
+  </data>
+	<data name="Beginning To Own Institution After Assignment" xml:space="preserve">
+    <value>Görevlendirme / Eğitim Sonrası Kendi Kurumuna Başlangıç</value>
+  </data>
+	<data name="Country" xml:space="preserve">
+    <value>Ülke</value>
+  </data>
+	<data name="KKTC Half Timed" xml:space="preserve">
+    <value>KKTC Yarı Süreli</value>
+  </data>
+	<data name="Edit" xml:space="preserve">
+    <value>Düzenle</value>
+  </data>
+	<data name="You have to delete the related record first, to delete this record." xml:space="preserve">
+    <value>Bu kaydı silmek için önce ilgili kaydı silmelisiniz.</value>
+  </data>
+	<data name="Time of assignment cannot exceed 360 days!" xml:space="preserve">
+    <value>Görevlendirme / Eğitim süresi 360 günü geçemez!</value>
+  </data>
+	<data name="Time Decreasing in Accordance With Law Number 1219" xml:space="preserve">
+    <value>1219 nolu Kanunun EK-1 Tablosu Uyarınca Süre Kısaltılması</value>
+  </data>
+	<data name="Advisor Not Found!" xml:space="preserve">
+    <value>Danışman Bulunamadı!</value>
+  </data>
+	<data name="Deactivated Student" xml:space="preserve">
+    <value>Pasife Alınan Öğrenci</value>
+  </data>
+	<data name="Deactivated Educator" xml:space="preserve">
+    <value>Pasife Alınan Eğitici</value>
+  </data>
+	<data name="Exam Date" xml:space="preserve">
+    <value>Sınav Tarihi</value>
+  </data>
+	<data name="Time Extension Due to Failure of Thesis Defense" xml:space="preserve">
+    <value>Tez Savunmasındaki Başarısızlık Nedeniyle Süre Uzatma</value>
+  </data>
+	<data name="Successfully Saved" xml:space="preserve">
+    <value>Başarıyla Kaydedildi</value>
+  </data>
+	<data name="The defense has not been concluded yet" xml:space="preserve">
+    <value>Savunma henüz sonuçlanmadı</value>
+  </data>
+	<data name="1st Thesis Defence" xml:space="preserve">
+    <value>1. Tez Savunması</value>
+  </data>
+	<data name="2nd Thesis Defence" xml:space="preserve">
+    <value>2. Tez Savunması</value>
+  </data>
+	<data name="3rd Thesis Defence" xml:space="preserve">
+    <value>3. Tez Savunması</value>
+  </data>
+	<data name="4th Thesis Defence" xml:space="preserve">
+    <value>4. Tez Savunması</value>
+  </data>
+	<data name="Thesis Defence" xml:space="preserve">
+    <value>Tez Savunması</value>
+  </data>
+	<data name="Time Decreasing Due to Success of First Thesis Defense" xml:space="preserve">
+    <value>İlk Tez Savunmasındaki Başarı Nedeniyle Süre Kısaltma</value>
+  </data>
+	<data name="Time Extension Due to Failure of First Thesis Defense" xml:space="preserve">
+    <value>İlk Tez Savunmasındaki Başarısızlık Nedeniyle Süre Uzatma</value>
+  </data>
+	<data name="Study" xml:space="preserve">
+    <value>Çalışma</value>
+  </data>
+	<data name="Study Type" xml:space="preserve">
+    <value>Çalışma Tipi</value>
+  </data>
+	<data name="Please enter at least 3 character to search." xml:space="preserve">
+    <value>Arama yapmak için en az 3 karakter giriniz</value>
+  </data>
+	<data name="Completed Rotations" xml:space="preserve">
+    <value>Tamamlanmış Rotasyonlar</value>
+  </data>
+	<data name="Exam Place" xml:space="preserve">
+    <value>Sınav Yeri</value>
+  </data>
+	<data name="Ability Exam Note" xml:space="preserve">
+    <value>Beceri Sınav Notu</value>
+  </data>
+	<data name="Practice and Ability Exam Note" xml:space="preserve">
+    <value>Uygulama ve Beceri Sınav Notu</value>
+  </data>
+	<data name="Staff Institution" xml:space="preserve">
+    <value>Kadrosunun Bulunduğu Kurum</value>
+  </data>
+	<data name="Staff Parent Institution" xml:space="preserve">
+    <value>Kadrosunun Bulunduğu Üst Kurum</value>
+  </data>
+	<data name="Time of Assignment So Far" xml:space="preserve">
+    <value>Şimdiye kadar gidilen görevlendirme / eğitim süresi</value>
+  </data>
+	<data name="Day" xml:space="preserve">
+    <value>Gün</value>
+  </data>
+	<data name="Please enter expertise branch and registration date." xml:space="preserve">
+    <value>Lütfen uzmanlık alanı ve tescil tarihi giriniz. </value>
+  </data>
+	<data name="Please Select Expertise Branch" xml:space="preserve">
+    <value>Lütfen Uzmanlık Dalı Seçiniz</value>
+  </data>
+	<data name="Vocational Knowledge Exam Note" xml:space="preserve">
+    <value>Mesleki Bilgi Sınavı Notu</value>
+  </data>
+	<data name="PROVISIONAL ARTICLE 1- (1) The educator rights of those who have received at least the title of associate professor according to Law No. 2547 before 18/7/2009 and have started teaching in the relevant branch, although they are not experts in the relevant branch, are reserved." xml:space="preserve">
+    <value>GEÇİCİ MADDE 1- (1) İlgili dalda uzman olmadığı halde 18/7/2009 tarihinden önce 2547 sayılı Kanuna göre en az doçent ünvanını almış olup ilgili dalda eğitim vermeye başlamış olanların eğitici hakları saklıdır.</value>
+  </data>
+	<data name="Is Conditional Educator?" xml:space="preserve">
+    <value>TUEY Geçici Birinci Madde Kapsamında Eğitici Mi?</value>
+  </data>
+	<data name="Title Date" xml:space="preserve">
+    <value>Doçentlik Belgesi Tarihi</value>
+  </data>
+	<data name="Successful Completion of the Specialization Training" xml:space="preserve">
+    <value>Uzmanlık Eğitiminin Başarılı Bir Şekilde Tamamlanması</value>
+  </data>
+	<data name="Failure in the Exit Exam" xml:space="preserve">
+    <value>Bitirme Sınavında Başarısız</value>
+  </data>
+	<data name="Successful in the Exit Exam" xml:space="preserve">
+    <value>Bitirme Sınavında Başarılı</value>
+  </data>
+	<data name="Are you sure you want to make this person education officer of the program?" xml:space="preserve">
+    <value>Bu kişiyi programın eğitim sorumlusu yapmak istediğinizden emin misiniz?</value>
+  </data>
+	<data name="Are you sure you want to make this person education officer of the program? This choice will affect the current education officer." xml:space="preserve">
+    <value>Bu kişiyi programın eğitim sorumlusu yapmak istediğinizden emin misiniz? Bu seçim programdaki eğitim sorumlusunu etkileyecektir.</value>
+  </data>
+	<data name="Associate Professorship Document" xml:space="preserve">
+    <value>Doçentlik Belgesi</value>
+  </data>
+	<data name="Declaration Regarding Teaching In This Field Document" xml:space="preserve">
+    <value>Bu Alanda Eğitim Vermeye Başladığı Tarih ile İlgili Beyan Yazısı</value>
+  </data>
+	<data name="Obligatory/Optional" xml:space="preserve">
+    <value>Zorunlu/Seçmeli</value>
+  </data>
+	<data name="Education Year-Seniorty" xml:space="preserve">
+    <value>Eğitim Yılı-Kıdem</value>
+  </data>
+	<data name="Duty Start Date" xml:space="preserve">
+    <value>Göreve Başlangıç Tarihi</value>
+  </data>
+	<data name="Duty End Date" xml:space="preserve">
+    <value>Görev Bitiş Tarihi</value>
+  </data>
+	<data name="Add Instructor Advisor" xml:space="preserve">
+    <value>Eğitici Danışman Ekle</value>
+  </data>
+	<data name="Add Non-Instructor Advisor" xml:space="preserve">
+    <value>Eğitici Olmayan Danışman Ekle</value>
+  </data>
+	<data name="To add program, you have to select an expertise branch." xml:space="preserve">
+    <value>Program eklemek için bir uzmanlık dalı seçmelisiniz.</value>
+  </data>
+	<data name="You have to delete the related program record first, to delete this record." xml:space="preserve">
+    <value>Bu kaydı silmek için önce ilgili program kaydını silmelisiniz.</value>
+  </data>
+	<data name="You have to delete the sub branches records first, to delete this record." xml:space="preserve">
+    <value>Bu kaydı silmek için önce ilgili yan dal kayıtlarını silmelisiniz.</value>
+  </data>
+	<data name="Assignment Letter" xml:space="preserve">
+    <value>Görevlendirme Yazısı</value>
+  </data>
+	<data name="Are you sure you want to make passive this user?" xml:space="preserve">
+    <value>Bu kişiyi pasife almak istediğinizden emin misiniz?</value>
+  </data>
+	<data name="Exam Not Concluded" xml:space="preserve">
+    <value>Sınav Sonuçlandırılmadı</value>
+  </data>
+	<data name="The {0} program to which the student is affiliated, has been closed on {1}. Make sure the necessary process is done." xml:space="preserve">
+    <value>Öğrencinin bağlı olduğu {0} programı {1} tarihinde kapatılmıştır. Öğrencinin nakil vb. girişinin yapılmasını sağlayın.</value>
+  </data>
+	<data name="Download has been started, this proces may take while." xml:space="preserve">
+    <value>İndirme işlemi başlamıştır, bu işlem uzun sürebilir.</value>
+  </data>
+	<data name="Allowed file types:" xml:space="preserve">
+    <value>İzin verilen dosya tipleri:</value>
+  </data>
+	<data name="Download Form Sample" xml:space="preserve">
+    <value>Örnek Form İndir</value>
+  </data>
+	<data name="Document Type" xml:space="preserve">
+    <value>Dosya Tipi</value>
+  </data>
+	<data name="Scientific Study" xml:space="preserve">
+    <value>Bilimsel Çalışma</value>
+  </data>
+	<data name="Declaration Document" xml:space="preserve">
+    <value>Beyan Yazısı</value>
+  </data>
+	<data name="Official Letter" xml:space="preserve">
+    <value>Resmi Yazı</value>
+  </data>
+	<data name="Performance Rating" xml:space="preserve">
+    <value>Diğer Yetkinlik</value>
+  </data>
+	<data name="Deleted Document" xml:space="preserve">
+    <value>Silinen Dosya</value>
+  </data>
+	<data name="Account Settings" xml:space="preserve">
+    <value>Hesap Ayarları</value>
+  </data>
+	<data name="Personal Info" xml:space="preserve">
+    <value>Kişisel Bilgiler</value>
+  </data>
+	<data name="Photo" xml:space="preserve">
+    <value>Fotoğraf</value>
+  </data>
+	<data name="My Profile" xml:space="preserve">
+    <value>Profilim</value>
+  </data>
+	<data name="Save Changes" xml:space="preserve">
+    <value>Değişiklikleri Kaydet</value>
+  </data>
+	<data name="Update your personal information and account settings" xml:space="preserve">
+    <value>Kişisel bilgilerinizi ve hesap ayarlarınızı güncelleyin</value>
+  </data>
+	<data name="Dates don't match!" xml:space="preserve">
+    <value>Tarihler uyuşmuyor!</value>
+  </data>
+	<data name="Instructor" xml:space="preserve">
+    <value>Eğitici</value>
+  </data>
+	<data name="Non-Instructor" xml:space="preserve">
+    <value>Eğitici Olmayan</value>
+  </data>
+	<data name="Date" xml:space="preserve">
+    <value>Tarih</value>
+  </data>
+	<data name="User Inactivated!" xml:space="preserve">
+    <value>Kullanıcı Pasife Alındı!</value>
+  </data>
+	<data name="User Activated!" xml:space="preserve">
+    <value>Kullanıcı Aktif Edildi!</value>
+  </data>
+	<data name="Place of Rotation" xml:space="preserve">
+    <value>Rotasyonun Yapıldığı Yer</value>
+  </data>
+	<data name="Transfer Institution" xml:space="preserve">
+    <value>Nakil Olduğu Kurum</value>
+  </data>
+	<data name="Sectional" xml:space="preserve">
+    <value>Kesitsel</value>
+  </data>
+	<data name="Time of assignment, cannot exceed the estimated finish!" xml:space="preserve">
+    <value>Görevlendirme / Eğitim süresi tahmini bitiş tarihini geçemez!</value>
+  </data>
+	<data name="Enter the process date of the assignment/education record for which the process date is not entered." xml:space="preserve">
+    <value>İşlem tarihi girilmeyen görevlendirme/eğitim kaydının işlem tarihini giriniz.</value>
+  </data>
+	<data name="Leaving Due to Re-Passing the Exam" xml:space="preserve">
+    <value>Yeniden Sınav Kazanma Sebebi İle Ayrılış</value>
+  </data>
+	<data name="OSYM Result Document" xml:space="preserve">
+    <value>ÖSYM Sonuç Belgesi</value>
+  </data>
+	<data name="Registration Branch Name" xml:space="preserve">
+    <value>Tescil Uzmanlık Alanı</value>
+  </data>
+	<data name="We use cookies in accordance with privacy in order to serve you better on our site. You can review our cookie policy." xml:space="preserve">
+    <value>Sitemizde sizlere daha iyi hizmet verebilmek için gizliliğe uygun şekilde çerezler kullanmaktayız. Çerez politikamızı inceleyebilirsiniz.</value>
+  </data>
+	<data name="Cookie Policy" xml:space="preserve">
+    <value>Çerez Politikası</value>
+  </data>
+	<data name="Log Records" xml:space="preserve">
+    <value>Log Kayıtları</value>
+  </data>
+	<data name="Log Record" xml:space="preserve">
+    <value>Log Kaydı</value>
+  </data>
+	<data name="Log Type" xml:space="preserve">
+    <value>Log Tipi</value>
+  </data>
+	<data name="Message" xml:space="preserve">
+    <value>Mesaj</value>
+  </data>
+	<data name="Captcha expired" xml:space="preserve">
+    <value>Doğrulama kodunun süresi doldu</value>
+  </data>
+	<data name="Captcha is wrong" xml:space="preserve">
+    <value>Doğrulama kodu yanlış</value>
+  </data>
+	<data name="Support" xml:space="preserve">
+    <value>Destek</value>
+  </data>
+	<data name="To add a program, you must add the expertise branch in the upper right corner of the page to the Academic Information section." xml:space="preserve">
+    <value>Program eklemek için sayfanın sağ üst köşesinde bulunan uzmanlık dalını, Akademik Bilgileri bölümüne eklemelisiniz.</value>
+  </data>
+	<data name="Jury Name" xml:space="preserve">
+    <value>Jüri İsmi</value>
+  </data>
+	<data name="Jury Type" xml:space="preserve">
+    <value>Jüri Tipi</value>
+  </data>
+	<data name="Jury Members" xml:space="preserve">
+    <value>Jüri Üyeleri</value>
+  </data>
+	<data name="Core/Alternate" xml:space="preserve">
+    <value>Asil/Yedek</value>
+  </data>
+	<data name="Authorization Category List" xml:space="preserve">
+    <value>Yetki Kategorisi Listesi</value>
+  </data>
+	<data name="Deactivated Educators" xml:space="preserve">
+    <value>Pasife Alınan Eğiticiler</value>
+  </data>
+	<data name="Deactivated Students" xml:space="preserve">
+    <value>Pasife Alınan Öğrenciler</value>
+  </data>
+	<data name="Deleted Documents" xml:space="preserve">
+    <value>Silinen Dosyalar</value>
+  </data>
+	<data name="Expertise Branch List" xml:space="preserve">
+    <value>Uzmanlık Alanı Listesi</value>
+  </data>
+	<data name="Expertise Training Program List" xml:space="preserve">
+    <value>Uzmanlık Eğitim Programı Listesi</value>
+  </data>
+	<data name="Log Records List" xml:space="preserve">
+    <value>Log Kayıtları Listesi</value>
+  </data>
+	<data name="Province List" xml:space="preserve">
+    <value>İl Listesi</value>
+  </data>
+	<data name="Role and Permission List" xml:space="preserve">
+    <value>Rol ve Yetki Listesi</value>
+  </data>
+	<data name="Study Type List" xml:space="preserve">
+    <value>Çalışma Tipi Listesi</value>
+  </data>
+	<data name="Title List" xml:space="preserve">
+    <value>Ünvan Listesi</value>
+  </data>
+	<data name="User List" xml:space="preserve">
+    <value>Kullanıcı Listesi</value>
+  </data>
+	<data name="Re-Inquiry" xml:space="preserve">
+    <value>Yeniden Sorgula</value>
+  </data>
+	<data name="EPK Institutional Education Officer Appointment Decision" xml:space="preserve">
+    <value>EPK Kurum Birim Eğitim Sorumlusu Atama Kararı</value>
+  </data>
+	<data name="Assigned" xml:space="preserve">
+    <value>Görevlendirme/Eğitim</value>
+  </data>
+	<data name="Education Continues" xml:space="preserve">
+    <value>Eğitim Devam Ediyor</value>
+  </data>
+	<data name="Requires Transfer Due to Negative Opinion" xml:space="preserve">
+    <value>Olumsuz Kanaat Nedeniyle Nakil Olması Gerekiyor</value>
+  </data>
+	<data name="Graduated" xml:space="preserve">
+    <value>Mezun</value>
+  </data>
+	<data name="AdvisorThesis get by id" xml:space="preserve">
+    <value>Tez Danışmanı Detayını Getir</value>
+  </data>
+	<data name="AdvisorThesis add" xml:space="preserve">
+    <value>Tez Danışmanı Ekle</value>
+  </data>
+	<data name="AdvisorThesis delete" xml:space="preserve">
+    <value>Tez Danışmanını Sil</value>
+  </data>
+	<data name="AdvisorThesis get list by thesis id" xml:space="preserve">
+    <value>Teze Göre Tez Danışmanı Listesini Getir</value>
+  </data>
+	<data name="Affiliation add" xml:space="preserve">
+    <value>Birlikte Kullanım Ekle</value>
+  </data>
+	<data name="Affiliation delete" xml:space="preserve">
+    <value>Birlikte Kullanımı Sil</value>
+  </data>
+	<data name="Affiliation get by id" xml:space="preserve">
+    <value>Birlikte Kullanım Detayını Getir</value>
+  </data>
+	<data name="Affiliation get list" xml:space="preserve">
+    <value>Birlikte Kullanım Listesini Getir</value>
+  </data>
+	<data name="Affiliation get list by hospital id" xml:space="preserve">
+    <value>Hastaneye Göre Birlikte Kullanım Listesini Getir</value>
+  </data>
+	<data name="Affiliation get list by university id" xml:space="preserve">
+    <value>Üniversiteye Göre Birlikte Kullanım Listesini Getir</value>
+  </data>
+	<data name="Affiliation update" xml:space="preserve">
+    <value>Birlikte Kullanımı Güncelle</value>
+  </data>
+	<data name="AuthorizationCategory add" xml:space="preserve">
+    <value>Yetki Kategorisi Ekle</value>
+  </data>
+	<data name="AuthorizationCategory delete" xml:space="preserve">
+    <value>Yetki Kategorisini Sil</value>
+  </data>
+	<data name="AuthorizationCategory get by id" xml:space="preserve">
+    <value>Yetki Kategorisi Detayını Getir</value>
+  </data>
+	<data name="AuthorizationCategory get list" xml:space="preserve">
+    <value>Yetki Kategorisi Listesini Getir</value>
+  </data>
+	<data name="AuthorizationCategory get list pagination" xml:space="preserve">
+    <value>Yetki Kategorisi Sayfalı Getir</value>
+  </data>
+	<data name="AuthorizationCategory update" xml:space="preserve">
+    <value>Yetki Kategorisini Güncelle</value>
+  </data>
+	<data name="AdvisorThesis" xml:space="preserve">
+    <value>Tez Danışmanı</value>
+  </data>
+	<data name="AuthorizationCategory" xml:space="preserve">
+    <value>Yetki Kategorisi</value>
+  </data>
+	<data name="Curriculum get list pagination" xml:space="preserve">
+    <value>Müfredat Safyasını Getir</value>
+  </data>
+	<data name="Curriculum delete" xml:space="preserve">
+    <value>Müfredatı Sil</value>
+  </data>
+	<data name="Curriculum get list" xml:space="preserve">
+    <value>Müfredat Listesini Getir</value>
+  </data>
+	<data name="Curriculum add" xml:space="preserve">
+    <value>Müfredat Ekle</value>
+  </data>
+	<data name="Curriculum get by id" xml:space="preserve">
+    <value>Müfredat Detayını Getir</value>
+  </data>
+	<data name="Curriculum update" xml:space="preserve">
+    <value>Müfredatı Güncelle</value>
+  </data>
+	<data name="Curriculum Perfection delete" xml:space="preserve">
+    <value>Müfredat Yetkinliğini Sil</value>
+  </data>
+	<data name="Curriculum Perfection get by id" xml:space="preserve">
+    <value>Müfredat Yetkinliği Detayını Getir</value>
+  </data>
+	<data name="Curriculum Perfection put" xml:space="preserve">
+    <value>Müfredat Yetkinliğini Güncelle</value>
+  </data>
+	<data name="Curriculum Perfection add" xml:space="preserve">
+    <value>Müfredat Yetkinliği Ekle</value>
+  </data>
+	<data name="Curriculum Perfection get paginate list" xml:space="preserve">
+    <value>Müfredat Yetkinliği Sayfalı Getir</value>
+  </data>
+	<data name="Curriculum Rotation delete" xml:space="preserve">
+    <value>Müfredat Rotasyonunu Sil</value>
+  </data>
+	<data name="Curriculum Rotation get by id" xml:space="preserve">
+    <value>Müfredat Rotasyonu Detayını Getir</value>
+  </data>
+	<data name="Curriculum Rotation get paginate list" xml:space="preserve">
+    <value>Müfredat Rotasyonu Sayfalı Getir</value>
+  </data>
+	<data name="Curriculum Rotation add" xml:space="preserve">
+    <value>Müfredat Rotasyonu Ekle</value>
+  </data>
+	<data name="DependentProgram delete" xml:space="preserve">
+    <value>Bağlı Programı Sil</value>
+  </data>
+	<data name="DependentProgram" xml:space="preserve">
+    <value>Bağlı Program</value>
+  </data>
+	<data name="CurriculumRotation" xml:space="preserve">
+    <value>Müfredat Rotasyonu</value>
+  </data>
+	<data name="CurriculumPerfection" xml:space="preserve">
+    <value>Müfredat Yetkinliği</value>
+  </data>
+	<data name="Document" xml:space="preserve">
+    <value>Dosya</value>
+  </data>
+	<data name="Document update" xml:space="preserve">
+    <value>Dosyayı Güncelle</value>
+  </data>
+	<data name="Document get by id" xml:space="preserve">
+    <value>Dosya Detayını Getir</value>
+  </data>
+	<data name="Document get deleted list" xml:space="preserve">
+    <value>Arşiv Dosya Listesini Getir</value>
+  </data>
+	<data name="Document get list" xml:space="preserve">
+    <value>Dosya Listesini Getir</value>
+  </data>
+	<data name="Document delete" xml:space="preserve">
+    <value>Dosyayı Sil</value>
+  </data>
+	<data name="Document get by type and id" xml:space="preserve">
+    <value>Dosyayı Getir</value>
+  </data>
+	<data name="Document add" xml:space="preserve">
+    <value>Dosya Ekle</value>
+  </data>
+	<data name="EducationTracking get paginate list" xml:space="preserve">
+    <value>Eğitim Süre Takibi Listesini Getir</value>
+  </data>
+	<data name="EducationTracking delete" xml:space="preserve">
+    <value>Eğitim Süre Takibini Sil</value>
+  </data>
+	<data name="EducationTracking update" xml:space="preserve">
+    <value>Eğitim Süre Takibini Güncelle</value>
+  </data>
+	<data name="EducationTracking add" xml:space="preserve">
+    <value>Eğitim Süre Takibi Ekle</value>
+  </data>
+	<data name="EducationTracking" xml:space="preserve">
+    <value>Eğitim Süre Takibi</value>
+  </data>
+	<data name="Educator add" xml:space="preserve">
+    <value>Eğitici Ekle</value>
+  </data>
+	<data name="Educator get by id" xml:space="preserve">
+    <value>Eğitici Detayını Getir</value>
+  </data>
+	<data name="Educator get list" xml:space="preserve">
+    <value>Eğitici Listesini Getir</value>
+  </data>
+	<data name="Educator delete" xml:space="preserve">
+    <value>Eğiticiyi Sil</value>
+  </data>
+	<data name="Educator update" xml:space="preserve">
+    <value>Eğiticiyi Güncelle</value>
+  </data>
+	<data name="Educator get by identity no" xml:space="preserve">
+    <value>Kimlik Numarasına Göre Eğitici Getir</value>
+  </data>
+	<data name="EthicCommitteeDecision" xml:space="preserve">
+    <value>Etik Kurul Kararı</value>
+  </data>
+	<data name="EthicCommitteeDecision delete" xml:space="preserve">
+    <value>Etik Kurul Kararını Sil</value>
+  </data>
+	<data name="EthicCommitteeDecision get paginate list" xml:space="preserve">
+    <value>Etik Kurul Kararı Listesini Getir</value>
+  </data>
+	<data name="EthicCommitteeDecision update" xml:space="preserve">
+    <value>Etik Kurul Kararını Düzenle</value>
+  </data>
+	<data name="EthicCommitteeDecision add" xml:space="preserve">
+    <value>Etik Kurul Kararı Ekle</value>
+  </data>
+	<data name="ExitExam" xml:space="preserve">
+    <value>Bitirme Sınavı</value>
+  </data>
+	<data name="ExitExam add" xml:space="preserve">
+    <value>Bitirme Sınavı Ekle</value>
+  </data>
+	<data name="ExitExam get paginate list" xml:space="preserve">
+    <value>Bitirme Sınavı Sayfalı Getir</value>
+  </data>
+	<data name="ExitExam delete" xml:space="preserve">
+    <value>Bitirme Sınavını Sil</value>
+  </data>
+	<data name="ExitExam update" xml:space="preserve">
+    <value>Bitirme Sınavını Güncelle</value>
+  </data>
+	<data name="ExitExam get list" xml:space="preserve">
+    <value>Bitirme Sınavı Listesini Getir</value>
+  </data>
+	<data name="ExitExam get by id" xml:space="preserve">
+    <value>Bitirme Sınavı Detayını Getir</value>
+  </data>
+	<data name="ExpertiseBranch delete" xml:space="preserve">
+    <value>Uzmanlık Alanını Sil</value>
+  </data>
+	<data name="ExpertiseBranch add" xml:space="preserve">
+    <value>Uzmanlık Alanı Ekle</value>
+  </data>
+	<data name="ExpertiseBranch update" xml:space="preserve">
+    <value>Uzmanlık Alanını Güncelle</value>
+  </data>
+	<data name="ExpertiseBranch get list" xml:space="preserve">
+    <value>Uzmanlık Alanı Listesini Getir</value>
+  </data>
+	<data name="ExpertiseBranchl get list pagination" xml:space="preserve">
+    <value>Uzmanlık Alanı Sayfalı Getir</value>
+  </data>
+	<data name="ExpertiseBranch get by professionid" xml:space="preserve">
+    <value>Fakülteye Göre Uzmanlık Alanı Getir</value>
+  </data>
+	<data name="ExpertiseBranch get by id" xml:space="preserve">
+    <value>Uzmanlık Alanı Detayını Getir</value>
+  </data>
+	<data name="ExpertiseBranch upload from excel" xml:space="preserve">
+    <value>Excelden Uzmanlık Alanı Ekle</value>
+  </data>
+	<data name="Faculty get list" xml:space="preserve">
+    <value>Fakülte Listesini Getir</value>
+  </data>
+	<data name="Faculty get by universityid" xml:space="preserve">
+    <value>Üniversiteye Göre Fakülte Getir</value>
+  </data>
+	<data name="Hospital get by expertisebranchid" xml:space="preserve">
+    <value>Uzmanlık Alanına Göre Hastane Getir</value>
+  </data>
+	<data name="Hospital add" xml:space="preserve">
+    <value>Hastane Ekle</value>
+  </data>
+	<data name="Hospital get by universityid" xml:space="preserve">
+    <value>Üniversiteye Göre Hastane Getir</value>
+  </data>
+	<data name="Hospital get list for map" xml:space="preserve">
+    <value>Harita İçin Hastane Listesini Getir</value>
+  </data>
+	<data name="Hospital get list" xml:space="preserve">
+    <value>Hastane Listesini Getir</value>
+  </data>
+	<data name="Hospital get by id" xml:space="preserve">
+    <value>Hastane Detayını Getir</value>
+  </data>
+	<data name="Hospital get list pagination" xml:space="preserve">
+    <value>Hastane Sayfalı Getir</value>
+  </data>
+	<data name="Hospital update" xml:space="preserve">
+    <value>Hastaneyi Güncelle</value>
+  </data>
+	<data name="Hospital get by user" xml:space="preserve">
+    <value>Kullanıcıya Göre Hastane Getir</value>
+  </data>
+	<data name="Hospital delete" xml:space="preserve">
+    <value>Hastaneyi Sil</value>
+  </data>
+	<data name="Institution get list" xml:space="preserve">
+    <value>Üst Kurum Listesini Getir</value>
+  </data>
+	<data name="Institution update" xml:space="preserve">
+    <value>Üst Kurumu Güncelle</value>
+  </data>
+	<data name="Institution delete" xml:space="preserve">
+    <value>Üst Kurumu Sil</value>
+  </data>
+	<data name="Institution get by id" xml:space="preserve">
+    <value>Üst Kurum Detayını Getir</value>
+  </data>
+	<data name="Institution add" xml:space="preserve">
+    <value>Üst Kurum Ekle</value>
+  </data>
+	<data name="Jury get by id" xml:space="preserve">
+    <value>Jüri Detayını Getir</value>
+  </data>
+	<data name="Jury add" xml:space="preserve">
+    <value>Jüri Ekle</value>
+  </data>
+	<data name="Jury delete" xml:space="preserve">
+    <value>Jüri Sil</value>
+  </data>
+	<data name="Log get by id" xml:space="preserve">
+    <value>Log Detayını Getir</value>
+  </data>
+	<data name="Log get list pagination" xml:space="preserve">
+    <value>Log Listesini Getir</value>
+  </data>
+	<data name="Menu get by id" xml:space="preserve">
+    <value>Menü Detayını Getir</value>
+  </data>
+	<data name="Menu delete" xml:space="preserve">
+    <value>Menü Sil</value>
+  </data>
+	<data name="Menu add" xml:space="preserve">
+    <value>Menü Ekle</value>
+  </data>
+	<data name="Menu update" xml:space="preserve">
+    <value>Menüyü Güncelle</value>
+  </data>
+	<data name="Menu get list" xml:space="preserve">
+    <value>Menüyü Güncelle</value>
+  </data>
+	<data name="Notification get list by user id" xml:space="preserve">
+    <value>Kullanıcıya Göre Bildirim Listesini Getir</value>
+  </data>
+	<data name="Notification get by id" xml:space="preserve">
+    <value>Bildirim Detayını Getir</value>
+  </data>
+	<data name="Notification add" xml:space="preserve">
+    <value>Bildirim Ekle</value>
+  </data>
+	<data name="Notification delete" xml:space="preserve">
+    <value>Bildirimi Sil</value>
+  </data>
+	<data name="Notification get paginate list" xml:space="preserve">
+    <value>Bildirim Sayfalı Getir</value>
+  </data>
+	<data name="OfficialLetter add" xml:space="preserve">
+    <value>Resmi Yazı Ekle</value>
+  </data>
+	<data name="OfficialLetter get list by thesis id" xml:space="preserve">
+    <value>Teze Göre Resmi Yazı Listesini Getir</value>
+  </data>
+	<data name="OfficialLetter update" xml:space="preserve">
+    <value>Resmi Yazıyı Güncelle</value>
+  </data>
+	<data name="OfficialLetter get by id" xml:space="preserve">
+    <value>Resmi Yazı Detayını Getir</value>
+  </data>
+	<data name="OfficialLetter get paginate list" xml:space="preserve">
+    <value>Resmi Yazı Sayfalı Getir</value>
+  </data>
+	<data name="OfficialLetter delete" xml:space="preserve">
+    <value>Resmi Yazıyı Sil</value>
+  </data>
+	<data name="OpinionForm delete" xml:space="preserve">
+    <value>Kanaat Formunu Sil</value>
+  </data>
+	<data name="OpinionForm add" xml:space="preserve">
+    <value>Kanaat Formu Ekle</value>
+  </data>
+	<data name="OpinionForm check negative opinions" xml:space="preserve">
+    <value>Nakil Gerekiyor Mu Kontrol Et</value>
+  </data>
+	<data name="OpinionForm get by id" xml:space="preserve">
+    <value>Kanaat Formu Detayını Getir</value>
+  </data>
+	<data name="OpinionForm update" xml:space="preserve">
+    <value>Kanaat Formunu Güncelle</value>
+  </data>
+	<data name="OpinionForm get paginate list" xml:space="preserve">
+    <value>Kanaat Formu Sayfalı Getir</value>
+  </data>
+	<data name="OpinionForm get by student id" xml:space="preserve">
+    <value>Öğrenciye Göre Kanaat Formu Getir</value>
+  </data>
+	<data name="Perfection add" xml:space="preserve">
+    <value>Yetkinlik Ekle</value>
+  </data>
+	<data name="Perfection update" xml:space="preserve">
+    <value>Yetkinliği Güncelle</value>
+  </data>
+	<data name="Perfection export excel list" xml:space="preserve">
+    <value>Excelden Yetkinlik Listesini Ekle</value>
+  </data>
+	<data name="Perfection delete" xml:space="preserve">
+    <value>Yetkinliği Sil</value>
+  </data>
+	<data name="Perfection get list pagination" xml:space="preserve">
+    <value>Yetkinlik Sayfalı Getir</value>
+  </data>
+	<data name="Perfection get by id" xml:space="preserve">
+    <value>Yetkinlik Detayını Getir</value>
+  </data>
+	<data name="Perfection get list" xml:space="preserve">
+    <value>Yetkinlik Listesini Getir</value>
+  </data>
+	<data name="PerformanceRating get paginate list" xml:space="preserve">
+    <value>Diğer Yetkinlikler Listesini Getir</value>
+  </data>
+	<data name="PerformanceRating add" xml:space="preserve">
+    <value>Diğer Yetkinlikler Ekle</value>
+  </data>
+	<data name="PerformanceRating delete" xml:space="preserve">
+    <value>Diğer Yetkinlikleri Sil</value>
+  </data>
+	<data name="PerformanceRating update" xml:space="preserve">
+    <value>Diğer Yetkinlikleri Güncelle</value>
+  </data>
+	<data name="PerformanceRating get by student id" xml:space="preserve">
+    <value>Öğrenciye Göre Diğer Yetkinlikleri Getir</value>
+  </data>
+	<data name="PerformanceRating get by id" xml:space="preserve">
+    <value>Diğer Yetkinlikler Detayını Getir</value>
+  </data>
+	<data name="Profession add" xml:space="preserve">
+    <value>Uzmanlık Alanı Ekle</value>
+  </data>
+	<data name="Profession get list" xml:space="preserve">
+    <value>Uzmanlık Alanı Listesini Getir</value>
+  </data>
+	<data name="Profession update" xml:space="preserve">
+    <value>Uzmanlık Alanını Güncelle</value>
+  </data>
+	<data name="Profession get by universityid" xml:space="preserve">
+    <value>Üniversiteye Göre Uzmanlık Alanı Getir</value>
+  </data>
+	<data name="Profession get by id" xml:space="preserve">
+    <value>Uzmanlık Alanı Detayını Getir</value>
+  </data>
+	<data name="Program get list by hospital id and expertise branch id" xml:space="preserve">
+    <value>Hastane ve Uzmanlık Dalına Göre Program Getir</value>
+  </data>
+	<data name="Program get list by hospital id" xml:space="preserve">
+    <value>Hastaneye Göre Program Listesini Getir</value>
+  </data>
+	<data name="Program get list by expertise branch id" xml:space="preserve">
+    <value>Uzmanlık Dalına Göre Program Getir</value>
+  </data>
+	<data name="Program get list" xml:space="preserve">
+    <value>Program Listesini Getir</value>
+  </data>
+	<data name="Program get list pagination" xml:space="preserve">
+    <value>Program Sayfalı Getir</value>
+  </data>
+	<data name="ExpertiseBranch get list related with programs" xml:space="preserve">
+    <value>Uzmanlık Alanına Göre Programlarla İlişkili Uzmanlık Dalı Listesini Getir</value>
+  </data>
+	<data name="Program by student id" xml:space="preserve">
+    <value>Öğrenciye Göre Program Getir</value>
+  </data>
+	<data name="Program add" xml:space="preserve">
+    <value>Program Ekle</value>
+  </data>
+	<data name="Program update" xml:space="preserve">
+    <value>Programı Güncelle</value>
+  </data>
+	<data name="Program import from excel" xml:space="preserve">
+    <value>Excelden Program Ekle</value>
+  </data>
+	<data name="Program get by id" xml:space="preserve">
+    <value>Program Detayını Getir</value>
+  </data>
+	<data name="Program delete" xml:space="preserve">
+    <value>Programı Sil</value>
+  </data>
+	<data name="Program get list by university id" xml:space="preserve">
+    <value>Üniversiteye Göre Program Listesini Getir</value>
+  </data>
+	<data name="Export program excel list" xml:space="preserve">
+    <value>Program Listesini Dışa Aktar</value>
+  </data>
+	<data name="ProgressReport add" xml:space="preserve">
+    <value>İlerleme Raporu Ekle</value>
+  </data>
+	<data name="ProgressReport get list by thesis id" xml:space="preserve">
+    <value>Teze Göre İlerleme Raporu Listesini Getir</value>
+  </data>
+	<data name="ProgressReport get by id" xml:space="preserve">
+    <value>İlerleme Raporu Detayını Getir</value>
+  </data>
+	<data name="ProgressReport get paginate list" xml:space="preserve">
+    <value>İlerleme Raporu Sayfalı Getir</value>
+  </data>
+	<data name="ProgressReport delete" xml:space="preserve">
+    <value>İlerleme Raporunu Sil</value>
+  </data>
+	<data name="ProgressReport update" xml:space="preserve">
+    <value>İlerleme Raporunu Güncelle</value>
+  </data>
+	<data name="Property get by type" xml:space="preserve">
+    <value>Mezun</value>
+  </data>
+	<data name="ProtocolProgram get by id" xml:space="preserve">
+    <value>Protokol Program Detayını Getir</value>
+  </data>
+	<data name="ProtocolProgram add" xml:space="preserve">
+    <value>Protokol Program Ekle</value>
+  </data>
+	<data name="ProtocolProgram delete" xml:space="preserve">
+    <value>Protokol Programı Sil</value>
+  </data>
+	<data name="ProtocolProgram update" xml:space="preserve">
+    <value>Protokol Programı Güncelle</value>
+  </data>
+	<data name="ProtocolProgram get list" xml:space="preserve">
+    <value>Protokol Program Listesini Getir</value>
+  </data>
+	<data name="ProtocolProgram get paginate list" xml:space="preserve">
+    <value>Protokol Program Sayfalı Getir</value>
+  </data>
+	<data name="Province update" xml:space="preserve">
+    <value>İli Güncelle</value>
+  </data>
+	<data name="Province add" xml:space="preserve">
+    <value>İl Ekle</value>
+  </data>
+	<data name="Province get list pagination" xml:space="preserve">
+    <value>İl Sayfalı Getir</value>
+  </data>
+	<data name="Province get list" xml:space="preserve">
+    <value>İl Listesini Getir</value>
+  </data>
+	<data name="Province delete" xml:space="preserve">
+    <value>İli Sil</value>
+  </data>
+	<data name="Province get by id" xml:space="preserve">
+    <value>İl Detayını Getir</value>
+  </data>
+	<data name="Rotation get by id" xml:space="preserve">
+    <value>Rotasyon Detayını Getir</value>
+  </data>
+	<data name="Rotation update" xml:space="preserve">
+    <value>Rotasyonu Güncelle</value>
+  </data>
+	<data name="Rotation add" xml:space="preserve">
+    <value>Rotasyon Ekle</value>
+  </data>
+	<data name="Rotation delete" xml:space="preserve">
+    <value>Rotasyonu Sil</value>
+  </data>
+	<data name="Rotation get list pagination" xml:space="preserve">
+    <value>Rotasyon Sayfalı Getir</value>
+  </data>
+	<data name="ScientificStudy delete" xml:space="preserve">
+    <value>Bilimsel Çalışmayı Sil</value>
+  </data>
+	<data name="ScientificStudy get list by student" xml:space="preserve">
+    <value>Öğrenciye Göre Bilimsel Çalışma Listesini Getir</value>
+  </data>
+	<data name="ScientificStudy update" xml:space="preserve">
+    <value>Bilimsel Çalışmayı Güncelle</value>
+  </data>
+	<data name="ScientificStudy get by id" xml:space="preserve">
+    <value>Bilimsel Çalışma Detayını Getir</value>
+  </data>
+	<data name="ScientificStudy add" xml:space="preserve">
+    <value>Bilimsel Çalışma Ekle</value>
+  </data>
+	<data name="Student get list" xml:space="preserve">
+    <value>Öğrenci Listesini Getir</value>
+  </data>
+	<data name="Student delete" xml:space="preserve">
+    <value>Öğrenciyi Sil</value>
+  </data>
+	<data name="Student get list pagination only" xml:space="preserve">
+    <value>Öğrenci Sayfalı Bölgesel Getir</value>
+  </data>
+	<data name="Student update" xml:space="preserve">
+    <value>Öğrenciyi Güncelle</value>
+  </data>
+	<data name="Student get by id" xml:space="preserve">
+    <value>Öğrenci Detayını Getir</value>
+  </data>
+	<data name="Student get list pagination" xml:space="preserve">
+    <value>Öğrenci Sayfalı Getir</value>
+  </data>
+	<data name="Student add" xml:space="preserve">
+    <value>Öğrenci Ekle</value>
+  </data>
+	<data name="StudentPerfection get by id" xml:space="preserve">
+    <value>Öğrenci Yetkinliği Detayını Getir</value>
+  </data>
+	<data name="StudentPerfection add" xml:space="preserve">
+    <value>Öğrenciye Yetkinlik Ekle</value>
+  </data>
+	<data name="StudentPerfection get list by  student id" xml:space="preserve">
+    <value>Öğrencinin Yetkinlik Listesini Getir</value>
+  </data>
+	<data name="StudentPerfection delete" xml:space="preserve">
+    <value>Öğrencinin Yetkinliğini Sil</value>
+  </data>
+	<data name="StudentRotation update" xml:space="preserve">
+    <value>Öğrencinin Rotasyonunu Güncelle</value>
+  </data>
+	<data name="StudentPerfection update" xml:space="preserve">
+    <value>Öğrencinin Yetkinliğini</value>
+  </data>
+	<data name="StudentRotation get by id" xml:space="preserve">
+    <value>Öğrencinin Rotasyonunun Detayını Getir</value>
+  </data>
+	<data name="StudentRotation get former list by student id" xml:space="preserve">
+    <value>Öğrencinin Geçmiş Rotasyon Listesini Getir</value>
+  </data>
+	<data name="StudentRotation add" xml:space="preserve">
+    <value>Öğrenciye Rotasyon Ekle</value>
+  </data>
+	<data name="StudentRotation delete" xml:space="preserve">
+    <value>Öğrencinin Rotasyonunu Sil</value>
+  </data>
+	<data name="ScientificStudy get list pagination" xml:space="preserve">
+    <value>Bilimsel Çalışma Sayfalı Getir</value>
+  </data>
+	<data name="Study get list pagination" xml:space="preserve">
+    <value>Bilimsel Çalışma Tipi Sayfalı Getir</value>
+  </data>
+	<data name="Study delete" xml:space="preserve">
+    <value>Bilimsel Çalışma Tipini Sil</value>
+  </data>
+	<data name="Study get by id" xml:space="preserve">
+    <value>Bilimsel Çalışma Tipi Detayını Getir</value>
+  </data>
+	<data name="Study get list" xml:space="preserve">
+    <value>Bilimsel Çalışma Tipi Listesini Getir</value>
+  </data>
+	<data name="Study add" xml:space="preserve">
+    <value>Bilimsel Çalışma Tipi Ekle</value>
+  </data>
+	<data name="Study update" xml:space="preserve">
+    <value>Bilimsel Çalışma Tipini Güncelle</value>
+  </data>
+	<data name="Svg get by Id" xml:space="preserve">
+    <value>İconları Getir</value>
+  </data>
+	<data name="Thesis update" xml:space="preserve">
+    <value>Tezi Güncelle</value>
+  </data>
+	<data name="Thesis get by student id" xml:space="preserve">
+    <value>Öğrenciye Göre Tez Getir</value>
+  </data>
+	<data name="Thesis get list by student id for e report" xml:space="preserve">
+    <value>E-karne İçin Öğrenciye Göre Tez Listesini Getir</value>
+  </data>
+	<data name="Thesis get by id" xml:space="preserve">
+    <value>Tez Detayını Getir</value>
+  </data>
+	<data name="Thesis delete" xml:space="preserve">
+    <value>Tezi Sil</value>
+  </data>
+	<data name="Thesis add" xml:space="preserve">
+    <value>Tez Ekle</value>
+  </data>
+	<data name="Thesis get paginate list" xml:space="preserve">
+    <value>Tez Sayfalı Getir</value>
+  </data>
+	<data name="ThesisDefence get by id" xml:space="preserve">
+    <value>Tez Savunması Detayını Getir</value>
+  </data>
+	<data name="ThesisDefence update" xml:space="preserve">
+    <value>Tez Savunmasını Güncelle</value>
+  </data>
+	<data name="ThesisDefence add" xml:space="preserve">
+    <value>Tez Savunması Ekle</value>
+  </data>
+	<data name="ThesisDefence delete" xml:space="preserve">
+    <value>Tez Savunması Sil</value>
+  </data>
+	<data name="ThesisDefence get paginate list" xml:space="preserve">
+    <value>Tez Savunması Sayfalı Getir</value>
+  </data>
+	<data name="ThesisDefence get list by thesis id" xml:space="preserve">
+    <value>Teze Göre Tez Savunması Listesini Getir</value>
+  </data>
+	<data name="Title get list" xml:space="preserve">
+    <value>Ünvan Listesini Getir</value>
+  </data>
+	<data name="Title get by id" xml:space="preserve">
+    <value>Ünvan Detayını Getir</value>
+  </data>
+	<data name="Title update" xml:space="preserve">
+    <value>Ünvanı Güncelle</value>
+  </data>
+	<data name="Title get list pagination" xml:space="preserve">
+    <value>Ünvan Sayfalı Getir</value>
+  </data>
+	<data name="Title add" xml:space="preserve">
+    <value>Ünvan Ekle</value>
+  </data>
+	<data name="Title delete" xml:space="preserve">
+    <value>Ünvanı Sil</value>
+  </data>
+	<data name="Title get list by type" xml:space="preserve">
+    <value>Tipine Göre Ünvan Listesini Getir</value>
+  </data>
+	<data name="University update" xml:space="preserve">
+    <value>Bakanlık/Üniversite Güncelle</value>
+  </data>
+	<data name="University add" xml:space="preserve">
+    <value>Bakanlık/Üniversite Ekle</value>
+  </data>
+	<data name="University get by id" xml:space="preserve">
+    <value>Bakanlık/Üniversite Detayını Getir</value>
+  </data>
+	<data name="University delete" xml:space="preserve">
+    <value>Bakanlık/Üniversite Sil</value>
+  </data>
+	<data name="University get paginate list" xml:space="preserve">
+    <value>Bakanlık/Üniversite Sayfalı Getir</value>
+  </data>
+	<data name="University get list" xml:space="preserve">
+    <value>Bakanlık/Üniversite Listesini Getir</value>
+  </data>
+	<data name="User Add User With EducatorInfo" xml:space="preserve">
+    <value>Eğitici Ekle</value>
+  </data>
+	<data name="User Get By Id" xml:space="preserve">
+    <value>Kullamıcı Detayını Getir</value>
+  </data>
+	<data name="User Get By Identity No" xml:space="preserve">
+    <value>TCKN İle Kullanıcı Getir</value>
+  </data>
+	<data name="User Is Existing User" xml:space="preserve">
+    <value>Kullanıcı Mevcut Mu Sorgula</value>
+  </data>
+	<data name="UserSetting get by user" xml:space="preserve">
+    <value>Kullanıcı Rolünü Getir</value>
+  </data>
+	<data name="UserSetting change role" xml:space="preserve">
+    <value>Kullanıcının Rolünü Değiştir</value>
+  </data>
+	<data name="ExpertiseBranch" xml:space="preserve">
+    <value>Uzmanlık Alanı</value>
+  </data>
+	<data name="Jury" xml:space="preserve">
+    <value>Jüri</value>
+  </data>
+	<data name="Menu" xml:space="preserve">
+    <value>Menü</value>
+  </data>
+	<data name="Notification" xml:space="preserve">
+    <value>Bildirim</value>
+  </data>
+	<data name="OfficialLetter" xml:space="preserve">
+    <value>Resmi Yazı</value>
+  </data>
+	<data name="OpinionForm" xml:space="preserve">
+    <value>Kanaat Formu</value>
+  </data>
+	<data name="PerformanceRating" xml:space="preserve">
+    <value>Diğer Yetkinlikler</value>
+  </data>
+	<data name="Profession" xml:space="preserve">
+    <value>Uzmanlık Alanı</value>
+  </data>
+	<data name="ProgressReport" xml:space="preserve">
+    <value>İlerleme Raporu</value>
+  </data>
+	<data name="ProtocolProgram" xml:space="preserve">
+    <value>Protokol Program</value>
+  </data>
+	<data name="ScientificStudy" xml:space="preserve">
+    <value>Bilimsel Çalışma</value>
+  </data>
+	<data name="StudentPerfection" xml:space="preserve">
+    <value>Öğrenci Yetkinliği</value>
+  </data>
+	<data name="StudentRotation" xml:space="preserve">
+    <value>Öğrenci Rotasyonu</value>
+  </data>
+	<data name="ThesisDefence" xml:space="preserve">
+    <value>Tez Savunması</value>
+  </data>
+	<data name="UserSettings" xml:space="preserve">
+    <value>Kullanıcı Ayarları</value>
+  </data>
+	<data name="Requires End Of Education Due to Negative Opinion" xml:space="preserve">
+    <value>Olumsuz Kanaat Nedeniyle Eğitimin Sonlandırılması Gerekiyor</value>
+  </data>
+	<data name="End Of Education Due to Negative Opinion" xml:space="preserve">
+    <value>Olumsuz Kanaat Nedeniyle Eğitimin Sonlandırılması</value>
+  </data>
+	<data name="Education Ended" xml:space="preserve">
+    <value>Eğitim Sona Erdi</value>
+  </data>
+	<data name="Education Officer Assignment Letter" xml:space="preserve">
+    <value>Birim Eğitim Sorumlusu Görevlendirme Yazısı</value>
+  </data>
+	<data name="Deactivated User" xml:space="preserve">
+    <value>Pasife Alınmış Kullanıcı</value>
+  </data>
+	<data name="Deactivated Users" xml:space="preserve">
+    <value>Pasife Alınmış Kullanıcılar</value>
+  </data>
+	<data name="In the hospital where the program you want to activate, there is an active program for the same expertise branch!" xml:space="preserve">
+    <value>Aktif etmek istediğiniz programın bulunduğu hastanede, aynı uzmanlık dalı için aktif program bulunmaktadır!</value>
+  </data>
+	<data name="Registration number cannot be negative value." xml:space="preserve">
+    <value>Tescil numarası negatif değer olamaz.</value>
+  </data>
+	<data name="The student you want to register is already a student of this program!" xml:space="preserve">
+    <value>Kaydetmek istediğiniz öğrenci, zaten bu programın öğrencisidir!</value>
+  </data>
+	<data name="Zone" xml:space="preserve">
+    <value>Bölge</value>
+  </data>
+	<data name="Past Education Officers" xml:space="preserve">
+    <value>Geçmiş Eğitim Sorumluları</value>
+  </data>
+	<data name="There are no academic information of the person you query!" xml:space="preserve">
+    <value>Sorgulama yaptığınız kişinin akademik bilgisi bulunmamaktadır!</value>
+  </data>
+	<data name="Retirement" xml:space="preserve">
+    <value>Emeklilik</value>
+  </data>
+	<data name="Resignation" xml:space="preserve">
+    <value>İstifa</value>
+  </data>
+	<data name="Transfer to an Institution that Does Not Provide Specialization Education" xml:space="preserve">
+    <value>Uzmanlık Eğitimi Verilmeyen Bir Kuruma Tayin</value>
+  </data>
+	<data name="Active Rotation" xml:space="preserve">
+    <value>Aktif Rotasyon</value>
+  </data>
+	<data name="Leaving the Institution Due to Rotation" xml:space="preserve">
+    <value>Kendi Kurumundan Rotasyon Sebebiyle Ayrılış</value>
+  </data>
+	<data name="Students Who Come To Rotation" xml:space="preserve">
+    <value>Rotasyona Gelen Öğrenciler</value>
+  </data>
+	<data name="Students Who Go To Rotation" xml:space="preserve">
+    <value>Rotasyona Giden Öğrenciler</value>
+  </data>
+	<data name="Students Who Go Under Protocol" xml:space="preserve">
+    <value>Protokol Kapsamında Giden Öğrenciler</value>
+  </data>
+	<data name="Students Who Come Under Protocol" xml:space="preserve">
+    <value>Protokol Kapsamında Gelen Öğrenciler</value>
+  </data>
+	<data name="Students Who Come Under Complement Protocol" xml:space="preserve">
+    <value>Tamamlayıcı Protokol Kapsamında Gelen Öğrenciler</value>
+  </data>
+	<data name="Students Who Go Under Complement Protocol" xml:space="preserve">
+    <value>Tamamlayıcı Protokol Kapsamında Giden Öğrenciler</value>
+  </data>
+	<data name="On Rotation" xml:space="preserve">
+    <value>Rotasyonda</value>
+  </data>
+	<data name="Completion Of Rotation" xml:space="preserve">
+    <value>Rotasyon Sonrası Kendi Kurumuna Dönüş</value>
+  </data>
+	<data name="Send To Rotation" xml:space="preserve">
+    <value>Rotasyona Gönder</value>
+  </data>
+	<data name="End Date Must Be Greater Than {0}" xml:space="preserve">
+    <value>Bitiş Tarihi {0} Tarihinden Büyük Olmalıdır</value>
+  </data>
+	<data name="Associate Professorship Document Date Must Be Less Than {0}" xml:space="preserve">
+    <value>Doçentlik Belge Tarihi {0} Tarihinden Küçük Olmalıdır</value>
+  </data>
+	<data name="Zones" xml:space="preserve">
+    <value>Bölgeler</value>
+  </data>
+	<data name="Registration number cannot be null." xml:space="preserve">
+    <value>Tescil numarası boş olamaz.</value>
+  </data>
+	<data name="Finish Rotation" xml:space="preserve">
+    <value>Rotasyonu Bitir</value>
+  </data>
+	<data name="Use the 'Update' button to save the changes that occur as a result of the query." xml:space="preserve">
+    <value>Sorgulama sonucunda oluşan değişikliklerin kaydedilmesi için 'Güncelle' butonunu kullanınız.</value>
+  </data>
+	<data name="Use the 'Update' button to save the changes." xml:space="preserve">
+    <value>Değişikliklerin kaydedilmesi için 'Güncelle' butonunu kullanınız.</value>
+  </data>
+	<data name="This section is for informational purposes. Related administrative duties should be defined on a role basis from the user operations menu." xml:space="preserve">
+    <value>Bu bölüm bilgilendirme amaçlıdır. İlgili idari görev yetkileri kullanıcı işlemleri menüsünden rol bazlı tanımlanmalıdır.</value>
+  </data>
+	<data name="Successful with minor revision" xml:space="preserve">
+    <value>Minör revizyon ile başarılı</value>
+  </data>
+	<data name="Order" xml:space="preserve">
+    <value>Sıra</value>
+  </data>
+	<data name="Orange colored arrows are for changes applied" xml:space="preserve">
+    <value>Turuncu ile gösterilen oklar yapılan değişiklikleri göstermektedir</value>
+  </data>
+	<data name="Please fill the Parent Institution and Start Date." xml:space="preserve">
+    <value>Lütfen Üst Kurum ve Başlangıç Tarihini doldurunuz.</value>
+  </data>
+	<data name="Please fill the Institution and Start Date." xml:space="preserve">
+    <value>Lütfen Başlangıç Tarihi ve Kurumu doldurunuz.</value>
+  </data>
+	<data name="Educator Program Start Date" xml:space="preserve">
+    <value>Kurumunuzda Göreve Başlama Tarihi</value>
+  </data>
+	<data name="Educator Program End Date" xml:space="preserve">
+    <value>Kurumunuzdaki Görev Bitiş Tarihi</value>
+  </data>
+	<data name="The graduation information of the person is not registered in YÖKSİS. The person should register the graduation information with YÖKSİS by contacting the central unit responsible for domestic student affairs of the university/universities from which he/she graduated. For international graduations, the person should contact the YÖK Equivalency Unit." xml:space="preserve">
+    <value>Kişinin mezuniyet bilgileri YÖKSİS'te kayıtlı değildir. Kişi mezun olduğu üniversitenin/üniversitelerin yurtiçi için öğrenci işlerinden sorumlu merkezi birimi ile irtibata geçerek mezuniyet bilgilerini YÖKSİS'e kaydettirmelidir. Yurtdışı mezuniyetler için kişi YÖK Denklik Birimi ile irtibata geçmelidir.</value>
+  </data>
+	<data name="Orcid Number" xml:space="preserve">
+    <value>Orcid Numarası</value>
+  </data>
+	<data name="Show Passives" xml:space="preserve">
+    <value>Pasifleri Göster</value>
+  </data>
+	<data name="Hide Passives" xml:space="preserve">
+    <value>Pasifleri Gizle</value>
+  </data>
+	<data name="Show when YUEP List is first opened" xml:space="preserve">
+    <value>YUEP Listesi ilk açıldığında göster</value>
+  </data>
+	<data name="File size cannot exceed 3 MB!" xml:space="preserve">
+    <value>Dosya boyutu 3 MB'ı geçemez!</value>
+  </data>
+	<data name="Versions" xml:space="preserve">
+    <value>Versiyonlar</value>
+  </data>
+	<data name="_Delete" xml:space="preserve">
+    <value>{0} Sil</value>
+  </data>
+	<data name="Perfections" xml:space="preserve">
+    <value>Yetkinlikler</value>
+  </data>
+	<data name="Former Rotations" xml:space="preserve">
+    <value>Önceki Rotasyonlar</value>
+  </data>
+	<data name="At least how many of the principal branches must be present in order to create a program protocol?" xml:space="preserve">
+    <value>Program protokolü oluşturulabilmesi için ana dallarından en az kaç tane bulunması gerekiyor?</value>
+  </data>
+	<data name="PerfectionGroup" xml:space="preserve">
+    <value>Grup</value>
+  </data>
+	<data name="PerfectionName" xml:space="preserve">
+    <value>İsim</value>
+  </data>
+	<data name="PerfectionLevel" xml:space="preserve">
+    <value>Düzey</value>
+  </data>
+	<data name="PerfectionMethod" xml:space="preserve">
+    <value>Yöntem</value>
+  </data>
+	<data name="PerfectionSeniorty" xml:space="preserve">
+    <value>Eğitim Yılı-Kıdem</value>
+  </data>
+	<data name="Property" xml:space="preserve">
+    <value>Parametre</value>
+  </data>
+	<data name="Add Protocol Revision" xml:space="preserve">
+    <value>Protokol Revizyonu Ekle</value>
+  </data>
+	<data name="Revision" xml:space="preserve">
+    <value>Revizyon</value>
+  </data>
+	<data name="Original Institution" xml:space="preserve">
+    <value>Kendi Kurumu</value>
+  </data>
+	<data name="In order to create a program protocol, the number of dependent programs in the protocol/revision must be at least {0}." xml:space="preserve">
+    <value>Program protokolü oluşturulabilmesi için protokolde/revizyonda bulunan bağlı program sayısının en az {0} olması zorunludur.</value>
+  </data>
+	<data name="Any branch in the institutions that make up the protocol and which has an instructor with an intensive care specialist certificate cannot be excluded from the program.&#xD;&#xA;		  &#xD;&#xA;		Following branches has to be selected:&#xD;&#xA;		&#xD;&#xA;		  &#xD;&#xA;		{0}" xml:space="preserve">
+    <value>Protokolü oluşturan kurumlarda bulunan ve yoğun bakım uzmanlık belgesine sahip eğiticisi bulunan hiçbir dal program dışında tutulamaz.
+	
+	Aşağıdaki dallar seçilmelidir:
+	
+	
+{0}</value>
+  </data>
+	<data name="Document Successfully Added" xml:space="preserve">
+    <value>Dosya Başarıyla Eklendi</value>
+  </data>
+	<data name="Exempt" xml:space="preserve">
+    <value>Muaf</value>
+  </data>
+	<data name="Exemption" xml:space="preserve">
+    <value>Muafiyet</value>
+  </data>
+	<data name="Exemption From Rotation" xml:space="preserve">
+    <value>Rotasyondan Muafiyet</value>
+  </data>
+	<data name="Cancel Protocol" xml:space="preserve">
+    <value>Protokolü İptal Et</value>
+  </data>
+	<data name="Under Protocol Program" xml:space="preserve">
+    <value>Protokollü Program Kapsamında</value>
+  </data>
+	<data name="Under Complement Program" xml:space="preserve">
+    <value>Tamamlayıcı Program Kapsamında</value>
+  </data>
+	<data name="Send" xml:space="preserve">
+    <value>Gönder</value>
+  </data>
+	<data name="Student's program is not protocol program." xml:space="preserve">
+    <value>Öğrencinin programı protokollü program değildir.</value>
+  </data>
+	<data name="Are you sure you want to send student to this dependent program?" xml:space="preserve">
+    <value>Öğrenciyi bu bağlı programa göndermek istediğinizden emin misiniz?</value>
+  </data>
+	<data name="Are you sure you want to send student to main program in the protocol?" xml:space="preserve">
+    <value>Öğrenciyi protokoldeki ana programa göndermek istediğinizden emin misiniz?</value>
+  </data>
+	<data name="The Unit where the Education is Provided under the Protocol Program" xml:space="preserve">
+    <value>Protokollü Program Kapsamında Eğitimin Verildiği Birim</value>
+  </data>
+	<data name="The Institution where the Education is Provided under the Protocol Program" xml:space="preserve">
+    <value>Protokollü Program Kapsamında Eğitimin Verildiği Kurum</value>
+  </data>
+	<data name="The Unit where the Education is Provided under Rotation" xml:space="preserve">
+    <value>Rotasyon Kapsamında Eğitimin Verildiği Birim</value>
+  </data>
+	<data name="The Institution where the Education is Provided under Rotation" xml:space="preserve">
+    <value>Rotasyon Kapsamında Eğitimin Verildiği Kurum</value>
+  </data>
+	<data name="Unit" xml:space="preserve">
+    <value>Birim</value>
+  </data>
+	<data name="Uncompleted" xml:space="preserve">
+    <value>Tamamlanmadı</value>
+  </data>
+	<data name="Completed Dependent Programs" xml:space="preserve">
+    <value>Tamamlanmış Bağlı Programlar</value>
+  </data>
+	<data name="Uncompleted Dependent Programs" xml:space="preserve">
+    <value>Tamamlanmamış Bağlı Programlar</value>
+  </data>
+	<data name="Uncompleted Rotations" xml:space="preserve">
+    <value>Tamamlanmamış Rotasyonlar</value>
+  </data>
+	<data name="Active Dependent Program" xml:space="preserve">
+    <value>Aktif Bağlı Program</value>
+  </data>
+	<data name="Number of Days Remaining if the Training is Left Before Ending" xml:space="preserve">
+    <value>Eğitim Bitmeden Bırakıldı ise Kalan Gün Sayısı</value>
+  </data>
+	<data name="Leave Before the Education Is Over" xml:space="preserve">
+    <value>Eğitim Bitmeden Bırak</value>
+  </data>
+	<data name="Educational Videos" xml:space="preserve">
+    <value>Eğitim Videoları</value>
+  </data>
+	<data name="Return To Home" xml:space="preserve">
+    <value>Anasayfaya Dön</value>
+  </data>
+	<data name="Left without Completing Rotation" xml:space="preserve">
+    <value>Rotasyonu Tamamlamadan Ayrıldı</value>
+  </data>
+	<data name="Successful / Unsuccessful" xml:space="preserve">
+    <value>Başarılı / Başarısız</value>
+  </data>
+	<data name="The remaining time to complete the education in this program is {0} days." xml:space="preserve">
+    <value>Bu programdaki eğitimin tamamlanması için kalan süre {0} gündür.</value>
+  </data>
+	<data name="Student Dependent Program" xml:space="preserve">
+    <value>Öğrencinin Bağlı Programı</value>
+  </data>
+	<data name="Remaining Days" xml:space="preserve">
+    <value>Kalan Gün</value>
+  </data>
+	<data name="Add Past Rotation" xml:space="preserve">
+    <value>Geçmiş Rotasyon Ekle</value>
+  </data>
+	<data name="Add Past Opinion Form" xml:space="preserve">
+    <value>Geçmiş Kanaat Formu Ekle</value>
+  </data>
+	<data name="Canceled Opinion Forms" xml:space="preserve">
+    <value>İptal Edilen Kanaat Formları</value>
+  </data>
+	<data name="Additional Explanation Field of New Opinion Form Added Instead of Canceled Opinion Form is Required" xml:space="preserve">
+    <value>İptal Edilen Kanaat Formunun Yerine Eklenen Yeni Kanaat Formunun Açıklama Alanı Zorunludur</value>
+  </data>
+	<data name="Re-add Canceled Opinion Form" xml:space="preserve">
+    <value>İptal Edilen Kanaat Formunu Yeniden Ekle</value>
+  </data>
+	<data name="In case of canceling opinion form you have to re-add for it. Are you sure you want to cancel this opinion form?" xml:space="preserve">
+    <value>Kanaat formunun iptal edilmesi durumunda yeniden eklemeniz gerekmektedir. Bu kanaat formunu iptal etmek istediğinizden emin misiniz?</value>
+  </data>
+	<data name="User does not exist!" xml:space="preserve">
+    <value>Kullanıcı bulunamadı!</value>
+  </data>
+	<data name="Other Programs" xml:space="preserve">
+    <value>Diğer Programlar</value>
+  </data>
+	<data name="Duration of dependent program cannot be empty!" xml:space="preserve">
+    <value>Bağlı programın süresi boş olamaz!</value>
+  </data>
+	<data name="If you delete the student, you cannot add them to the same program again! Are you sure you want to delete it?" xml:space="preserve">
+    <value>Öğrenciyi silerseniz tekrar aynı programa ekleyemezsiniz! Silmek istediğinizden emin misiniz?</value>
+  </data>
+	<data name="Deactivation Date" xml:space="preserve">
+    <value>Pasife Alınma Tarihi</value>
+  </data>
+	<data name="This person has an active student. You cannot undelete the item." xml:space="preserve">
+    <value>Bu kişinin aktif bir öğrencisi var. Bu öğeyi geri alamazsınız.</value>
+  </data>
+	<data name="Other Universities" xml:space="preserve">
+    <value>Diğer Üniversiteler</value>
+  </data>
+	<data name="Private Universities" xml:space="preserve">
+    <value>Özel Üniversiteler</value>
+  </data>
+	<data name="Public Universities" xml:space="preserve">
+    <value>Devlet Üniversiteleri</value>
+  </data>
+	<data name="Count" xml:space="preserve">
+    <value>Sayı</value>
+  </data>
+	<data name="Grand Totals" xml:space="preserve">
+    <value>Toplam Sayı</value>
+  </data>
+	<data name="Affiliated Place of Educations" xml:space="preserve">
+    <value>Birlikte Kullanım Yaptığı Eğitim Kurumları</value>
+  </data>
+	<data name="Affiliated Universities" xml:space="preserve">
+    <value>Birlikte Kullanım Yapan Üniversiteler</value>
+  </data>
+	<data name="Are you sure you want to cancel this opinion form?" xml:space="preserve">
+    <value>Bu kanaat formunu iptal etmek istediğinizden emin misiniz?</value>
+  </data>
+	<data name="You are not authorized for this operation!" xml:space="preserve">
+    <value>Bu işlem için yetkiniz bulunmamaktadır!</value>
+  </data>
+	<data name="Is Forensic Medicine Institute Educator?" xml:space="preserve">
+    <value>Adli Tıp Kurumu Eğiticisi Mi?</value>
+  </data>
+	<data name="TUEY Article 10 (3); Specialization education at the Forensic Medicine Institution is given by the heads of the specialized boards specified in the Chairman Decree No. 4 on the Organization of Related, Associated Institutions and Organizations and Other Institutions and Organizations Affiliated to the Ministries, and by forensic medicine experts who have been members of the specialized boards for at least three years." xml:space="preserve">
+    <value>TUEY Madde 10 (3) ; Adli Tıp Kurumunda uzmanlık eğitimi, 4 sayılı Bakanlıklara Bağlı, İlgili, İlişkili Kurum ve Kuruluşlar ile Diğer Kurum ve Kuruluşların Teşkilatı Hakkında Cumhurbaşkanlığı Kararnamesinde belirtilen ihtisas kurulu başkanları ile en az üç yıl süreyle ihtisas kurullarında üyelik yapmış adlî tıp uzmanları tarafından verilir.</value>
+  </data>
+	<data name="Specialization Board Chairman Document" xml:space="preserve">
+    <value>İhtisas Kurulu Başkanlığı Belgesi</value>
+  </data>
+	<data name="Specialization Board Membership Document" xml:space="preserve">
+    <value>İhtisas Kurulu Üyeliği Belgesi</value>
+  </data>
+	<data name="Membership Start Date" xml:space="preserve">
+    <value>Üyelik Başlangıç Tarihi</value>
+  </data>
+	<data name="Membership End Date" xml:space="preserve">
+    <value>Üyelik Bitiş Tarihi</value>
+  </data>
+	<data name="Graduated Institution" xml:space="preserve">
+    <value>Mezun Olduğu Kurum</value>
+  </data>
+	<data name="{0} Count" xml:space="preserve">
+    <value>{0} Sayısı</value>
+  </data>
+	<data name="Download SVG" xml:space="preserve">
+    <value>İndir SVG</value>
+  </data>
+	<data name="Foundation Universities" xml:space="preserve">
+    <value>Vakıf Üniversiteleri</value>
+  </data>
+	<data name="Chairman" xml:space="preserve">
+    <value>Başkan</value>
+  </data>
+	<data name="Member" xml:space="preserve">
+    <value>Üye</value>
+  </data>
+	<data name="Chairman or Member?" xml:space="preserve">
+    <value>Başkan mı Üye mi?</value>
+  </data>
+	<data name="Chairman Unit" xml:space="preserve">
+    <value>Başkanlık Birimi</value>
+  </data>
+	<data name="1st Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>1. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="2nd Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>2. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="3rd Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>3. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="4th Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>4. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="5th Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>5. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="6th Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>6. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="7th Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>7. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="8th Forensic Medicine Specialization Board" xml:space="preserve">
+    <value>8. Adli Tıp İhtisas Kurulu</value>
+  </data>
+	<data name="Did this student start her/his education at another institution and get transferred to you?" xml:space="preserve">
+    <value>Öğrenci eğitimine başka kurumda başlayıp size nakil mi geldi?</value>
+  </data>
+	<data name="Specialization Training Program in which the Student Starts Training before Transfer" xml:space="preserve">
+    <value>Öğrencinin Nakil olmadan önce Eğitime Başladığı Uzmanlık Eğitim Programı</value>
+  </data>
+	<data name="Program Start Date at the Institution where Education Started" xml:space="preserve">
+    <value>Nakil olmadan önceki Kurumda Programa Başlama Tarihi</value>
+  </data>
+	<data name="Current Institution and Expertise Training Program" xml:space="preserve">
+    <value>Mevcut Kurumu ve Uzmanlık Eğitim Programı</value>
+  </data>
+	<data name="Start Date to Program in Your Institution" xml:space="preserve">
+    <value>Kurumunuzdaki Programa Başlangıç Tarihi</value>
+  </data>
+	<data name="Transfer Type" xml:space="preserve">
+    <value>Nakil Tipi</value>
+  </data>
+	<data name="Standard Category" xml:space="preserve">
+    <value>Standart Kategorisi</value>
+  </data>
+	<data name="Standard Category Type" xml:space="preserve">
+    <value>Standart Kategori Tipi</value>
+  </data>
+	<data name="Standards" xml:space="preserve">
+    <value>Standartlar</value>
+  </data>
+	<data name="Visit Module" xml:space="preserve">
+    <value>Yerinde Ziyaret Modülü</value>
+  </data>
+	<data name="YUEP Update Requests" xml:space="preserve">
+    <value>YUEP Güncelleme Talepleri</value>
+  </data>
+	<data name="Education Information" xml:space="preserve">
+    <value>Eğitim Bilgileri</value>
+  </data>
+	<data name="Education Institution" xml:space="preserve">
+    <value>Eğitimin Kurumu</value>
+  </data>
+	<data name="Education Period (Year)" xml:space="preserve">
+    <value>Eğitim Süresi (Yıl)</value>
+  </data>
+	<data name="Educators and Students" xml:space="preserve">
+    <value>Eğitici ve Öğrenciler</value>
+  </data>
+	<data name="Institutions / Provinces / Programs" xml:space="preserve">
+    <value>Kurumlar / İller / Programlar</value>
+  </data>
+	<data name="Number of New Students Added (Last 6 Months)" xml:space="preserve">
+    <value>Yeni Eklenen Öğrenci Sayısı (Son 6 Ay)</value>
+  </data>
+	<data name="Principle Branch" xml:space="preserve">
+    <value>Ana Dal</value>
+  </data>
+	<data name="Transfer Document" xml:space="preserve">
+    <value>Nakil Dosyası</value>
+  </data>
+	<data name="Decision No" xml:space="preserve">
+    <value>Karar Numarası</value>
+  </data>
+	<data name="Faculty/Institute of Graduation" xml:space="preserve">
+    <value>Mezun Olduğu Fakülte/Enstitü</value>
+  </data>
+	<data name="Field of Graduation" xml:space="preserve">
+    <value>Mezun Olduğu Alan</value>
+  </data>
+	<data name="Graduation Date" xml:space="preserve">
+    <value>Mezuniyet Tarihi</value>
+  </data>
+	<data name="Graduation Information" xml:space="preserve">
+    <value>Mezuniyet Bilgileri</value>
+  </data>
+	<data name="Graduation Registration No" xml:space="preserve">
+    <value>Mezuniyet Tescil Numarası</value>
+  </data>
+	<data name="Higher Education Information" xml:space="preserve">
+    <value>Yüksek Öğrenim Bilgisi</value>
+  </data>
+	<data name="University of Graduation" xml:space="preserve">
+    <value>Mezun Olduğu Üniversite</value>
+  </data>
+	<data name="The Person Entering The Evaluation Data" xml:space="preserve">
+    <value>Değerlendirme Verilerini Giren</value>
+  </data>
+	<data name="The Person Recorded The Entry" xml:space="preserve">
+    <value>Kaydı Yapan Kişi</value>
+  </data>
+	<data name="Address People Appropriately" xml:space="preserve">
+    <value>Kişilere uygun şekilde hitapta bulunur</value>
+  </data>
+	<data name="Can Be a Team Leader" xml:space="preserve">
+    <value>Ekip Lideri Olabilir</value>
+  </data>
+	<data name="Can Deliver Negative, Bad News" xml:space="preserve">
+    <value>Olumsuz, kötü haber verebilir</value>
+  </data>
+	<data name="Can Provide Motivation to the Team" xml:space="preserve">
+    <value>Ekibine Motivasyon Sağlayabilir</value>
+  </data>
+	<data name="Can Resolve Team Internal Conflicts" xml:space="preserve">
+    <value>Ekip İçi Çatışmalarda Çözüm Sağlayabilir</value>
+  </data>
+	<data name="Can Work Within a Team" xml:space="preserve">
+    <value>Ekip İçinde Çalışabilir</value>
+  </data>
+	<data name="Communication" xml:space="preserve">
+    <value>İletişim</value>
+  </data>
+	<data name="Demonstrates Empathy In Communication" xml:space="preserve">
+    <value>İletişimde empati yapar</value>
+  </data>
+	<data name="Edit Roles" xml:space="preserve">
+    <value>Rolleri Düzenle</value>
+  </data>
+	<data name="Eliminates Communication Barriers In The Workplace" xml:space="preserve">
+    <value>Çalışma ortamında iletişim engellerini ortadan kaldırır</value>
+  </data>
+	<data name="Listens Effectively" xml:space="preserve">
+    <value>Etkili Dinleme Yapar</value>
+  </data>
+	<data name="Management" xml:space="preserve">
+    <value>Yöneticilik</value>
+  </data>
+	<data name="Team Membership" xml:space="preserve">
+    <value>Ekip Üyeliği</value>
+  </data>
+	<data name="Upholds the Rights of the Team" xml:space="preserve">
+    <value>Ekibinin Haklarını Gözetir</value>
+  </data>
+	<data name="Uses Feedback In Accordance With The Rules" xml:space="preserve">
+    <value>Geri bildirimi kurallarına uygun olarak kullanır</value>
+  </data>
+	<data name="Download The Final Exam Report" xml:space="preserve">
+    <value>Bitirme Sınavı Tutanağı İndir</value>
+  </data>
+	<data name="Opinion Form Document" xml:space="preserve">
+    <value>Kanaat Formu Dosyası</value>
+  </data>
+	<data name="Student Communique Document" xml:space="preserve">
+    <value>Öğrenci Tebliğ Dosyası</value>
+  </data>
+	<data name="Opinion Form Document Upload" xml:space="preserve">
+    <value>Kanaat Formu Yükle</value>
+  </data>
+	<data name="Student Communique Document Upload" xml:space="preserve">
+    <value>Öğrenci Tebliğ Dosyası Yükle</value>
+  </data>
+	<data name="Click If the Student Cannot Be Transferred Because It Has Not Been Notified" xml:space="preserve">
+    <value>Tebliğ Edilmediği İçin Nakil Yapılamıyor ise Tıklayınız</value>
+  </data>
+	<data name="Transfer Failed" xml:space="preserve">
+    <value>Nakil Yapılamadı</value>
+  </data>
+	<data name="Banned from Profession" xml:space="preserve">
+    <value>Meslekten Men</value>
+  </data>
+	<data name="Being Considered Independent" xml:space="preserve">
+    <value>Müstafi Sayılma</value>
+  </data>
+	<data name="Conviction" xml:space="preserve">
+    <value>Mahkumiyet</value>
+  </data>
+	<data name="Exportation" xml:space="preserve">
+    <value>İhraç</value>
+  </data>
+	<data name="Registration by mistake" xml:space="preserve">
+    <value>Sehven Kayıt</value>
+  </data>
+	<data name="Diploma Number" xml:space="preserve">
+    <value>Diploma Numarası</value>
+  </data>
+	<data name="Standard" xml:space="preserve">
+    <value>Standart</value>
+  </data>
+	<data name="Category" xml:space="preserve">
+    <value>Kategori</value>
+  </data>
+	<data name="Application Date" xml:space="preserve">
+    <value>Başvuru Tarihi</value>
+  </data>
+	<data name="Information not found. Try again." xml:space="preserve">
+    <value>Bilgiler bulunamadı. Tekrar deneyiniz.</value>
+  </data>
+	<data name="Category Code" xml:space="preserve">
+    <value>Kategori Kodu</value>
+  </data>
+	<data name="Standard Code" xml:space="preserve">
+    <value>Standart Kodu</value>
+  </data>
+	<data name="Web Address" xml:space="preserve">
+    <value>Web Adresi</value>
+  </data>
+	<data name="Affiliation Educational Institution / Faculty" xml:space="preserve">
+    <value>Birlikte Kullanım Eğitim Kurumu / Fakülte</value>
+  </data>
+	<data name="Affiliation Ministry / University" xml:space="preserve">
+    <value>Birlikte Kullanım Bakanlık / Üniversite</value>
+  </data>
+	<data name="Affiliation Hospital" xml:space="preserve">
+    <value>Birlikte Kullanım Eğitimin Verildiği Kurum</value>
+  </data>
+	<data name="Okey" xml:space="preserve">
+    <value>Tamam</value>
+  </data>
+	<data name="User account is passive." xml:space="preserve">
+    <value>Giriş yapmak isteyen kullanıcı pasif durumdadır.</value>
+  </data>
+	<data name="{0} days will be added to the estimated end date of the education. Do you confirm?" xml:space="preserve">
+    <value>Eğitimin tahmini bitiş tarihine {0} gün eklenecektir. Onaylıyor musunuz?</value>
+  </data>
+	<data name="Last Login Date" xml:space="preserve">
+    <value>Son Giriş Tarihi</value>
+  </data>
+	<data name="The student is not subject to any curriculum or the duration of the curriculum he is subject to is empty. Select the curriculum from the student detail or inform the system administrator that the duration of the curriculum is empty." xml:space="preserve">
+    <value>Öğrenci herhangi bir müfredata tâbi değil ya da tâbi olduğu müfredatın süresi boş. Öğrenci detayından tâbi olduğu müfredatı seçiniz ya da sistem yöneticisine müfredatın süresinin boş olduğunu bildiriniz.</value>
+  </data>
+	<data name="You cannot transfer the student without saving the student's opinion information!" xml:space="preserve">
+    <value>Öğrencinin kanaat bilgilerini kaydetmeden öğrenciyi nakil edemezsiniz!</value>
+  </data>
+	<data name="You cannot finish the rotation without saving the student's opinion information!" xml:space="preserve">
+    <value>Öğrencinin kanaat bilgilerini kaydetmeden rotasyonu bitiremezsiniz!</value>
+  </data>
+	<data name="Did this student start her/his education with amnesty law?" xml:space="preserve">
+    <value>Öğrenci eğitimine af kanunu ile mi başladı?</value>
+  </data>
+	<data name="Send to Registration" xml:space="preserve">
+    <value>Tescile Gönder</value>
+  </data>
+	<data name="Sent to Registration" xml:space="preserve">
+    <value>Tescile Gönderildi</value>
+  </data>
+	<data name="Specific Education" xml:space="preserve">
+    <value>Nitelikli Eğitim</value>
+  </data>
+	<data name="Specific Education Place" xml:space="preserve">
+    <value>Nitelikli Eğitim Yeri</value>
+  </data>
+	<data name="Fee Receipt" xml:space="preserve">
+    <value>Harç Makbuzu</value>
+  </data>
+	<data name="Photocopy of Identity Card" xml:space="preserve">
+    <value>Kimlik Kartı Fotokopisi</value>
+  </data>
+	<data name="Registration Control Form" xml:space="preserve">
+    <value>Tescil Kontrol Formu</value>
+  </data>
+	<data name="Mug Shot" xml:space="preserve">
+    <value>Vesikalık Fotoğraf</value>
+  </data>
+	<data name="ÖSYM Result Document" xml:space="preserve">
+    <value>ÖSYM Sonuç Dökümanı</value>
+  </data>
+	<data name="Specialist Training Exit Examination Report" xml:space="preserve">
+    <value>Uzmanlık Eğitimi Bitirme Sınavı Tutanağı</value>
+  </data>
+	<data name="Cancel Registration" xml:space="preserve">
+    <value>Tescili İptal Et</value>
+  </data>
+	<data name="Registration Cancel Statements" xml:space="preserve">
+    <value>Tescil İptal Açıklamaları</value>
+  </data>
+	<data name="Finish Education" xml:space="preserve">
+    <value>Eğitimi Bitir</value>
+  </data>
+	<data name="Software Support" xml:space="preserve">
+    <value>Yazılım Destek</value>
+  </data>
+	<data name="Starting Over with Exam for the Same Expertise Branch" xml:space="preserve">
+    <value>Aynı Uzmanlık Dalı İçin Sınav ile Yeniden Başlama</value>
+  </data>
+	<data name="Start Reason" xml:space="preserve">
+    <value>Başlangıç Nedeni</value>
+  </data>
+	<data name="Annual Leave" xml:space="preserve">
+    <value>Yıllık İzin</value>
+  </data>
+	<data name="File upload is required" xml:space="preserve">
+    <value>Dosya yükleme zorunludur</value>
+  </data>
+	<data name="Cancellation of Negative Opinion by Court Decision" xml:space="preserve">
+    <value>Olumsuz Kanaatin Mahkeme Kararı ile İptali</value>
+  </data>
+	<data name="Transfer after Cancellation of Negative Opinion by Court Decision" xml:space="preserve">
+    <value>Olumsuz Kanaatin Mahkeme Kararı ile İptali Sonrası Nakil</value>
+  </data>
+	<data name="Quota Requests" xml:space="preserve">
+    <value>Kontenjan Talepleri</value>
+  </data>
+	<data name="Announcements" xml:space="preserve">
+    <value>Duyurular</value>
+  </data>
+	<data name="Announcement" xml:space="preserve">
+    <value>Duyuru</value>
+  </data>
+	<data name="Announcement Title" xml:space="preserve">
+    <value>Duyuru Başlığı</value>
+  </data>
+	<data name="Publish Date" xml:space="preserve">
+    <value>Yayınlanma Tarihi</value>
+  </data>
+	<data name="Ray Leave" xml:space="preserve">
+	<value>Şua İzni</value>
+  </data>
+	<data name="Participation Rate in Portfolio Index" xml:space="preserve">
+	<value>Portföy Endeksi'ne Katılım Oranı</value>
+  </data>
+	<data name="Deadline for Institutions to Submit Requests" xml:space="preserve">
+	<value>Kurumların Talep Girebileceği Son Tarih</value>
+  </data>
+	<data name="Quota Request" xml:space="preserve">
+	<value>Kontenjan Talebi</value>
+  </data>
+	<data name="Period_1" xml:space="preserve">
+	<value>1. Dönem</value>
+  </data>
+	<data name="Period_2" xml:space="preserve">
+	<value>2. Dönem</value>
+  </data>
+	<data name="Number of students with 6 months left until the end of their education time" xml:space="preserve">
+	<value>Eğitim süresinin bitmesine 6 ay kalan öğrenci sayısı</value>
+  </data>
+	<data name="Educator Count Information" xml:space="preserve">
+	<value>Eğitici Sayısı Bilgisi</value>
+  </data>
+	<data name="Professor or Education Person Count" xml:space="preserve">
+	<value>Eğitim Görevlisi veya Profesör Sayısı</value>
+  </data>
+	<data name="Associate Professor Count" xml:space="preserve">
+	<value>Doçent Sayısı</value>
+  </data>
+	<data name="Chief Assistant Count" xml:space="preserve">
+	<value>Başasistan Sayısı</value>
+  </data>
+	<data name="Doctor Lecturer Count" xml:space="preserve">
+	<value>Doktor Öğretim Üyesi Sayısı</value>
+  </data>
+	<data name="Specialist Doctor Count" xml:space="preserve">
+	<value>Uzman Doktor Sayısı</value>
+  </data>
+	<data name="Student Count Information" xml:space="preserve">
+	<value>Öğrenci Sayısı Bilgisi</value>
+  </data>
+	<data name="Student Request" xml:space="preserve">
+	<value>Öğrenci Talebi</value>
+  </data>
+	<data name="Porfolio Information" xml:space="preserve">
+	<value>Portföy Bilgisi</value>
+  </data>
+	<data name="Capacity" xml:space="preserve">
+	<value>Kapasite</value>
+  </data>
+	<data name="Total Educator Count" xml:space="preserve">
+	<value>Toplam Eğitici Sayısı</value>
+  </data>
+	<data name="Total Student Count" xml:space="preserve">
+	<value>Toplam Öğrenci Sayısı</value>
+  </data>
+	<data name="Total University/Ministry Count" xml:space="preserve">
+	<value>Toplam Bakanlık/Üniversite Sayısı</value>
+  </data>
+	<data name="Total Number of Education Places" xml:space="preserve">
+	<value>Toplam Eğitim Verilen Yer Sayısı</value>
+  </data>
+	<data name="Student Count" xml:space="preserve">
+	<value>Öğrenci Sayısı</value>
+  </data>
+	<data name="Calculate Capacities for Selected Expertise Branch" xml:space="preserve">
+	<value>Seçili Uzmanlık Dalı İçin Kapasiteleri Hesapla</value>
+  </data>
+	<data name="Annual Global Quota" xml:space="preserve">
+	<value>Yıllık Global Kontenjan</value>
+  </data>
+	<data name="Enter Annual Global Quota" xml:space="preserve">
+	<value>Yıllık Global Kontenjan Gir</value>
+  </data>
+	<data name="You cannot calculate capacity without determining annual global quotas!" xml:space="preserve">
+	<value>Yıllık global kontenjanları belirlemeden kapasiteyi hesaplayamazsınız!</value>
+  </data>
+	<data name="Fetch Requests of Selected Expertise Branch" xml:space="preserve">
+	<value>Seçili Uzmanlık Dalına Ait Talepleri Getir</value>
+  </data>
+	<data name="Termination/Suspension of Civil Service" xml:space="preserve">
+	<value>Memuriyetin Sona Ermesi/Askıya Alınması</value>
+  </data>
+	<data name="Active Quota Request" xml:space="preserve">
+	<value>Aktif Kontenjan Talebi</value>
+  </data>
+	<data name="Incoming Quota Request" xml:space="preserve">
+	<value>Gelen Kontenjan Talebi</value>
+  </data>
+	<data name="Contribution Rate of Portfolio Index to Assistant Capacity Index by Branch" xml:space="preserve">
+	<value>Portföy Endeksi'nin Dala Göre Asistan Kapasite Endeksi'ne Katkı Oranı</value>
+  </data>
+	<data name="Contribution Rate of Educator Index to Assistant Capacity Index by Branch" xml:space="preserve">
+	<value>Eğitici Endeksi'nin Dala Göre Asistan Kapasite Endeksi'ne Katkı Oranı</value>
+  </data>
+	<data name="Request Type" xml:space="preserve">
+	<value>Talep Tipi</value>
+  </data>
+	<data name="Requested" xml:space="preserve">
+	<value>Talep Edilen</value>
+  </data>
+	<data name="Allocated By TUK" xml:space="preserve">
+	<value>TUK Tarafından Tahsis Edilen</value>
+  </data>
+	<data name="Allocated By TUK Secretary" xml:space="preserve">
+	<value>TUK Sekreteryası Tarafından Tahsis Edilen</value>
+  </data>
+	<data name="Expertise Branch Name" xml:space="preserve">
+	<value>Uzmanlık Dalı İsmi</value>
+  </data>
+	<data name="TUK Decision Number" xml:space="preserve">
+	<value>TUK Karar Numarası</value>
+  </data>
+	<data name="TUK Decision Date" xml:space="preserve">
+	<value>TUK Karar Tarihi</value>
+  </data>
+	<data name="First Period Global Quota" xml:space="preserve">
+	<value>1. Dönem Global Kontenjan</value>
+  </data>
+	<data name="Second Period Global Quota" xml:space="preserve">
+	<value>2. Dönem Global Kontenjan</value>
+  </data>
+	<data name="Student Index Per Educator" xml:space="preserve">
+	<value>Eğitici Başına Öğrenci Endeksi</value>
+  </data>
+	<data name="View Summary Table" xml:space="preserve">
+	<value>Özet Tabloyu Görüntüle</value>
+  </data>
+	<data name="Summary Table" xml:space="preserve">
+	<value>Özet Tablo</value>
+  </data>
+	<data name="Click to Add the Opinion Forms Received in Previous Education" xml:space="preserve">
+	<value>Önceki Eğitiminde Alınan Kanaat Formlarını Eklemek İçin Tıklayınız</value>
+  </data>
+	<data name="Active Requests" xml:space="preserve">
+	<value>Aktif Talepler</value>
+  </data>
+	<data name="Incoming Requests" xml:space="preserve">
+	<value>Gelen Talepler</value>
+  </data>
+	<data name="Past Requests" xml:space="preserve">
+	<value>Geçmiş Talepler</value>
+  </data>
+	<data name="Past Quota Request" xml:space="preserve">
+	<value>Geçmiş Kontenkan Talebi</value>
+  </data>
+	<data name="Dismissed" xml:space="preserve">
+	<value>İlişiği Kesildi</value>
+  </data>
+	<data name="Menus" xml:space="preserve">
+	<value>Menüler</value>
+  </data>
+	<data name="Roles and Menus" xml:space="preserve">
+	<value>Roller ve Menüler</value>
+  </data>
+	<data name="Institution Request" xml:space="preserve">
+	<value>Kurum Talebi</value>
+  </data>
+	<data name="Planned Request" xml:space="preserve">
+	<value>Planlanan Talep</value>
+  </data>
+	<data name="Committee Done Request" xml:space="preserve">
+	<value>Ziyareti Tamamlanan Talep</value>
+  </data>
+	<data name="Concluded Request" xml:space="preserve">
+	<value>Sonuçlanan Talep</value>
+  </data>
+	<data name="Active Request" xml:space="preserve">
+	<value>Aktif Talep</value>
+  </data>
+	<data name="Past Request" xml:space="preserve">
+	<value>Geçmiş Talep</value>
+  </data>
+	<data name="Incoming Request" xml:space="preserve">
+	<value>Gelen Talep</value>
+  </data>
+	<data name="Was the Opinion Note Notified to the Person?" xml:space="preserve">
+	<value>Kanaat Notu Kişiye Tebliğ Edildi Mi?</value>
+  </data>
+	<data name="State University" xml:space="preserve">
+	<value>Devlet Üniversitesi</value>
+  </data>
+	<data name="Ministry Of Interior-JGK" xml:space="preserve">
+	<value>İçişleri Bakanlığı-JGK</value>
+  </data>
+	<data name="Send Verification Code" xml:space="preserve">
+	<value>Doğrulama Kodu Gönder</value>
+  </data>
+	<data name="Verification Code" xml:space="preserve">
+	<value>Doğrulama Kodu</value>
+  </data>
+	<data name="Verify" xml:space="preserve">
+	<value>Doğrula</value>
+  </data>
+	<data name="Code Sent Successfully" xml:space="preserve">
+	<value>Kod Başarıyla Gönderildi</value>
+  </data>
+	<data name="An error occurred while sending the code. Please check the contact information!" xml:space="preserve">
+	<value>Kod Gönderilirken Hata Oluştu. İletişim Bilgilerini Kontrol Ediniz!</value>
+  </data>
+	<data name="Programs You Are Authorized to See" xml:space="preserve">
+	<value>Görmeye Yetkili Olduğunuz Programlar</value>
+  </data>
+	<data name="All Programs" xml:space="preserve">
+	<value>Tüm Programlar</value>
+  </data>
+	<data name="Send Verification Mail" xml:space="preserve">
+	<value>Doğrulama Maili Gönder</value>
+  </data>
+	<data name="You cannot log in to the system unless you verify your contact information." xml:space="preserve">
+	<value>İletişim bilgilerinizi doğrulamadığınız sürece sisteme giriş yapamazsınız.</value>
+  </data>
+	<data name="E-mail Verified" xml:space="preserve">
+	<value>E-posta Doğrulandı</value>
+  </data>
+	<data name="Phone Verified" xml:space="preserve">
+	<value>Telefon Doğrulandı</value>
+  </data>
+	<data name="Successfull" xml:space="preserve">
+	<value>Başarılı</value>
+  </data>
+	<data name="Estimated Finish Date Past" xml:space="preserve">
+	<value>Eğitimin Tahmini Bitiş Tarihi Geçmiş</value>
+  </data>
+	<data name="Check the students whose status is 'Estimated Finish Date Past'" xml:space="preserve">
+	<value>Durumu, "Eğitimin Tahmini Bitiş Tarihi Geçmiş" olan öğrencilerin kontrollerini yapınız</value>
+  </data>
+	<data name="Since the student's status is {0}, you can finish the education after completing the necessary operations from the student details." xml:space="preserve">
+	<value>Öğrencinin durumu {0} olduğu için, öğrenci detayından gerekli işlemleri yaptıktan sonra eğitimi bitirebilirsiniz.</value>
+  </data>
+	<data name="Frequently Asked Questions" xml:space="preserve">
+	<value>Sıkça Sorulan Sorular</value>
+  </data>
+	<data name="User Manual" xml:space="preserve">
+	<value>Kullanım Kılavuzu</value>
+  </data>
+	<data name="Clarification Text" xml:space="preserve">
+	<value>Aydınlatma Metni</value>
+  </data>
+	<data name="Since this person is a student, you can only delete them from the student list!" xml:space="preserve">
+	<value>Bu kişi öğrenci olduğu için, silme işlemini sadece öğrenci listesinden gerçekleştirebilirsiniz!</value>
+  </data>
+	<data name="Since this person is a educator, you can only delete them from the educator list!" xml:space="preserve">
+	<value>Bu kişi eğitici olduğu için, silme işlemini sadece eğitici listesinden gerçekleştirebilirsiniz!</value>
+  </data>
+	<data name="Education Officer Duty Start Date" xml:space="preserve">
+	<value>Eğitim Sorumlusu Göreve Başlangıç Tarihi</value>
+  </data>
+	<data name="Education Officer Duty End Date" xml:space="preserve">
+	<value>Eğitim Sorumlusu Görev Bitiş Tarihi</value>
+  </data>
+	<data name="Educator must have at least one program!" xml:space="preserve">
+	<value>Eğiticinin en az bir programı olmak zorundadır!</value>
+  </data>
+	<data name="Add Coordinator Advisor" xml:space="preserve">
+	<value>Koordinatör Danışman Ekle</value>
+  </data>
+	<data name="Do you want to delete this advisor? This action is irreversible." xml:space="preserve">
+	<value>Bu danışmanı silmek istiyor musunuz? Bu işlem geri alınamaz.</value>
+  </data>
+	<data name="If you want to delete coordinator advisor, you have do it using the edit button." xml:space="preserve">
+	<value>Koordinatör danışmanı silmek istiyorsanız düzenleme butonunu kullanarak silmeniz gerekmektedir.</value>
+  </data>
+	<data name="There is no coordinator advisor in this thesis. You have to add coordinator advisor to add progress report!" xml:space="preserve">
+	<value>Bu tezde koordinatör tez danışmanı bulunmamaktadır. İlerleme raporu ekleyebilmek için koordinatör tez danışmanı eklemelisiniz.</value>
+  </data>
+	<data name="Thesis Progress Reports" xml:space="preserve">
+    <value>Tez İlerleme Raporları</value>
+  </data>
+	<data name="Ethic Committee Decisions" xml:space="preserve">
+    <value>Etik Kurul Kararları</value>
+  </data>
+	<data name="Thesis Title Determine Date" xml:space="preserve">
+    <value>Tez Başlığı Belirlenme Tarihi</value>
+  </data>
+	<data name="Delete Reason Explanation" xml:space="preserve">
+    <value>Silme Nedeni Açıklaması</value>
+  </data>
+	<data name="Delete Reason of Current Coordinator Advisor" xml:space="preserve">
+    <value>Mevcut Koordinatör Danışmanın Silme Nedeni</value>
+  </data>
+	<data name="If you want to delete the coordinator advisor, you have to select a new coordinator advisor. Do you want to continue?" xml:space="preserve">
+    <value>Eğer koordinatör danışmanı silmek istiyorsanız, yeni bir koordinatör danışman seçmek zorundasınız. Devam etmek istiyor musunuz?</value>
+  </data>
+	<data name="You are ending this thesis. You can access the thesis information but you cannot make any changes. Do not forget to add your new thesis. Do you want to proceed?" xml:space="preserve">
+    <value>Bu tezi sonlandırıyorsunuz. Tez bilgilerine erişebilirsiniz ancak herhangi bir değişiklik yapamazsınız. Yeni tezinizi eklemeyi unutmayınız. Devam etmek istiyor musunuz?</value>
+  </data>
+	<data name="Not Educator" xml:space="preserve">
+	<value>Eğitici Olmayan</value>
+  </data>
+	<data name="You cannot add a thesis progress report because you have a successful thesis defense!" xml:space="preserve">
+	<value>Başarılı tez savunması bulunduğundan tez ilerleme raporu ekleyemezsiniz!</value>
+  </data>
+	<data name="You cannot add a thesis defense on this date. A thesis defense can be added 3 months before the student's estimated finish date." xml:space="preserve">
+	<value>Bu tarihte tez savunması ekleyemezsiniz. Tez savunması öğrencinin tahmini bitiş tarihine 3 ay kala eklenebilir.</value>
+  </data>
+	<data name="There cannot be more than 3 months between the due date of the last thesis progress report and the date of the thesis defense you attended. Add any missing thesis progress reports." xml:space="preserve">
+	<value>Son tez ilerleme raporunun bitiş tarihi ile girdiğiniz tez savunmasının tarihi arasında 3 aydan fazla süre olamaz. Eksik tez ilerleme raporlarını ekleyiniz.</value>
+  </data>
+	<data name="Old Name Surname" xml:space="preserve">
+    <value>Eski Adı Soyadı</value>
+  </data>
+	<data name="New Name Surname" xml:space="preserve">
+    <value>Yeni Adı Soyadı</value>
+  </data>
+	<data name="Error" xml:space="preserve">
+    <value>Hata</value>
+  </data>
+	<data name="Result Date" xml:space="preserve">
+    <value>Sonuç Tarihi</value>
+  </data>
+	<data name="Thesis Defence Status" xml:space="preserve">
+    <value>Tez Savunması Durumu</value>
+  </data>
+	<data name="Defence Date Determined" xml:space="preserve">
+    <value>Savunma Tarihi Belirlendi</value>
+  </data>
+	<data name="If there is a defense with the status 'Defense Date Determined', you cannot add a new defense. You must update the status of the thesis defense." xml:space="preserve">
+    <value>Durumu 'Savunma Tarihi Belirlendi' olan savunma varsa yeni savunma ekleyemezsiniz. Tez savunmasının durumunu güncellemelisiniz.</value>
+  </data>
+	<data name="If there is a successful defense, you cannot add a new defense." xml:space="preserve">
+    <value>Başarılı savunma varsa yeni savunma ekleyemezsiniz.</value>
+  </data>
+	<data name="You have to add thesis subject determine date to add progress report!" xml:space="preserve">
+    <value>İlerleme raporu ekleyebilmek için tez konusu belirlemelisiniz!</value>
+  </data>
+	<data name="Time Decreasing Due to Success of Second Thesis Defense" xml:space="preserve">
+    <value>2. Tez Savunmasında Başarı Sebebiyle Süre Kısaitma</value>
+  </data>
+	<data name="First Thesis Defence Date Determined" xml:space="preserve">
+    <value>1. Tez Savunması Tarihi Belirleme</value>
+  </data>
+	<data name="Second Thesis Defence Date Determined" xml:space="preserve">
+    <value>2. Tez Savunması Tarihi Belirleme</value>
+  </data>
+	<data name="Successful First Thesis Defence" xml:space="preserve">
+    <value>Başarılı 1. Tez Savunması</value>
+  </data>
+	<data name="Successful Second Thesis Defence" xml:space="preserve">
+    <value>Başarılı 2. Tez Savunması</value>
+  </data>
+	<data name="Unsuccessful First Thesis Defence" xml:space="preserve">
+    <value>Başarısız 1. Tez Savunması</value>
+  </data>
+	<data name="Unsuccessful Second Thesis Defence" xml:space="preserve">
+    <value>Başarısız 2. Tez Savunması</value>
+  </data>
+	<data name="Dismission" xml:space="preserve">
+    <value>İlişiğin Kesilmesi</value>
+  </data>
+	<data name="Education Failed" xml:space="preserve">
+    <value>Eğitim Başarısız Oldu</value>
+  </data>
+	<data name="File" xml:space="preserve">
+    <value>Dosya</value>
+  </data>
+	<data name="Other Specilization" xml:space="preserve">
+    <value>Diğer Uzmanlık</value>
+  </data>
+	
+	
+	
+	
+	
+	<data name="" xml:space="preserve">
+    <value></value>
+  </data>
+	
+</root>

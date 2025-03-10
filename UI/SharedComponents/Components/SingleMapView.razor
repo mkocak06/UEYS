@@ -1,0 +1,84 @@
+﻿@using UI.SharedComponents.BlazorLeaflet.Models
+@using UI.SharedComponents.BlazorLeaflet.Models.Events
+@using System.Drawing
+@inject IJSRuntime _jsRuntime
+@inherits FluxorComponent
+
+@if (_map != null)
+{
+    <div style="height: @(FullHeight ? "100%" : "250px"); width: 100%;">
+        <LeafletMap Map="_map" />
+    </div>
+}
+
+@code {
+    [Parameter] public float Lat { get; set; }
+    [Parameter] public float Lng { get; set; }
+    [Parameter] public string MarkerName { get; set; }
+    [Parameter] public bool EditMode { get; set; }
+    [Parameter] public bool FullHeight { get; set; }
+    [Parameter] public Action<float, float> OnLocationChanged { get; set; }
+    private Map _map;
+    private Marker _marker;
+
+    private bool _rendered = false;
+
+    protected override void OnParametersSet()
+    {
+        if (!_rendered)
+        {
+            _rendered = true;
+            InitializeMap();
+        }
+        base.OnParametersSet();
+    }
+    public async Task SetMapOnOpenModal(Guid modalId)
+    {
+        await _map.SetMapOnModal(modalId);
+    }
+    private async Task InitializeMap()
+    {
+        var latLng = new LatLng(Lat == 0 ? 39.925533f : Lat, Lng == 0 ? 32.866287f : Lng);
+        _map = new Map(_jsRuntime)
+        {
+            Center = latLng,
+            Zoom = 6f
+        };
+
+        _map.OnInitialized += () =>
+        {
+            _marker = new Marker(latLng)
+            {
+                Draggable = EditMode,
+                Popup = new Popup()
+                {
+                    Content = MarkerName
+                },
+                Title = MarkerName,
+                Tooltip = new Tooltip { Content = EditMode ? "Lokasyonu değiştirmek için sürükleyip bırakın" : MarkerName }
+            };
+            _map.AddLayer(new TileLayer
+            {
+                UrlTemplate = "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                Attribution = "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a>",
+            });
+            if (EditMode)
+            {
+                _marker.OnDragEnd += async (sender, senderevent) =>
+             {
+                 var resp = await sender.getLatLng(_jsRuntime, _map.Id);
+                 var resp2 = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, float>>(resp);
+                 OnLocationChanged.Invoke(resp2["lat"], resp2["lng"]);
+             };
+            }
+            _map.AddLayer(_marker);
+        };
+    }
+
+    public void UpdateMap(float lat, float lng)
+    {
+        _marker.Position = new LatLng(lat == 0 ? 39.925533f : lat, lng == 0 ? 32.866287f : lng);
+        _map.UpdateLayer(_marker);
+        _map.PanTo(new PointF(_marker.Position.Lat, _marker.Position.Lng), true);
+    }
+}

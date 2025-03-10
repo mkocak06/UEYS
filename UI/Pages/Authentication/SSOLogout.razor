@@ -1,0 +1,29 @@
+﻿@page "/login/logout"
+@layout LoginLayout
+<Spinner></Spinner>
+
+
+@code
+{
+    [Inject] NavigationManager NavigationManager { get; set; }
+    [Inject] IAuthenticationService AuthenticationService { get; set; }
+    [Inject] ISweetAlert SweetAlert { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await AuthenticationService.Logout();
+            SweetAlert.ToastAlert(SweetAlertIcon.success, $"{L["Your session ended successfully"]}");
+        }
+        catch (Exception)
+        {
+
+        }
+        finally
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

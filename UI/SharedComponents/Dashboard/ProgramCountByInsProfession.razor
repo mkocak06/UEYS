@@ -1,0 +1,58 @@
+﻿@using ApexCharts;
+@using Shared.ResponseModels.StatisticModels
+@using Shared.Types;
+@inherits FluxorComponent
+@if (_chartLoaded)
+{
+    <div class="card card-custom card-stretch gutter-b bg-diagonal bg-diagonal-light-success">
+        <div class="card-body">
+            <div style="overflow-x:auto;overflow-y:auto">
+                <ApexChart @ref=_apexChart TItem="CountsByProfessionInstitutionModel" Title="Üst Kurum/Uzmanlık Alanına Bağlı Program Sayısı" Options="_options">
+
+                    @if (countsModelList != null && countsModelList?.Count > 0)
+                    {
+
+                        <ApexPointSeries TItem="CountsByProfessionInstitutionModel"
+                                         Items="countsModelList"
+                                         Name="Tıp"
+                                         XValue="@(e => e.ParentInstitutionName)"
+                                         SeriesType="SeriesType.Bar"
+                                         YAggregate="@(e => e.Sum(e => e.MedicineCount))"
+                                         OrderByDescending="e=>e.Y"
+                                         ShowDataLabels />
+
+                        <ApexPointSeries TItem="CountsByProfessionInstitutionModel"
+                                         Items="countsModelList"
+                                         Name="Diş Hekimliği"
+                                         SeriesType="SeriesType.Bar"
+                                         XValue="@(e => e.ParentInstitutionName)"
+                                         YAggregate="@(e => e.Sum(e => e.DentistryCount))"
+                                         OrderByDescending="e=>e.Y"
+                                         ShowDataLabels />
+                        @* <ApexPointSeries TItem="CountsByProfessionInstitutionModel"
+                Items="countsModelList"
+                Name="Eczacılık"
+                XValue="@(e => e.ParentInstitutionName)"
+                SeriesType="SeriesType.Bar"
+                YAggregate="@(e => e.Sum(e => e.PharmaceuticsCount))"
+                OrderByDescending="e=>e.Y"
+                ShowDataLabels /> *@
+                    }
+                    else
+                    {
+                        <ApexPointSeries TItem="CountsByProfessionInstitutionModel"
+                                         Items="null"
+                                         Name=""
+                                         XValue="@(e => e.ParentInstitutionName)"
+                                         YAggregate="@(e => e.Sum(e => e.Count))"
+                                         SeriesType="SeriesType.Bar" />
+                    }
+                </ApexChart>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}

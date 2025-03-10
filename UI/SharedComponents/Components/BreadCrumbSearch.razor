@@ -1,0 +1,54 @@
+﻿@using System.Globalization
+<div class="dropdown">
+    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @BreadCrumb.Title
+    </button>
+    <div class="dropdown-menu dropdown-menu-lg">
+        <div class="p-1">
+            <div class="mx-4 "><input class="form-control" @bind="@SearchQuery" @bind:event="oninput" placeholder="Ara .." /></div>
+
+            @if (_elementList is not null)
+            {
+                @foreach (var item in _elementList.OrderBy(x => x.Name))
+                {
+                    if (!string.IsNullOrEmpty(item.Link))
+                    {
+                        <a role="button" @onclick="()=>Click(item)" class="dropdown-item" href="@item.Link">@item.Name</a>
+                    }
+                    else
+                    {
+                        <span class="dropdown-item">@item.Name</span>
+                    }
+                }
+            }
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter] public BreadCrumbLink BreadCrumb { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; }
+    private string SearchQuery { get; set; } = string.Empty;
+    private bool forceRender;
+
+    private List<DropdownElement> _elementList =>
+        BreadCrumb.DropdownList is not null ? BreadCrumb.DropdownList.Where(x => x.Name.Trim().ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.Trim().ToLower(CultureInfo.CurrentCulture))).OrderBy(x => x.Name).ToList() :
+            new();
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (forceRender)
+        {
+            forceRender = false;
+            SearchQuery = string.Empty;
+        }
+    }
+
+    private void Click(DropdownElement dropdownElement)
+    {
+        forceRender = true;
+        NavigationManager.NavigateTo(dropdownElement.Link);
+    }
+
+}

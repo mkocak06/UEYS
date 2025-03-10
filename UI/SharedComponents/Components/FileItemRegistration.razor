@@ -1,0 +1,331 @@
+﻿@using Shared.ResponseModels
+@using Shared.ResponseModels.Wrapper;
+@using Shared.Types;
+@using Shared.Extensions;
+<div class="card-body">
+
+    <div class="table-responsive">
+
+        @if (Documents != null && Documents.Any())
+        {
+            <table class="table table-vertical-center">
+                <thead>
+                    <tr>
+                        <th class="p-0 w-50px"></th>
+                        <th class="p-0 min-w-80px">Dosya Tipi</th>
+                        <th class="p-0 min-w-200px">Dosya Adı</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DocumentResponseDTO fileObj in Documents)
+                    {
+                        <tr>
+                            <td class="pl-0">
+                                <div class="symbol symbol-30 symbol-light-info mr-2">
+                                    @((MarkupString)Tools.GetFileExtensionImage(fileObj.Name))
+                                </div>
+                            </td>
+                            <td class="pl-0">
+                                <a class="text-dark-75" data-toggle="tooltip">@L[fileObj.DocumentType == DocumentTypes.EducationTimeTracking ? "Specialist Training Exit Examination Report" : fileObj.DocumentType.GetDescription() ?? "-"]</a>
+                            </td>
+                            <td class="pl-0">
+                                <a class="text-dark" data-toggle="tooltip" title="@Tools.GetFileName(fileObj,false)">@Tools.GetFileName(fileObj)</a>
+                            </td>
+
+                            <td class="text-right pr-0">
+                                @if (CanDownloaded)
+                                {
+                                    <a @onclick="@(()=>GetFile(fileObj))" target="_top" class="btn btn-icon btn-light-success btn-sm" title="@L["Download"]">
+                                        <span class="svg-icon">
+                                            <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo3/dist/../src/media/svg/icons/Files/Download.svg-->
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect x="0" y="0" width="24" height="24" />
+                                                    <path d="M2,13 C2,12.5 2.5,12 3,12 C3.5,12 4,12.5 4,13 C4,13.3333333 4,15 4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 C2,15 2,13.3333333 2,13 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" />
+                                                    <rect fill="#000000" opacity="0.3" transform="translate(12.000000, 8.000000) rotate(-180.000000) translate(-12.000000, -8.000000) " x="11" y="1" width="2" height="14" rx="1" />
+                                                    <path d="M7.70710678,15.7071068 C7.31658249,16.0976311 6.68341751,16.0976311 6.29289322,15.7071068 C5.90236893,15.3165825 5.90236893,14.6834175 6.29289322,14.2928932 L11.2928932,9.29289322 C11.6689749,8.91681153 12.2736364,8.90091039 12.6689647,9.25670585 L17.6689647,13.7567059 C18.0794748,14.1261649 18.1127532,14.7584547 17.7432941,15.1689647 C17.3738351,15.5794748 16.7415453,15.6127532 16.3310353,15.2432941 L12.0362375,11.3779761 L7.70710678,15.7071068 Z" fill="#000000" fill-rule="nonzero" transform="translate(12.000004, 12.499999) rotate(-180.000000) translate(-12.000004, -12.499999) " />
+                                                </g>
+                                            </svg>
+                                            <!--end::Svg Icon-->
+                                        </span>
+                                    </a>
+                                }
+                                @if (IsEditing == true)
+                                {
+                                    <a @onclick="@(()=>Delete(fileObj))" class="btn btn-icon btn-light-danger btn-sm" title="@L["Delete"]">
+                                        <span class="svg-icon">
+                                            <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo3/dist/../src/media/svg/icons/Files/Deleted-file.svg-->
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect x="0" y="0" width="24" height="24" />
+                                                    <path d="M6,8 L18,8 L17.106535,19.6150447 C17.04642,20.3965405 16.3947578,21 15.6109533,21 L8.38904671,21 C7.60524225,21 6.95358004,20.3965405 6.89346498,19.6150447 L6,8 Z M8,10 L8.45438229,14.0894406 L15.5517885,14.0339036 L16,10 L8,10 Z" fill="#000000" fill-rule="nonzero" />
+                                                    <path d="M14,4.5 L14,3.5 C14,3.22385763 13.7761424,3 13.5,3 L10.5,3 C10.2238576,3 10,3.22385763 10,3.5 L10,4.5 L5.5,4.5 C5.22385763,4.5 5,4.72385763 5,5 L5,5.5 C5,5.77614237 5.22385763,6 5.5,6 L18.5,6 C18.7761424,6 19,5.77614237 19,5.5 L19,5 C19,4.72385763 18.7761424,4.5 18.5,4.5 L14,4.5 Z" fill="#000000" opacity="0.3" />
+                                                </g>
+                                            </svg>
+                                            <!--end::Svg Icon-->
+                                        </span>
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="d-flex flex-column flex-center mb-10">
+                <img src="assets/media/svg/icons/Files/Compilation.svg" class="w-100px">
+                <div class="h1 text-dark mb-4">@L["No files found"].</div>
+            </div>
+        }
+    </div>
+</div>
+@code {
+    [Parameter]
+    public bool Loaded { get; set; }
+    [Parameter]
+    public ICollection<DocumentResponseDTO> Documents { get; set; }
+    [Parameter]
+    public bool CanDownloaded { get; set; } = true;
+    [Parameter]
+    public bool IsEditing { get; set; }
+
+    [Inject] public IDocumentService DocumentService { get; set; }
+    [Inject] public IAffiliationService AffiliationService { get; set; }
+    [Inject] public IProtocolProgramService ProtocolProgramService { get; set; }
+    [Inject] public IThesisService ThesisService { get; set; }
+    [Inject] public IProgressReportService ProgressReportService { get; set; }
+    [Inject] public IEthicCommitteeService EthicCommitteeService { get; set; }
+    [Inject] public IOfficialLetterService OfficialLetterService { get; set; }
+    [Inject] public IPerformanceRatingService PerformanceRatingService { get; set; }
+    [Inject] public IThesisDefenceService ThesisDefenceService { get; set; }
+    [Inject] public IOpinionService OpinionService { get; set; }
+    [Inject] public IEducationTrackingService EducationTrackingService { get; set; }
+    [Inject] public IStudentRotationService StudentRotationService { get; set; }
+    [Inject] public IScientificStudyService ScientificStudyService { get; set; }
+    [Inject] public IEducatorService EducatorService { get; set; }
+    [Inject] public IStudentService StudentService { get; set; }
+    [Inject] public IUserService UserService { get; set; }
+    [Inject] public ISweetAlert SweetAlert { get; set; }
+    [Inject] public IJSRuntime JSRuntime { get; set; }
+
+
+    private async void Delete(DocumentResponseDTO fileObj)
+    {
+        bool confirm = await SweetAlert.ConfirmAlert(L["Are you sure?"], L["This file will be deleted. You cannot undo this action!"], SweetAlertIcon.warning, true, L["Delete"], L["Cancel"]);
+        if (confirm)
+        {
+            try
+            {
+                switch (fileObj.DocumentType)
+                {
+                    case DocumentTypes.Affiliation:
+                        await AffiliationService.DeleteFile(DocumentTypes.Affiliation, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.ProtocolProgram:
+                        await ProtocolProgramService.DeleteFile(DocumentTypes.ProtocolProgram, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.ComplementProgram:
+                        await ProtocolProgramService.DeleteFile(DocumentTypes.ComplementProgram, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.Thesis:
+                        await ThesisService.DeleteFile(DocumentTypes.Thesis, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.ProgressReport:
+                        await ProgressReportService.DeleteFile(DocumentTypes.ProgressReport, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.EthicCommitteeDecision:
+                        await EthicCommitteeService.DeleteFile(DocumentTypes.EthicCommitteeDecision, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.OfficialLetter:
+                        await OfficialLetterService.DeleteFile(DocumentTypes.OfficialLetter, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.ThesisFinalExam:
+                        await ThesisService.DeleteFile(DocumentTypes.ThesisFinalExam, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.PerformanceRating:
+                        await PerformanceRatingService.DeleteFile(DocumentTypes.PerformanceRating, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.ThesisDefence:
+                        await ThesisDefenceService.DeleteFile(DocumentTypes.ThesisDefence, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.OpinionForm:
+                        await OpinionService.DeleteFile(DocumentTypes.OpinionForm, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.Communique:
+                        await OpinionService.DeleteFile(DocumentTypes.Communique, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.EducationTimeTracking:
+                        await EducationTrackingService.DeleteFile(DocumentTypes.EducationTimeTracking, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.StudentRotation:
+                        await StudentRotationService.DeleteFile(DocumentTypes.StudentRotation, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.PlaceOfDuty:
+                        await EducatorService.DeleteFile(DocumentTypes.PlaceOfDuty, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.ScientificStudy:
+                        await ScientificStudyService.DeleteFile(DocumentTypes.ScientificStudy, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.AssociateProfessorship:
+                        await EducatorService.DeleteFile(DocumentTypes.AssociateProfessorship, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.DeclarationDocument:
+                        await EducatorService.DeleteFile(DocumentTypes.DeclarationDocument, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.EducationOfficerAssignmentLetter:
+                        await EducatorService.DeleteFile(DocumentTypes.EducationOfficerAssignmentLetter, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.OsymResultDocument:
+                        await StudentService.DeleteFile(DocumentTypes.OsymResultDocument, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.Transfer:
+                        await StudentService.DeleteFile(DocumentTypes.Transfer, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.EPKInstitutionalEducationOfficerAppointmentDecision:
+                        await UserService.DeleteFile(DocumentTypes.EPKInstitutionalEducationOfficerAppointmentDecision, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.RelatedDependentProgram:
+                        await ProtocolProgramService.DeleteFile(DocumentTypes.RelatedDependentProgram, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.StudentDependentProgram:
+                        await StudentService.DeleteFile(DocumentTypes.RelatedDependentProgram, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.FeeReceipt:
+                        await StudentService.DeleteFile(DocumentTypes.FeeReceipt, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.RegistrationControlForm:
+                        await StudentService.DeleteFile(DocumentTypes.RegistrationControlForm, fileObj.EntityId);
+                        break;
+                    case DocumentTypes.PhotocopyOfIdentityCard:
+                        await StudentService.DeleteFile(DocumentTypes.PhotocopyOfIdentityCard, fileObj.EntityId);
+                        break;
+                    default:
+                        throw new Exception("Döküman bulunamadı. Sistem yöneticisiyle iletişime geçiniz.");
+                        break;
+                }
+                Documents.Remove(fileObj);
+                StateHasChanged();
+                SweetAlert.ToastAlert(SweetAlertIcon.success, $"{L["Item Deleted!"]}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                SweetAlert.ErrorAlert(e.Message);
+                throw;
+            }
+
+        }
+    }
+    private async Task GetFile(DocumentResponseDTO fileObj)
+    {
+        ResponseWrapper<FileResponseDTO> fileResponse = new();
+        try
+        {
+            switch (fileObj.DocumentType)
+            {
+                case DocumentTypes.Affiliation:
+                    fileResponse = await AffiliationService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.ProtocolProgram:
+                    fileResponse = await ProtocolProgramService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.ComplementProgram:
+                    fileResponse = await ProtocolProgramService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.Thesis:
+                    fileResponse = await ThesisService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.ProgressReport:
+                    fileResponse = await ProgressReportService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.EthicCommitteeDecision:
+                    fileResponse = await EthicCommitteeService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.OfficialLetter:
+                    fileResponse = await OfficialLetterService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.ThesisFinalExam:
+                    fileResponse = await ThesisService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.PerformanceRating:
+                    fileResponse = await PerformanceRatingService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.ThesisDefence:
+                    fileResponse = await ThesisDefenceService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.OpinionForm:
+                    fileResponse = await OpinionService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.Communique:
+                    fileResponse = await OpinionService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.EducationTimeTracking:
+                    fileResponse = await EducationTrackingService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.StudentRotation:
+                    fileResponse = await StudentRotationService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.PlaceOfDuty:
+                    fileResponse = await EducatorService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.ScientificStudy:
+                    fileResponse = await ScientificStudyService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.AssociateProfessorship:
+                    fileResponse = await EducatorService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.DeclarationDocument:
+                    fileResponse = await EducatorService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.SpecializationBoardChairman:
+                    fileResponse = await EducatorService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.SpecializationBoardMember:
+                    fileResponse = await EducatorService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.OsymResultDocument:
+                    fileResponse = await StudentService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.Transfer:
+                    fileResponse = await StudentService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.EPKInstitutionalEducationOfficerAppointmentDecision:
+                    fileResponse = await UserService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.EducationOfficerAssignmentLetter:
+                    fileResponse = await EducatorService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.RelatedDependentProgram:
+                    fileResponse = await ProtocolProgramService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.StudentDependentProgram:
+                    fileResponse = await StudentService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.FeeReceipt:
+                    fileResponse = await StudentService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.RegistrationControlForm:
+                    fileResponse = await StudentService.Download(fileObj.BucketKey);
+                    break;
+                case DocumentTypes.PhotocopyOfIdentityCard:
+                    fileResponse = await StudentService.Download(fileObj.BucketKey);
+                    break;
+                default:
+                    throw new Exception("Döküman türü bulunamadı. Sistem yöneticisiyle iletişime geçiniz.");
+                    break;
+            }
+
+            await JSRuntime.InvokeVoidAsync("saveAsFile", fileObj.Name, Convert.ToBase64String(fileResponse.Item.FileContent));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            SweetAlert.ErrorAlert(e.Message);
+            throw;
+        }
+
+    }
+
+}

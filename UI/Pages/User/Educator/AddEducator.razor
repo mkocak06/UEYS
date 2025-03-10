@@ -1,0 +1,820 @@
+﻿@page "/educator/educators/add-educator/{programId:long?}"
+@page "/educator/educators/add-educator"
+@using Shared.Extensions;
+@using Shared.RequestModels;
+@using Shared.Types;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            @if (existEducatorId == null || existEducatorId == 0)
+            {
+
+                <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="async() => await Save()">
+                    <i class="fas fa-save"></i>@L["Save"]
+                </SpinnerButton>
+            }
+
+        </div>
+    </Toolbar>
+    <Content>
+        @if (existEducatorId != null && existEducatorId > 0)
+        {
+            <UI.Pages.User.Educator.Tabs.EducatorOverview @ref="EducatorOverviewComponent" EducatorIdFromAdding="@((long)existEducatorId)"></UI.Pages.User.Educator.Tabs.EducatorOverview>
+        }
+        else
+        {
+
+            <div class="card card-custom mb-30">
+                <div class="card-body @(programId!=null?"ribbon ribbon-right":"")">
+                    @if (programId != null)
+                    {
+                        <div class="ribbon-target bg-danger" style="top: 10px; right: -2px;">@_program?.Name </div>
+                    }
+                    <div class="row">
+                        <div class="col-12">
+                            @if (isDomainAllowed && _showCaptcha)
+                            {
+                                <div class="d-flex justify-content-center">
+                                    @if (captcha != null)
+                                    {
+                                        <div class="form-group">
+                                            <label class="col-form-label text-right">@L["Güvenlik Kodu"]</label>
+                                            <div class="card card-custom overlay mb-3">
+                                                <div class="card-body p-0">
+                                                    <div class="overlay-wrapper">
+                                                        <img src="data:image/png;base64, @captcha.Captcha" alt="" class="w-100 rounded" />
+                                                    </div>
+                                                    <div class="overlay-layer align-items-start justify-content-end pt-5 pr-5">
+                                                        <a @onclick="ReloadCaptcha" class="btn btn-clean btn-icon mr-2">
+                                                            <i class="flaticon2-reload icon-lg text-primary"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <InputText @bind-Value="inputCaptcha" class="form-control rounded-lg" />
+                                            @if (!string.IsNullOrEmpty(_captchaValidatorMessage))
+                                            {
+                                                <div class="validation-message">@_captchaValidatorMessage</div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="spinner spinner-dark spinner-primary spinner-lg my-5"></div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            <div class="d-flex justify-content-center">
+                                <EditForm Model="@_identityNo" OnSubmit="SearchByIdentityNo">
+                                    <div class="form-group">
+                                        <label>@L["T.R. Identity Number"]</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="flaticon2-browser"></i></span>
+                                            </div>
+                                            <InputMask Value="@_identityNo" ValueExpression="()=>_identityNo" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(IdentyNoChanged)" type="text" class="@GetIdentiyClass()" data-mask="99999999999" disabled="@(_searchingIdentity || _user is not null)" />
+                                            <div class="input-group-append">
+                                                @if (_user is null)
+                                                {
+                                                    <SpinnerButton Type="submit" Spinning="_searchingIdentity" Disabled="_searchingIdentity">
+                                                        @L["Fetch"]
+                                                    </SpinnerButton>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-danger" type="button" @onclick="CancelUser"><i class="fa fa-window-close "></i></button>
+                                                }
+                                            </div>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(_tcValidatorMessage))
+                                        {
+                                            <div class="validation-message">@_tcValidatorMessage</div>
+                                        }
+                                    </div>
+
+                                </EditForm>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (_user is not null && !_searchingIdentity)
+                    {
+                        <EditForm EditContext="_ec">
+                            <FluentValidator TValidator="UserResponseEducatorValidator" />
+                            <div class="validation-summary" id="validationSummary">
+                                <ValidationSummary />
+                            </div>
+                            <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <span class="card-icon">
+                                            <i class="flaticon2-avatar text-primary"></i>
+                                        </span>
+                                        <h3 class="card-label">@L["_Information", L["Kişisel"]]</h3>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-group">
+                                                <label>@L["Name Surname"]</label>
+                                                <input type="text" class="form-control" value="@(_user.Name??"-")" disabled />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>@L["Gender"]</label>
+                                                <input type="text" class="form-control" value="@L[_user?.Gender?.Description() ?? "-"]" disabled />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>@L["Mobile Phone"]</label>
+
+                                                <InputMask Value="@_user.Phone" ValueExpression="()=>_user.Phone" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(PhoneNoChanged)" class="form-control" type="text" data-mask="(999) 999-9999" />
+                                                <ValidationMessage For="() => _user.Phone"></ValidationMessage>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-12 col-md-6">
+                                            <div class="form-group">
+                                                <label>@L["Birthplace"]</label>
+                                                <input type="text" class="form-control" value="@(_user.BirthPlace??"-")" disabled />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>@L["Birth Date"]</label>
+                                                <input type="text" class="form-control" value="@(_user.BirthDate?.ToString("dd.MM.yyyy"))" disabled />
+                                            </div>
+                                            <div class="form-group">
+                                                <label>@L["Email"]</label>
+                                                <InputText class="form-control" @bind-Value="_user.Email" />
+                                                <ValidationMessage For="() => _user.Email"></ValidationMessage>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="form-group">
+                            <label>@L["Address"]</label>
+                            <textarea class="form-control" value="@(_user.Address??"-")" rows="5" disabled />
+                            </div>*@
+                                </div>
+                            </div>
+                            <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <span class="card-icon">
+                                            <i class="flaticon2-pin text-primary"></i>
+                                        </span>
+                                        <h3 class="card-label">@L["Graduation Information"]</h3>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    @if (_user.EgitimBilgisiResult?.Count > 0)
+                                    {
+                                        @foreach (var graduationDetail in _user.EgitimBilgisiResult)
+                                        {
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group">
+                                                            <label>@L["University of Graduation"]</label>
+                                                            <InputText class="form-control" @bind-Value="@(graduationDetail.GraduationUniversity)" disabled />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group">
+                                                            <label>@L["Faculty/Institute of Graduation"]</label>
+                                                            <InputText class="form-control" @bind-Value="@(graduationDetail.GraduationFaculty)" disabled />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group">
+                                                            <label>@L["Field of Graduation"]</label>
+                                                            <InputText disabled class="form-control" @bind-Value="graduationDetail.GraduationField" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group">
+                                                            <label>@L["Graduation Date"]</label>
+                                                            <InputText disabled class="form-control" @bind-Value="graduationDetail.GraduationDate" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12 col-md-6">
+                                                        <div class="form-group">
+                                                            <label>@L["Higher Education Information"]</label>
+                                                            <InputText class="form-control" @bind-Value="@(graduationDetail.HigherEducationDetail)" disabled />
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-6">
+                                                        @if (graduationDetail.DiplomaNumber != null)
+                                                        {
+                                                            <div class="form-group">
+                                                                <label>@L["Registration Number"]</label>
+                                                                <InputText class="form-control" @bind-Value="@(graduationDetail.DiplomaNumber)" disabled />
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label>
+                                            @L["The graduation information of the person is not registered in YÖKSİS. The person should register the graduation information with YÖKSİS by contacting the central unit responsible for domestic student affairs of the university/universities from which he/she graduated. For international graduations, the person should contact the YÖK Equivalency Unit."]
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+                            <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <span class="card-icon">
+                                            <i class="flaticon2-list text-primary"></i>
+                                        </span>
+                                        <h3 class="card-label">@L["_Information", L["Staff"]]</h3>
+                                    </div>
+                                    <div class="card-toolbar">
+                                        <a class="btn btn-outline-primary" @onclick="()=>{_user.Educator.StaffParentInstitutions.Add(new EducatorStaffParentInstitutionResponseDTO());}">
+                                            <i class="fas fa-plus"></i> @L["_add", L["Staff Parent Institution"]]
+                                        </a>
+                                        <a class="btn btn-outline-primary ml-3" @onclick="()=>{_user.Educator.StaffInstitutions.Add(new EducatorStaffInstitutionResponseDTO());}">
+                                            <i class="fas fa-plus"></i> @L["_add", L["Staff Institution"]]
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <Grid Items="_user.Educator.StaffParentInstitutions" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                                                <GridColumn style="width:40%;" TRowData="EducatorStaffParentInstitutionResponseDTO" Title="@L["Staff Parent Institution"]">
+                                                    <ChildContent Context="espi">
+                                                        <InputSelect class="form-control" disabled="@(espi.StaffParentInstitutionId != null)" @bind-Value="espi.StaffParentInstitutionId">
+                                                            <option value="" selected="@(espi.StaffParentInstitutionId == null)">@L["Select"]</option>
+                                                            @foreach (var item in _staffParentInstitutions)
+                                                            {
+                                                                <option value="@item.Id">
+                                                                    @item.Name
+                                                                </option>
+                                                            }
+                                                        </InputSelect>
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn TRowData="EducatorStaffParentInstitutionResponseDTO" Title="@L["Start Date"]">
+                                                    <ChildContent Context="espi">
+                                                        <InputDate class="form-control" @bind-Value="espi.StartDate" />
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn TRowData="EducatorStaffParentInstitutionResponseDTO" Title="@L["End Date"]">
+                                                    <ChildContent Context="espi">
+                                                        <InputDate class="form-control" @bind-Value="espi.EndDate" />
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn Context="espi" class="min-w-100px align-middle" TRowData="EducatorStaffParentInstitutionResponseDTO" Title="@L["Transactions"]">
+                                                    <a @onclick="()=>{_user.Educator.StaffParentInstitutions.Remove(espi);}" class="btn btn-light-danger btn-icon btn-sm  float-right mr-2"><i class="fas fa-trash-alt"></i></a>
+                                                </GridColumn>
+                                            </Grid>
+                                            <ValidationMessage For="() => _user.Educator.StaffParentInstitutions"></ValidationMessage>
+
+                                            <Grid Items="_user.Educator.StaffInstitutions" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                                                <GridColumn style="width:40%;" TRowData="EducatorStaffInstitutionResponseDTO" Title="@L["Staff Institution"]">
+                                                    <ChildContent Context="esi">
+                                                        <InputSelect class="form-control" disabled="@(esi.StaffInstitutionId != null)" @bind-Value="esi.StaffInstitutionId">
+                                                            <option value="" selected="@(esi.StaffInstitutionId == null)">@L["Select"]</option>
+                                                            @foreach (var item in _staffInstitutions)
+                                                            {
+                                                                <option value="@item.Id">
+                                                                    @item.Name
+                                                                </option>
+                                                            }
+                                                        </InputSelect>
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn TRowData="EducatorStaffInstitutionResponseDTO" Title="@L["Start Date"]">
+                                                    <ChildContent Context="esi">
+                                                        <InputDate class="form-control" @bind-Value="esi.StartDate" />
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn TRowData="EducatorStaffInstitutionResponseDTO" Title="@L["End Date"]">
+                                                    <ChildContent Context="esi">
+                                                        <InputDate class="form-control" @bind-Value="esi.EndDate" />
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn Context="esi" class="min-w-100px align-middle" TRowData="EducatorStaffInstitutionResponseDTO" Title="@L["Transactions"]">
+                                                    <a @onclick="()=>{_user.Educator.StaffInstitutions.Remove(esi);}" class="btn btn-light-danger btn-icon btn-sm  float-right mr-2"><i class="fas fa-trash-alt"></i></a>
+                                                </GridColumn>
+                                            </Grid>
+                                            <ValidationMessage For="() => _user.Educator.StaffInstitutions"></ValidationMessage>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <span class="card-icon">
+                                            <i class="flaticon2-chart text-primary"></i>
+                                        </span>
+                                        <h3 class="card-label">@L["_Information", L["Academic"]]</h3>
+                                    </div>
+                                    <div class="card-toolbar">
+                                       @*  @if (_user.Educator?.EducatorExpertiseBranches?.Any() == false)
+                                        {
+                                            <a class="btn btn-outline-primary" @onclick="()=>{_user.Educator?.EducatorExpertiseBranches?.Add(new EducatorExpertiseBranchResponseDTO(){ExpertiseBranch = null}); StateHasChanged();}">
+                                                <i class="fas fa-plus"></i> @L["_add", L["Expertise Branch"]]
+                                            </a>
+                                        } *@
+                                        <SpinnerButton Spinning="_loadingCKYSInfo" Disabled="_loadingCKYSInfo" OnClick="() => GetCKYSInfoByIdentityNo()">
+                                            <i class="fas fa-sync-alt"></i>@L["Re-Inquiry"]
+                                        </SpinnerButton>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12 col-md-4">
+                                            <div class="form-group">
+                                                <label>@L["Staff Title"]</label>
+                                                <div class="input-group">
+                                                    <InputSelect Class="form-control" @bind-Value="@_user.Educator.StaffTitleId">
+                                                        <option value="" selected="@(_user.Educator?.StaffTitleId == null)">@(L["Please Select"])...</option>
+                                                        @foreach (var title in staffTitles)
+                                                        {
+                                                            <option value="@title.Id" selected="@(_user.Educator?.StaffTitleId == title.Id)">
+                                                                @(title.Name)
+                                                            </option>
+                                                        }
+                                                    </InputSelect>
+                                                </div>
+                                                <ValidationMessage For="() => _user.Educator.StaffTitleId"></ValidationMessage>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <div class="form-group">
+                                                <label>@L["Academic Title"]</label>
+                                                <div class="input-group">
+                                                    <InputSelect Class="form-control" @bind-Value="@_user.Educator.AcademicTitleId">
+                                                        <option value="" selected="@(_user.Educator?.AcademicTitleId == null)">@(L["Please Select"])...</option>
+                                                        @foreach (var title in academicTitles)
+                                                        {
+                                                            <option value="@title.Id" selected="@(_user.Educator?.AcademicTitleId == title.Id)">
+                                                                @(title.Name)
+                                                            </option>
+                                                        }
+                                                    </InputSelect>
+                                                </div>
+                                                <ValidationMessage For="() => _user.Educator.AcademicTitleId"></ValidationMessage>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <div class="form-group">
+                                                <label>@L["Administrative Mission"]</label>
+                                                <BlazoredTypeahead SearchMethod="SearchAdministrativeTitles"
+                                                                   @bind-Values="_user.Educator.EducatorAdministrativeTitles"
+                                                                   EnableDropDown="true"
+                                                                   MinimumLength="1"
+                                                                   MaximumSuggestions=99999>
+                                                    <SelectedTemplate Context="group">
+                                                        @group?.AdministrativeTitle.Name
+                                                    </SelectedTemplate>
+                                                    <HelpTemplate>
+                                                        @L["Please enter at least 2 character to search."]
+                                                    </HelpTemplate>
+                                                    <NotFoundTemplate Context="searchText">
+                                                        @if (string.IsNullOrEmpty(searchText))
+                                                        {
+                                                            @L["Could not find an item"]
+                                                        }
+                                                        else
+                                                        {
+                                                            <div>@searchText @L["Could not find an item named"]</div>
+                                                        }
+                                                    </NotFoundTemplate>
+                                                    <ResultTemplate Context="group">
+                                                        @group?.AdministrativeTitle.Name
+                                                    </ResultTemplate>
+                                                </BlazoredTypeahead>
+                                                <ValidationMessage For="() => _user.Educator.EducatorAdministrativeTitles"></ValidationMessage>
+                                            </div>
+                                            <p>@L["This section is for informational purposes. Related administrative duties should be defined on a role basis from the user operations menu."]</p>
+                                        </div>
+                                    </div>
+
+                                    <Grid Items="_user.Educator.EducatorExpertiseBranches" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                                        <GridColumn TRowData="EducatorExpertiseBranchResponseDTO" Title="@L["Principal Branch / Sub Branch"]">
+                                            <ChildContent Context="edx">
+
+
+                                                @if (edx.ExpertiseBranch?.IsPrincipal != null)
+                                                {
+                                                    if (edx.ExpertiseBranch?.IsPrincipal == true)
+                                                    {
+                                                        <label>@L["Principal Branch"]</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label>@L["Sub Branch"]</label>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <label>-</label>
+                                                }
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn TRowData="EducatorExpertiseBranchResponseDTO" Title="@L["Expertise Branch"]">
+                                            <ChildContent Context="edx">
+
+                                                @if (_user.Educator.EducatorPrograms?.Any(x => x.Program.ExpertiseBranchId == edx.ExpertiseBranchId) == true)
+                                                {
+                                                    <input type="text" class="form-control" value="@edx.ExpertiseBranchName" disabled />
+                                                }
+                                                else
+                                                {
+                                                    <InputSelect class="form-control" Value="edx.ExpertiseBranchId" TValue="long?" ValueExpression="()=>edx.ExpertiseBranchId" ValueChanged="(long? id)=>OnChangeNewBranch(id, edx)">
+                                                        <option value="" selected="@(edx.ExpertiseBranchId == null)">@L["Select"]</option>
+                                                        @foreach (var item in expertiseBranches.OrderBy(x => x.Name).GroupBy(x => x.IsPrincipal).ToList())
+                                                        {
+                                                            <optgroup label="@L[item.Key==true?"Principal Branches":"Sub Branches"]">
+                                                                @foreach (var item2 in item.ToList())
+                                                                {
+                                                                    <option @key=item2 value="@item2.Id">
+                                                                        @item2.Name
+                                                                    </option>
+                                                                }
+                                                            </optgroup>
+                                                        }
+                                                    </InputSelect>
+                                                }
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn TRowData="EducatorExpertiseBranchResponseDTO" Title="@L["Registration Branch Name"]">
+                                            <ChildContent Context="edx">
+                                                <InputTextArea @bind-Value="edx.RegistrationBranchName" class="form-control" disabled></InputTextArea>
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn TRowData="EducatorExpertiseBranchResponseDTO" Title="@L["Graduated Institution"]">
+                                            <ChildContent Context="edx">
+                                                <InputTextArea @bind-Value="edx.RegistrationGraduationSchool" class="form-control" disabled></InputTextArea>
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn TRowData="EducatorExpertiseBranchResponseDTO" Title="@L["Registration Date"]">
+                                            <ChildContent Context="edx">
+                                                <InputDate max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" @bind-Value="edx.RegistrationDate" class="form-control" disabled="@(edx.RegistrationBranchName != null)"></InputDate>
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn TRowData="EducatorExpertiseBranchResponseDTO" Title="@L["Registration Number"]">
+                                            <ChildContent Context="edx">
+                                                <input @bind-value="edx.RegistrationNo" class="form-control" type="number" disabled="@(edx.RegistrationBranchName != null)" />
+                                            </ChildContent>
+                                        </GridColumn>
+                                        <GridColumn class="min-w-100px align-middle" TRowData="EducatorExpertiseBranchResponseDTO" Title="@L["Transactions"]">
+                                            <ChildContent Context="edx">
+                                                <a title="@L["Remove"]" @onclick="()=>OnRemoveEducatorExpertiseBranch(edx)" class="btn btn-light-danger btn-icon btn-sm">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                                @* @if (edx == _user.Educator.EducatorExpertiseBranches.LastOrDefault())
+                                                {
+
+                                                    <a class="btn btn-icon btn-outline-primary btn-sm ml-2" title="@L["_add", L["Expertise Branch"]]" @onclick="()=>{_user.Educator.EducatorExpertiseBranches.Add(new EducatorExpertiseBranchResponseDTO(){ExpertiseBranch = null}); _existRegistrationNo=false; StateHasChanged();}">
+                                                        <i class="fas fa-plus"></i>
+                                                    </a>
+                                                } *@
+                                            </ChildContent>
+                                        </GridColumn>
+                                    </Grid>
+                                    <ValidationMessage For="() => _user.Educator.EducatorExpertiseBranches"></ValidationMessage>
+
+                                    <div class="row">
+                                        <div class="col-12 col-md-12">
+                                            <p>@L["PROVISIONAL ARTICLE 1- (1) The educator rights of those who have received at least the title of associate professor according to Law No. 2547 before 18/7/2009 and have started teaching in the relevant branch, although they are not experts in the relevant branch, are reserved."]</p>
+                                            <div class="form-group row">
+                                                <label class="col-6 col-form-label">@L["Is Conditional Educator?"]</label>
+                                                <div class="col-6 col-form-label">
+                                                    <div class="radio-inline">
+                                                        <InputRadioGroup @bind-Value="_user.Educator.IsConditionalEducator" @bind-Value:after="CheckConditionalEducator">
+                                                            <label class="radio radio-success">
+                                                                <InputRadio Value="true" disabled="@(_user.Educator.IsForensicMedicineInstitutionEducator == true)"></InputRadio>
+                                                                <span></span>@L["Yes"]
+                                                            </label>
+                                                            <label class="radio radio-danger">
+                                                                <InputRadio Value="false"></InputRadio>
+                                                                <span></span>@L["No"]
+                                                            </label>
+                                                        </InputRadioGroup>
+                                                        <ValidationMessage For="()=>_user.Educator.IsConditionalEducator" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if (_user.Educator.IsConditionalEducator == true)
+                                        {
+                                            <div class="col-12 col-md-12">
+                                                <div class="form-group">
+                                                    <label>@L["Title Date"]</label>
+                                                    <InputDate max="@Shared.Extensions.EnumExtension.GetTueyDate().ToString("yyyy-MM-dd")" class="form-control" @bind-Value="_user.Educator.TitleDate" />
+                                                    <ValidationMessage For="()=>_user.Educator.TitleDate" />
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label><b>@L["Associate Professorship Document"]</b></label>
+                                                    <Dropzone @ref="dropzone" EntityId="@(0)" DocumentType="DocumentTypes.AssociateProfessorship" OnUpdateHandler="OnUpdateDropzone"></Dropzone>
+                                                    @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                                                    {
+                                                        <div class="validation-message">@_documentValidatorMessage</div>
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label><b>@L["Declaration Regarding Teaching In This Field Document"]</b></label>
+                                                    <Dropzone @ref="dropzoneDeclaration" EntityId="@(0)" DocumentType="DocumentTypes.DeclarationDocument" OnUpdateHandler="OnUpdateDropzoneDeclaration"></Dropzone>
+                                                    @if (!string.IsNullOrEmpty(_declarationDocumentValidatorMessage))
+                                                    {
+                                                        <div class="validation-message">@_declarationDocumentValidatorMessage</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <p>@L["TUEY Article 10 (3); Specialization education at the Forensic Medicine Institution is given by the heads of the specialized boards specified in the Chairman Decree No. 4 on the Organization of Related, Associated Institutions and Organizations and Other Institutions and Organizations Affiliated to the Ministries, and by forensic medicine experts who have been members of the specialized boards for at least three years."]</p>
+                                            <div class="form-group row">
+                                                <label class="col-6 col-form-label text-bold">@L["Is Forensic Medicine Institute Educator?"]</label>
+                                                <div class="col-6 col-form-label">
+                                                    <div class="radio-inline">
+                                                        <InputRadioGroup @bind-Value="_user.Educator.IsForensicMedicineInstitutionEducator">
+                                                            <label class="radio radio-success">
+                                                                <InputRadio Value="true" disabled="@(_user.Educator.IsConditionalEducator == true)"></InputRadio>
+                                                                <span></span>@L["Yes"]
+                                                            </label>
+                                                            <label class="radio radio-danger">
+                                                                <InputRadio Value="false"></InputRadio>
+                                                                <span></span>@L["No"]
+                                                            </label>
+                                                        </InputRadioGroup>
+                                                        <ValidationMessage For="()=>_user.Educator.IsForensicMedicineInstitutionEducator" />
+                                                    </div>
+                                                </div>
+                                                @if (_user.Educator.IsForensicMedicineInstitutionEducator == true)
+                                                {
+                                                    <label class="col-6 col-form-label text-bold">@L["Chairman or Member?"]</label>
+                                                    <div class="col-6 col-form-label">
+                                                        <div class="radio-inline">
+                                                            <InputRadioGroup @bind-Value="_user.Educator.IsChairman">
+                                                                <label class="radio radio-success">
+                                                                    <InputRadio Value="true"></InputRadio>
+                                                                    <span></span>@L["Chairman"]
+                                                                </label>
+                                                                <label class="radio radio-danger">
+                                                                    <InputRadio Value="false"></InputRadio>
+                                                                    <span></span>@L["Member"]
+                                                                </label>
+                                                            </InputRadioGroup>
+                                                            <ValidationMessage For="()=>_user.Educator.IsChairman" />
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        @if (_user.Educator.IsForensicMedicineInstitutionEducator == true)
+                                        {
+                                            if (_user.Educator.IsChairman == true)
+                                            {
+                                                <div class="col-12 col-md-6">
+                                                    <div class="form-group">
+                                                        <label><b>@L["Specialization Board Chairman Document"]</b></label>
+                                                        <Dropzone @ref="dropzoneChairman" EntityId="@(0)" DocumentType="DocumentTypes.SpecializationBoardChairman" OnUpdateHandler="OnUpdateDropzoneChairman"></Dropzone>
+                                                        @if (!string.IsNullOrEmpty(_chairmanDocumentValidatorMessage))
+                                                        {
+                                                            <div class="validation-message">@_chairmanDocumentValidatorMessage</div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div class="form-group">
+                                                        <label>@L["Chairman Unit"]</label>
+                                                        <InputSelect @bind-Value="_user.Educator.ForensicMedicineBoardType" class="form-control">
+                                                            <option value="" selected>@L["Select"]</option>
+                                                            @foreach (var item in Enum.GetValues(typeof(ForensicMedicineBoardType)).Cast<ForensicMedicineBoardType>())
+                                                            {
+                                                                <option value="@item">@L[item.GetDescription()]</option>
+                                                            }
+                                                        </InputSelect>
+                                                        <ValidationMessage For="()=>_user.Educator.ForensicMedicineBoardType" />
+                                                    </div>
+                                                </div>
+                                            }
+                                            else if (_user.Educator.IsChairman == false)
+                                            {
+                                                <div class="col-12 col-md-6">
+                                                    <div class="form-group">
+                                                        <label>@L["Membership Start Date"]</label>
+                                                        <InputDate class="form-control" @bind-Value="_user.Educator.MembershipStartDate" />
+                                                        <ValidationMessage For="()=>_user.Educator.MembershipStartDate" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label><b>@L["Specialization Board Membership Document"]</b></label>
+                                                        <Dropzone @ref="dropzoneMember" EntityId="@(0)" DocumentType="DocumentTypes.SpecializationBoardMember" OnUpdateHandler="OnUpdateDropzoneMember"></Dropzone>
+                                                        @if (!string.IsNullOrEmpty(_memberDocumentValidatorMessage))
+                                                        {
+                                                            <div class="validation-message">@_memberDocumentValidatorMessage</div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 col-md-6">
+                                                    <div class="form-group">
+                                                        <label>@L["Membership End Date"]</label>
+                                                        <InputDate class="form-control" @bind-Value="_user.Educator.MembershipEndDate" />
+                                                        <ValidationMessage For="()=>_user.Educator.MembershipEndDate" />
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <span class="card-icon">
+                                            <i class="flaticon2-list text-primary"></i>
+                                        </span>
+                                        <h3 class="card-label">@L["_Information", L["Expertise Training Program"]]</h3>
+                                    </div>
+                                    @if ((programId != null && _user.Educator.EducatorPrograms?.Any() == false) || programId == null)
+                                    {
+                                        <div class="card-toolbar">
+                                            <a class="btn btn-outline-primary" @onclick="()=>OnOpenEducatorProgramAddModal()">
+                                                <i class="fas fa-plus"></i> @L["_add", L["Expertise Training Program"]]
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <Grid IsFilter="false" Items="_user.Educator.EducatorPrograms" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                                                <GridColumn TRowData="EducatorProgramResponseDTO" Title="@L["Place of Duty"]">
+                                                    <ChildContent Context="context_1">
+                                                        @L[context_1.DutyType?.GetDescription()]
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn TRowData="EducatorProgramResponseDTO" Title="@L["Expertise Training Program"]">
+                                                    <ChildContent Context="context_1">
+                                                        @context_1.Program.Name
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn TRowData="EducatorProgramResponseDTO" Title="@L["Start Date"]">
+                                                    <ChildContent Context="context_1">
+                                                        @context_1.DutyStartDate?.ToShortDateString()
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn TRowData="EducatorProgramResponseDTO" Title="@L["End Date"]">
+                                                    <ChildContent Context="context_1">
+                                                        @context_1.DutyEndDate?.ToShortDateString()
+                                                    </ChildContent>
+                                                </GridColumn>
+                                                <GridColumn Context="context_1" class="align-middle" TRowData="EducatorProgramResponseDTO" Title="@L["Transactions"]">
+                                                    <a title="@L["Remove"]" @onclick="()=>RemoveEducatorProgram(context_1)" class="btn btn-light-danger btn-icon btn-sm">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                </GridColumn>
+                                            </Grid>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ValidationMessage For="()=>_user.Educator.EducatorPrograms" />
+                            </div>
+                        </EditForm>
+
+
+                    }
+                </div>
+            </div>
+        }
+    </Content>
+</AppContent>
+
+<MyModal @ref="UploaderModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <Dropzone @ref="dropzone" EntityId=0 DocumentType="@Shared.Types.DocumentTypes.PlaceOfDuty" />
+        <FileItem Documents="_selectedEducatorProgram.Documents" Loaded="true"></FileItem>
+    </Body>
+</MyModal>
+
+<MyModal @ref="_educatorProgramModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecForProgram">
+            <FluentValidator TValidator="EducatorProgramValidator" />
+            <div class="form-group">
+                <label>@L["Place of Duty"]</label>
+                <div class="form_group">
+                    <InputSelect @bind-Value="_educatorProgram.DutyType" class="form-control">
+                        <option value="" selected>@L["Select"]</option>
+                        @foreach (DutyType dutyType in Enum.GetValues(typeof(DutyType)))
+                        {
+                            <option value="@dutyType">@L[dutyType.GetDescription()] </option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="()=>_educatorProgram.DutyType" />
+                    @if (!string.IsNullOrEmpty(_dutyPlaceValidatorMessage))
+                    {
+                        <div class="validation-message">@_dutyPlaceValidatorMessage</div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label>@L["Expertise Training Program"]</label>
+                <BlazoredTypeahead SearchMethod="SearchPrograms"
+                                   TItem="ProgramResponseDTO"
+                                   TValue="ProgramResponseDTO"
+                                   Value="_educatorProgram.Program"
+                                   ValueExpression="() => _educatorProgram.Program"
+                                   ValueChanged="OnChangeEducatorProgram"
+                                   EnableDropDown="false"
+                                   MinimumLength="2"
+                                   MaximumSuggestions="int.MaxValue"
+                                   placeholder=@L["Select"]>
+                    <SelectedTemplate Context="program">
+                        @program.Name
+                    </SelectedTemplate>
+                    <HelpTemplate>
+                        @L["Please enter at least 1 character to search."]
+                    </HelpTemplate>
+                    <NotFoundTemplate Context="searchText">
+                        "@searchText" @L["Could not find an item named"]
+                    </NotFoundTemplate>
+                    <ResultTemplate Context="program">
+                        @program.Name
+                    </ResultTemplate>
+                </BlazoredTypeahead>
+                <ValidationMessage For="()=>_educatorProgram.ProgramId" />
+            </div>
+            <div class="form-group row">
+                <label class="col-6 col-form-label">@L["Is Education Officer?"]</label>
+                <div class="col-6 col-form-label">
+                    <div class="radio-inline">
+                        <InputRadioGroup @bind-Value="_educatorProgram.IsEducationOfficer">
+                            <label class="radio radio-success">
+                                <InputRadio Value="true"></InputRadio>
+                                <span></span>@L["Yes"]
+                            </label>
+                            <label class="radio radio-danger">
+                                <InputRadio Value="false"></InputRadio>
+                                <span></span>@L["No"]
+                            </label>
+                        </InputRadioGroup>
+                        <ValidationMessage For="() =>_educatorProgram.IsEducationOfficer"></ValidationMessage>
+                    </div>
+                </div>
+            </div>
+            @if (_educatorProgram.IsEducationOfficer == true)
+            {
+                <div class="form-group">
+                    <label>@L["Education Officer Duty Start Date"]</label>
+                    <InputDate class="form-control" @bind-Value="_educatorProgram.EducationOfficerDutyStartDate" />
+                    <ValidationMessage For="()=>_educatorProgram.EducationOfficerDutyStartDate" />
+                </div>
+                <div class="form-group">
+                    <label><b>@L["Education Officer Assignment Letter"]</b></label>
+                    <Dropzone @ref="dropzoneOfficer" EntityId="0" DocumentType="DocumentTypes.EducationOfficerAssignmentLetter"></Dropzone>
+                    @* <ValidationMessage For="() =>_educatorProgram.EducationOfficerDocuments"></ValidationMessage> *@
+                </div>
+                @if (!string.IsNullOrEmpty(_educationOfficerDocumentValidatorMessage))
+                {
+                    <div class="validation-message">@_educationOfficerDocumentValidatorMessage</div>
+                }
+            }
+            <div class="form-group">
+                <label>@L["Educator Program Start Date"]</label>
+                <InputDate class="form-control" disabled="@(_educatorProgram.Program == null)" @bind-Value="_educatorProgram.DutyStartDate" />
+                <ValidationMessage For="()=>_educatorProgram.DutyStartDate" />
+                @if (!string.IsNullOrEmpty(_programStartDateValidatorMessage))
+                {
+                    <div class="validation-message">@_programStartDateValidatorMessage</div>
+                }
+            </div>
+            <div class="form-group">
+                <label>@L["Educator Program End Date"]</label>
+                <InputDate class="form-control" disabled="@(_educatorProgram.DutyStartDate == null)" @bind-Value="_educatorProgram.DutyEndDate" />
+                <ValidationMessage For="()=>_educatorProgram.DutyEndDate" />
+            </div>
+            <div class="form-group">
+                <label><b>@L["Assignment Letter"]</b></label>
+                <Dropzone @ref="dropzoneProgram" EntityId="@(_educatorProgram.Id.HasValue ? (long)_educatorProgram.Id : 0)" DocumentType="DocumentTypes.PlaceOfDuty"></Dropzone>
+            </div>
+
+            <button @onclick="SaveEducatorProgram" class="btn btn-clean btn-primary"> @L["Save"] </button>
+        </EditForm>
+    </Body>
+</MyModal>

@@ -1,0 +1,59 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Types
+@using Shared.Extensions;
+@page "/management/title/{Id:long?}"
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.TitleUpdate}">
+                <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                    <i class="fas fa-save"></i>@L["Save"]
+                </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="TitleValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["_name", L["Title"]]</label>
+                                        <InputText class="form-control" @bind-Value="_title.Name" />
+                                        <ValidationMessage For="() => _title.Name"></ValidationMessage>
+                                        <label>@L["Title Type"]</label>
+                                        <InputSelect @bind-Value="_title.TitleType" class="form-control">
+                                            @foreach (TitleType titleType in Enum.GetValues(typeof(TitleType)))
+                                            {
+                                                <option value="@titleType">@L[titleType.GetDescription()] </option>
+                                            }
+                                        </InputSelect>
+                                        @*<AutoFocus InputTextFunc="()=>_focusTarget" />*@
+                                        <ValidationMessage For="() => _title.TitleType"></ValidationMessage>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/titles"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

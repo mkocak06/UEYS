@@ -1,0 +1,25 @@
+﻿@using ApexCharts;
+@using Shared.Extensions
+@using Shared.ResponseModels.Student
+@using Shared.Types;
+@inherits FluxorComponent
+@if (_chartLoaded)
+{
+    <div style="overflow-x:auto;overflow-y:auto">
+        <ApexChart @ref=_apexChart TItem="StudentQuotaChartModel" Options="_options">
+
+            <ApexPointSeries TItem="StudentQuotaChartModel"
+                             Items="studentsCountModelList"
+                             XValue="@(e => {string lcl = L[e.Name];
+                                         return lcl;})"
+                             YAggregate="@(e => e.Sum(e => e.Count))"
+                             SeriesType="SeriesType.Bar"
+                             ShowDataLabels />
+
+        </ApexChart>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}

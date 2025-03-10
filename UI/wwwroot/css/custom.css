@@ -1,0 +1,114 @@
+.scala-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 30px;
+    max-width: 100%;
+    overflow: hidden;
+    text-align: center;
+}
+
+    .scala-wrapper > div {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: bold;
+        text-shadow: 1px 1px 0px black;
+    }
+
+
+/** Map Overview Page **/
+.map-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+    .map-toolbar > .form-group {
+        min-width: 150px;
+        margin-right: 10px;
+    }
+
+.map-overview-wrapper .mow-map > h3, .map-overview-wrapper .mow-map > p {
+    display: none;
+}
+
+.map-overview-wrapper:fullscreen {
+    background-color: #eee;
+}
+
+    .map-overview-wrapper:fullscreen .map-toolbar {
+        padding: 15px;
+        background-color: #fff;
+    }
+
+        .map-overview-wrapper:fullscreen .map-toolbar > .form-group {
+            margin-bottom: 0
+        }
+
+    .map-overview-wrapper:fullscreen .mow-map > .leaflet-container {
+        height: calc(100vh - 125px) !important;
+    }
+
+.meta-table td:nth-child(2) {
+    word-break: break-word;
+    width: 70%;
+}
+
+.meta-table td:nth-child(1) {
+    width: 30%;
+}
+
+.validation-message {
+    color: red;
+}
+
+.carousel:hover .slider-button {
+    display: block !important;
+}
+
+.carousel:hover .carousel-indicators {
+    display: flex !important;
+}
+
+.blazored-typeahead__results {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.dropdown-menu {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.datepicker.dropdown-menu {
+    z-index: 9999 !important;
+}
+
+:fullscreen {
+    background-color: aliceblue;
+    padding-top: 10vh;
+}
+
+.custom-marker {
+    background-color: transparent;
+}
+
+.drop-zone {
+    padding: 20px;
+    width: 100%;
+    min-height: 100px;
+    border: 2px dashed #0087F7;
+    border-radius: 5px;
+}
+
+    .drop-zone.hover {
+        border-style: solid;
+    }
+
+.popover {
+    min-width: 250px;
+}

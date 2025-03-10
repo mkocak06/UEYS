@@ -1,0 +1,397 @@
+﻿@using Shared.ResponseModels;
+@using Shared.Types
+
+@if (_perfections != null)
+{
+    <div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.PerfectionExportExcelList}">
+            <button class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left" : "btn btn-outline-success mr-3") @onclick="PerfectionType == Shared.Types.PerfectionType.Clinical ? DownloadExcelFileClinical : DownloadExcelFileInterventional">
+                <i class=@(_loadingFile ? "" : "fas fa-download")></i>@L["Export"]
+            </button>
+        </PermissionWrapper>
+        @* <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectioniCompleteAll}">
+            <button @onclick="CompleteAllPerfections" class="btn btn-outline-success">@L["Complete All"]</button>
+        </PermissionWrapper> *@
+    </div>
+    <Grid Items="_perfections" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+        <GridColumn Sort="PerfectionName" TRowData="PerfectionResponseDTO" Title="@(PerfectionType == Shared.Types.PerfectionType.Clinical ? L["Clinic Perfection"] : L["Interventional Perfection"])">
+            <ChildContent>
+                @context.PName?.Name
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="PerfectionGroup" TRowData="PerfectionResponseDTO" Title="@L["Group"]">
+            <ChildContent>
+                @context.Group?.Name
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="PerfectionLevel" TRowData="PerfectionResponseDTO" Title="@L["Level"]">
+            <ChildContent>
+                @foreach (var item in context.LevelList)
+                {
+                    <li>@item.Name</li>
+                }
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="PerfectionSeniorty" TRowData="PerfectionResponseDTO" Title="@L["Education Year-Seniorty"]">
+            <ChildContent>
+                @context.Seniorty?.Name
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn Sort="PerfectionMethod" TRowData="PerfectionResponseDTO" Title="@L["Method"]">
+            <ChildContent>
+                @foreach (var item in context.MethodList)
+                {
+                    <li>@item.Name</li>
+                }
+            </ChildContent>
+            <FilterTemplate Context="filter">
+                <div class="form-group mb-0">
+                    <div class="input-icon input-icon-right">
+                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                        @if (IsFiltered(filter))
+                        {
+                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                <i class="flaticon2-cross icon- text-danger"></i>
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cursor-pointer">
+                                <i class="flaticon2-search-1 icon-md"></i>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </FilterTemplate>
+        </GridColumn>
+        <GridColumn class="min-w-100px align-middle" TRowData="PerfectionResponseDTO" Title="@L["Transactions"]">
+            @if (!IsPerfectionChosen(context))
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectionAdd}">
+                    <SpinnerButton OnClick="() => OnAddStudentPerfectionModal(context)" ButtonClass="btn btn-light-primary btn-icon btn-sm" Spinning="_saving" Disabled="_saving">
+                        <i class="fas fa-plus"></i>
+                    </SpinnerButton>
+                </PermissionWrapper>
+            }
+            else
+            {
+                @if (context.StudentPerfections.Any(x => x.IsSuccessful.Value))
+                {
+                    <a class="btn btn-light-success disabled">
+                        <i class="fas fa-check-circle"></i> @L["Successful"]
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-light-danger disabled">
+                        <i class="fas fa-times-circle"></i> @L["Unsuccessful"]
+                    </a>
+                }
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectionGetById}">
+                    <a @onclick="() => OnStudentPerfectionDetail(context)" class="btn btn-light-success btn-icon btn-sm ml-1"><i class="far fa-edit"></i></a>
+                </PermissionWrapper>
+
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentPerfectionDelete}">
+                    <SpinnerButton OnClick="async () => await OnRemovePerfectionHandler(context)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Take Back"]" Spinning="_saving" Disabled="_saving">
+                        <i class="fas fa-minus"></i>
+                    </SpinnerButton>
+                </PermissionWrapper>
+            }
+        </GridColumn>
+        <GridColumn TRowData="PerfectionResponseDTO" Title="@L["Process Date"]">
+            @foreach (var item in context.StudentPerfections)
+            {
+                <span class="font-size-lg font-weight-bold">
+                    @item.ProcessDate?.ToLocalTime().ToString("dd/MM/yyyy")
+                </span>
+            }
+        </GridColumn>
+    </Grid>
+    <Pagination Action="PaginationHandler" Count="_paginationModelPerfections.TotalItemCount" Page="_paginationModelPerfections.Page"
+                DefaultPageSize="10" Loading="_loadingPerfections">
+    </Pagination>
+}
+else
+{
+    <Spinner></Spinner>
+}
+
+
+<MyModal @ref="_addStudentPerfectionModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ec">
+            <FluentValidator TValidator="StudentPerfectionValidator"></FluentValidator>
+            <div class="form-group">
+                <label>@L["Process Date"]</label>
+                <div class="form-group">
+                    <InputDate class="form-control" Value="_studentPerfection.ProcessDate" ValueExpression="()=>_studentPerfection.ProcessDate" ValueChanged="(DateTime? e)=>OnChangeBeginDate(e)"></InputDate>
+                    <ValidationMessage For="() =>_studentPerfection.ProcessDate"></ValidationMessage>
+                </div>
+                @if (PerfectionType == Shared.Types.PerfectionType.Interventional)
+                {
+                    <label>@L["Portfolio(Number of Transactions)"]</label>
+                    <div class="form-group">
+                        @* <InputNumber class="form-control" @bind-Value="_studentPerfection.Experience" /> *@
+                        <input type="text" inputmode="numeric" class="form-control" @bind-value="_studentPerfection.Experience" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" maxlength="4" />
+                        <ValidationMessage For="() => _studentPerfection.Experience"></ValidationMessage>
+                    </div>
+                }
+                <div class="form-group">
+                    <label>@L["Expertise Training Program"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchPrograms" class="@GetProgramClass()"
+                                       placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                       TItem="ProgramResponseDTO"
+                                       TValue="ProgramResponseDTO"
+                                       Value="_newProgram"
+                                       ValueExpression="() => _newProgram"
+                                       ValueChanged="OnChangeProgram"
+                                       EnableDropDown="false"
+                                       DisableClear="true"
+                                       MinimumLength="3"
+                                       MaximumSuggestions=int.MaxValue>
+                        <SelectedTemplate Context="program">
+                            @program.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 3 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="program">
+                            @program.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                    <ValidationMessage For="() =>_studentPerfection.ProgramId"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Evaluator Educator"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchEducators"
+                                       TItem="EducatorResponseDTO"
+                                       TValue="EducatorResponseDTO"
+                                       Value="_studentPerfection.Educator"
+                                       ValueExpression="() => _studentPerfection.Educator"
+                                       ValueChanged="OnChangeEducator"
+                                       EnableDropDown="true"
+                                       MinimumLength="2"
+                                       Disabled=@(_newProgram == null)
+                                       MaximumSuggestions="int.MaxValue">
+                        <SelectedTemplate Context="educator">
+                            @educator.User?.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="educator">
+                            @educator.User?.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                    <ValidationMessage For="() =>_studentPerfection.EducatorId"></ValidationMessage>
+                </div>
+                <div class="form-group row">
+                    <label class="col-3 col-form-label">@L["Successful"]/@L["Unsuccessful"]</label>
+                    <div class="col-9 col-form-label">
+                        <div class="radio-inline">
+                            <InputRadioGroup @bind-Value="_studentPerfection.IsSuccessful">
+                                <label class="radio radio-success">
+                                    <InputRadio Value="true"></InputRadio>
+                                    <span></span>@L["Successful"]
+                                </label>
+                                <label class="radio radio-danger">
+                                    <InputRadio Value="false"></InputRadio>
+                                    <span></span>@L["Unsuccessful"]
+                                </label>
+                            </InputRadioGroup>
+                            <ValidationMessage For="() =>_studentPerfection.IsSuccessful"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+        @if (!string.IsNullOrEmpty(_dateValidatorMessage))
+        {
+            <div class="validation-message">@_dateValidatorMessage</div>
+        }
+        <button @onclick="AddStudentPerfection" class="btn btn-clean btn-primary"> @L["Save"]</button>
+    </Body>
+</MyModal>
+<MyModal @ref="_studentPerfectionDetailModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecStudentPerfection">
+            <FluentValidator TValidator="StudentPerfectionValidator"></FluentValidator>
+            <div class="form-group">
+                <label>@L["Process Date"]</label>
+                <div class="form-group">
+                    <InputDate class="form-control" @bind-Value="_studentPerfectionUpdateModel.ProcessDate" TValue="DateTime?" />
+                    <ValidationMessage For="() =>_studentPerfectionUpdateModel.ProcessDate"></ValidationMessage>
+                </div>
+                @if (PerfectionType == Shared.Types.PerfectionType.Interventional)
+                {
+                    <label>@L["Portfolio"]</label>
+                    <div class="form-group">
+                        <InputNumber class="form-control" @bind-Value="_studentPerfectionUpdateModel.Experience" />
+                        <ValidationMessage For="() => _studentPerfectionUpdateModel.Experience"></ValidationMessage>
+                    </div>
+                }
+                <div class="form-group">
+                    <label>@L["Expertise Training Program"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchPrograms" class="@GetProgramClass()"
+                                       placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                       TItem="ProgramResponseDTO"
+                                       TValue="ProgramResponseDTO"
+                                       Value="_updatedProgram"
+                                       ValueExpression="() => _updatedProgram"
+                                       ValueChanged="OnChangeProgramUpdated"
+                                       EnableDropDown="false"
+                                       DisableClear="true"
+                                       MinimumLength="3"
+                                       MaximumSuggestions=int.MaxValue>
+                        <SelectedTemplate Context="program">
+                            @program.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 3 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="program">
+                            @program.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                    <ValidationMessage For="() =>_studentPerfectionUpdateModel.ProgramId"></ValidationMessage>
+                </div>
+                <div class="form-group">
+                    <label>@L["Evaluator Educator"]</label>
+                    <BlazoredTypeahead SearchMethod="SearchUpdatedEducators"
+                                       TItem="EducatorResponseDTO"
+                                       TValue="EducatorResponseDTO"
+                                       Value="_updatedEducator"
+                                       ValueExpression="() => _updatedEducator"
+                                       ValueChanged="OnChangeUpdatedEducator"
+                                       EnableDropDown="true"
+                                       MinimumLength="2"
+                                       MaximumSuggestions="int.MaxValue"
+                                       Disabled="_updatedProgram == null">
+                        <SelectedTemplate Context="educator">
+                            @educator.User.Name
+                        </SelectedTemplate>
+                        <HelpTemplate>
+                            @L["Please enter at least 1 character to search."]
+                        </HelpTemplate>
+                        <NotFoundTemplate Context="searchText">
+                            "@searchText" @L["Could not find an item named"]
+                        </NotFoundTemplate>
+                        <ResultTemplate Context="educator">
+                            @educator.User.Name
+                        </ResultTemplate>
+                    </BlazoredTypeahead>
+                    <ValidationMessage For="() =>_studentPerfectionUpdateModel.EducatorId"></ValidationMessage>
+                </div>
+                <div class="form-group row">
+                    <label class="col-3 col-form-label">@L["Successful"]/@L["Unsuccessful"]</label>
+                    <div class="col-9 col-form-label">
+                        <div class="radio-inline">
+                            <InputRadioGroup @bind-Value="_studentPerfectionUpdateModel.IsSuccessful">
+                                <label class="radio radio-success">
+                                    <InputRadio Value="true"></InputRadio>
+                                    <span></span>@L["Successful"]
+                                </label>
+                                <label class="radio radio-danger">
+                                    <InputRadio Value="false"></InputRadio>
+                                    <span></span>@L["Unsuccessful"]
+                                </label>
+                            </InputRadioGroup>
+                            <ValidationMessage For="() =>_studentPerfectionUpdateModel.IsSuccessful"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <ValidationSummary />
+        </EditForm>
+        @if (!string.IsNullOrEmpty(_dateValidatorMessage))
+        {
+            <div class="validation-message">@_dateValidatorMessage</div>
+        }
+        <button @onclick="UpdateStudentPerfection" class="btn btn-clean btn-primary"> @L["Save"]</button>
+    </Body>
+</MyModal>

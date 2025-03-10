@@ -1,0 +1,175 @@
+﻿@typeparam TRowData
+@using System.Linq.Expressions
+@using Humanizer
+@using Shared.Types
+@inherits FluxorComponent
+
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> ColumnAttributes { get; set; }
+    
+    [CascadingParameter]
+    public Grid<TRowData> OwnerGrid { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Width { get; set; }
+
+    [Parameter]
+    public Expression<Func<TRowData, object>> Expression { get; set; }
+
+    [Parameter]
+    public string Format { get; set; }
+    
+    [Parameter]
+    public string Sort { get; set; }
+
+    [Parameter]
+    public RenderFragment<TRowData> ChildContent { get; set; }
+    
+    [Parameter]
+    public RenderFragment<string> FilterTemplate { get; set; }
+
+    private Func<TRowData, object> _compiledExpression;
+    private Expression _lastCompiledExpression;
+    private RenderFragment _headerTemplate;
+    private RenderFragment<TRowData> _cellTemplate;
+
+    // Add the column to the parent Grid component.
+    // OnInitialized is called only once in the component lifecycle
+    protected override void OnInitialized()
+    {
+        OwnerGrid.AddColumn(this);
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (_lastCompiledExpression != Expression)
+        {
+            _compiledExpression = Expression?.Compile();
+            _lastCompiledExpression = Expression;
+        }
+        base.OnParametersSet();
+    }
+
+    internal RenderFragment HeaderTemplate
+    {
+        get
+        {
+            return _headerTemplate ??= (builder =>
+            {
+                // Use the provided title or infer it from the expression
+                var title = Title;
+                
+                if (Title == null && Expression != null)
+                {
+                    // Decamelize the property name (requires Humanizer.Core NuGet package). Add the following line in the csproj:
+                    // <PackageReference Include="Humanizer.Core" Version="2.8.26" />
+                    title = GetMemberName(Expression).Humanize();
+
+                    // If you don't want to decamelize the name you can use the following code instead of the previous line
+                    //title = GetMemberName(Expression);
+                }
+                builder.OpenElement(0, "th");
+                builder.AddAttribute(1, "class", !string.IsNullOrEmpty(Sort) ? "align-middle cursor-pointer" : "align-middle");
+
+                if (!string.IsNullOrEmpty(Width)) @*TODO Burası değişecek*@
+                {
+                    builder.AddAttribute(2, "class", $"w-{Width}");
+                }
+                if (ColumnAttributes != null)
+                {
+                    foreach (var (key, value) in ColumnAttributes)
+                    {
+                        builder.AddAttribute(1, key, value);
+                    }
+                }
+                
+                
+                if (!string.IsNullOrEmpty(Sort))
+                {
+                    title += $"<span class='fa {SetSortIcon()}'></span>";
+                    builder.AddAttribute(1, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, SortByColumn));
+                }
+                builder.AddContent(1, (MarkupString)title);
+                builder.CloseElement();
+            });
+        }
+    }
+
+    internal RenderFragment<TRowData> CellTemplate
+    {
+        get
+        {
+            return _cellTemplate ??= (rowData => builder =>
+            {
+                builder.OpenElement(0, "td");
+                builder.AddAttribute(1, "class", "align-middle");
+                if (ColumnAttributes != null)
+                {
+                    foreach (var (key, value) in ColumnAttributes)
+                    {
+                        builder.AddAttribute(1, key, value);
+                    }
+                }
+                if (_compiledExpression != null)
+                {
+                    var value = _compiledExpression(rowData);
+                    var formattedValue = string.IsNullOrEmpty(Format) ? value?.ToString() : string.Format("{0:" + Format + "}", value);
+                    builder.AddContent(1, formattedValue);
+                }
+                else
+                {
+                    builder.AddContent(2, ChildContent, rowData);
+                }
+
+                builder.CloseElement();
+            });
+        }
+    }
+
+    // Get the Member name from an expression.
+    // (customer => customer.Name) returns "Name"
+    private static string GetMemberName<T>(Expression<T> expression)
+    {
+        return expression.Body switch
+        {
+            MemberExpression m => m.Member.Name,
+            UnaryExpression u when u.Operand is MemberExpression m => m.Member.Name,
+            _ => throw new NotSupportedException("Expression of type '" + expression.GetType().ToString() + "' is not supported")
+        };
+    }
+    
+    private void SortByColumn()
+    {
+        var newSort = OwnerGrid.Sort.Clone();
+        if (newSort.Field == Sort)
+        {
+            newSort.Dir = newSort.Dir switch
+            {
+                SortType.ASC => SortType.DESC,
+                SortType.DESC => SortType.ASC,
+                _ => newSort.Dir
+                };
+        }
+        else
+        {
+            newSort.Dir = SortType.ASC;
+        }
+        newSort.Field = Sort;
+        OwnerGrid.OnSortChanged?.Invoke(newSort);
+    }
+    
+    private string SetSortIcon()
+    {
+        if (OwnerGrid.Sort == null || OwnerGrid.Sort.Field != Sort)
+        {
+            return string.Empty;
+        }
+        return OwnerGrid.Sort.Dir == SortType.ASC ? "fa-sort-up" : "fa-sort-down";
+    }
+}

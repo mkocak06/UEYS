@@ -1,0 +1,464 @@
+﻿@using Shared.Extensions;
+@using Shared.ResponseModels
+@using Shared.Types;
+@inherits FluxorComponent
+@*<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        <SpinnerButton ButtonClass="btn-primary font-weight-bold" Spinning="_loading" Disabled="_loading" OnClick="() => Save()">
+            <i class=@(IsEditing==true?"fas fa-save":"flaticon2-fast-next")></i>@(IsEditing == true ? L["Update"] : L["Save and Next"])
+        </SpinnerButton>
+    </div>
+</div>*@
+
+<EditForm EditContext="_ecUpdate">
+    <div class="card card-custom card-fit gutter-b shadow-xs border border-2">
+
+        <div class="card-header ribbon ribbon-top ribbon-ver">
+            <div class="ribbon-target bg-dark-o-5 d-block" style="top: -2px; right: 20px;">
+                <ImageUpload @ref="@_studentProfile" imagePath="@(Student.User.ProfilePhoto)" EditMode="@true" OnImageChanged="@ImageChanged" />
+            </div>
+            <h3 class="card-title">
+                <span class="card-icon">
+                    <i class="flaticon2-avatar text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["Personal Info"]</h3>
+            </h3>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentUpdate}">
+                <div class="d-flex p-5 mr-auto">
+                    @if (Student.Status != StudentStatus.Gratuated)
+                    {
+                        <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                            <i class="fas fa-save"></i>@L["Save"]
+                        </SpinnerButton>
+                    }
+                </div>
+            </PermissionWrapper>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label>@L["Name Surname"]</label>
+                        @* <PermInputText BaseClass="form-control" @bind-Value="@(Student.User.Name)" Permissions="new List<PermissionEnum>(){PermissionEnum.StudentUpdate}" /> *@
+                        <InputText class="form-control" disabled="@(!_isPermitted)" @bind-Value="@(Student.User.Name)" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Birthplace"]</label>
+                        @* <PermInputText BaseClass="form-control" @bind-Value="@(Student.User.BirthPlace)" Permissions="new List<PermissionEnum>(){PermissionEnum.StudentUpdate}" /> *@
+                        <InputText class="form-control" disabled="@(!_isPermitted)" @bind-Value="Student.User.BirthPlace" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Gender"]</label>
+                        <InputSelect Class="form-control" disabled="@(!_isPermitted)" @bind-Value="@Student.User.Gender">
+                            @foreach (GenderType genderType in Enum.GetValues(typeof(GenderType)))
+                            {
+                                <option value="@genderType">@L[genderType.Description()] </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Nationality"]</label>
+                        <div class="radio-inline">
+                            <label class="radio radio-primary">
+                                <input type="radio" disabled="@(!_isPermitted)" checked="@(_isNative)" @onchange="OnChangeNative" name="radios3_1" />
+                                <span></span>
+                                @L["T.C."]
+                            </label>
+                            <label class="radio radio-primary">
+                                <input type="radio" disabled="@(!_isPermitted)" checked="@(_isNative == false)" @onchange="OnChangeNative" name="radios3_1" />
+                                <span></span>
+                                @L["Yabancı"]
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @if (!_isNative)
+                        {
+                            <label>Yabancı Tipi</label>
+                            <InputSelect @bind-Value="_foreignType" disabled="@(!_isPermitted)" class="form-control blazored-typeahead">
+                                <option value="null">Seçiniz </option>
+                                @foreach (ForeignType foreignType in Enum.GetValues(typeof(ForeignType)))
+                                {
+                                    <option value="@foreignType">@L[foreignType.Description()] </option>
+                                }
+                            </InputSelect>
+                        }
+                        <label class="mt-4">@L["Country"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchCountries"
+                                           Disabled="@(!_isPermitted || _isNative)"
+                                           TItem="CountryResponseDTO"
+                                           TValue="CountryResponseDTO"
+                                           Value="_country"
+                                           ValueExpression="() => _country"
+                                           ValueChanged="OnChangeCountry"
+                                           EnableDropDown="true"
+                                           MinimumLength="2"
+                                           MaximumSuggestions=99999>
+                            <SelectedTemplate Context="country">
+                                @country?.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                @if (string.IsNullOrEmpty(searchText))
+                                {
+                                    @L["Could not find an item"]
+                                }
+                                else
+                                {
+                                    <div>@searchText @L["Could not find an item named"]</div>
+                                }
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="country">
+                                @country?.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+
+                    <div class="form-group">
+                        <label>@L["Birth Date"]</label>
+                        <InputDate class="form-control w-50" disabled="@(!_isPermitted)" @bind-Value="Student.User.BirthDate" TValue="DateTime?" />
+                        <ValidationMessage For="() => Student.User.BirthDate"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Email"]</label>
+                        <InputText class="form-control" disabled="@(!_isPermitted)" @bind-Value="Student.User.Email" rows="7" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>@L["Mobile Phone"]</label>
+                        <InputMask @ref="PhoneInput" disabled="@(!_isPermitted)" @bind-Value="@(Student.User.Phone)" class="form-control" data-mask="(999) 999 99 99" placeholder="(5__) ___ __ __" />
+                        <ValidationMessage For="() => Student.User.Phone"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Orcid Number"]</label>
+                        <InputText @bind-Value="@(Student.OrcidNumber)" disabled="@(!_isPermitted)" class="form-control" />
+                    </div>
+                    @*<div class="form-group">
+                    <label>@L["Address"]</label>
+                    <InputTextArea class="form-control" disabled @bind-Value="Student.User.Address" rows="7" />
+                    </div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="card-icon">
+                    <i class="flaticon2-chart text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["Education Information"]</h3>
+            </div>
+            <div class="card-toolbar">
+                @* @if (Student.StudentExpertiseBranches?.Count == 0 || Student.StudentExpertiseBranches == null)
+                {
+                <a class="btn btn-outline-primary" @onclick="()=>{Student.StudentExpertiseBranches.Add(new StudentExpertiseBranchResponseDTO(){IsPrincipal=null, RegistrationDate=DateTime.UtcNow, ExpertiseBranch = null}); StateHasChanged();}">
+                <i class="fas fa-plus"></i> @L["add_new", L["Expertise Branch"]]
+                </a>
+                }*@
+            </div>
+        </div>
+        <div class="card-body">
+            <Grid Items="_selectedStudentExpertiseBranches" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                <GridColumn TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Principal Branch / Sub Branch"]">
+                    <ChildContent Context="edx">
+
+
+                        @if (edx.IsPrincipal.HasValue)
+                        {
+                            if (edx.IsPrincipal.Value)
+                            {
+                                <label>@L["Principal Branch"]</label>
+                            }
+                            else
+                            {
+                                <label>@L["Sub Branch"]</label>
+                            }
+                        }
+                        else
+                        {
+                            <label>-</label>
+                        }
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Expertise Branch"]">
+                    <ChildContent Context="edx">
+                        <InputSelect class="form-control" Value="edx.ExpertiseBranchId" TValue="long?" ValueExpression="()=>edx.ExpertiseBranchId" ValueChanged="(long? id)=>OnChangeNewBranch(id, edx)">
+                            <option value="" selected="@(edx.ExpertiseBranchId == null)">@L["Select"]</option>
+                            @foreach (var item in allExpBranches)
+                            {
+                                <option value="@item.Id">
+                                    @item.Name
+                                </option>
+                            }
+                        </InputSelect>
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Registration Date"]">
+                    <ChildContent Context="edx">
+                        <InputDate class="form-control" @bind-Value="edx.RegistrationDate" TValue="DateTime?" />
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Transactions"]">
+                    <ChildContent Context="edx">
+                        <a title="@L["Remove"]" @onclick="()=>RemoveExpBranch(edx)" class="btn btn-light-danger btn-icon btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                        @if (edx == _selectedStudentExpertiseBranches.LastOrDefault())
+                        {
+
+                            <a class="btn btn-icon btn-outline-primary btn-sm ml-2" title="@L["add_new", L["Expertise Branch"]]"
+                               @onclick="()=>AddExpBranch(edx)">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        }
+                    </ChildContent>
+                </GridColumn>
+            </Grid>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label>@L["Graduated School"]</label>
+                        <input type="text" class="form-control" value="@(Student.GraduatedSchool ??"")" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Graduation Registration Date"]</label>
+                        <input type="text" class="form-control" value="@(Student.MedicineRegistrationDate ??"")" disabled />
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label>@L["Graduated Date"]</label>
+                        <input type="text" class="form-control" value="@(Student.GraduatedDate ??"")" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Graduation Registration No"]</label>
+                        <input type="text" class="form-control" value="@(Student.MedicineRegistrationNo ??"")" disabled />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label>@L["Beginning Exam"]</label>
+                        <InputSelect Class="form-control" @bind-Value="@Student.BeginningExam">
+                            <option value="" selected>@L["Select"]</option>
+                            @foreach (PlacementExamType placementExamType in Enum.GetValues(typeof(PlacementExamType)))
+                            {
+                                <option value="@placementExamType">@L[placementExamType.Description()] </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Placement Year"]</label>
+                        <InputSelect class="form-control" @bind-Value="@Student.BeginningYear">
+                            <option value="" selected>@L["Select"]</option>
+                            @for (int i = DateTime.UtcNow.Year; i > DateTime.UtcNow.Year - 50; i--)
+                            {
+                                <option value="@i">@i.ToString()</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Beginning Period"]</label>
+                        <InputSelect Class="form-control" @bind-Value="@Student.BeginningPeriod">
+                            <option value="" selected>@L["Select"]</option>
+                            @foreach (YearPeriodType yearPeriodType in Enum.GetValues(typeof(YearPeriodType)))
+                            {
+                                <option value="@yearPeriodType">@L[yearPeriodType.Description()] </option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label>@L["Placement Score"]</label>
+                        <InputNumber class="form-control" @bind-Value="Student.PlacementScore" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Quota Type"]</label>
+                        <InputSelect Class="form-control" @bind-Value="@Student.QuotaType">
+                            <option value="" selected>@L["Select"]</option>
+                            @foreach (QuotaType quotaType in Enum.GetValues(typeof(QuotaType)))
+                            {
+                                <option value="@quotaType">@L[quotaType.Description()] </option>
+                            }
+                        </InputSelect>
+                    </div>
+                    @* <div class="form-group">
+                    <label>@L["QuotaType_1"]</label>
+                    <InputSelect Class="form-control" @bind-Value="@Student.QuotaType_1">
+                    <option value="" selected>@L["Select"]</option>
+                    @foreach (QuotaType_1 quotaType_1 in Enum.GetValues(typeof(QuotaType_1)))
+                    {
+                    <option value="@quotaType_1">@L[quotaType_1.Description()] </option>
+                    }
+                    </InputSelect>
+                    </div>
+                    @if (Student.QuotaType_1 != null && Student.QuotaType_1 != QuotaType_1.YBU && Student.QuotaType_1 != QuotaType_1.ADL && Student.QuotaType_1 != QuotaType_1.GuestMilitaryPersonnel)
+                    {
+                    <div class="form-group">
+                    <label>@L["QuotaType_2"]</label>
+                    <InputSelect Class="form-control" @bind-Value="@Student.QuotaType_2">
+                    <option value="" selected>@L["Select"]</option>
+                    @foreach (var item in Student.QuotaType_1.Value.GetQuotaTypes())
+                    {
+                    <option value="@item">@L[item.Description()] </option>
+                    }
+                    </InputSelect>
+                    </div>
+                    } *@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-custom gutter-b shadow-xs border border-2">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="card-icon">
+                    <i class="flaticon2-pin text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["_Information", L["Expertise Training Program"]]</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group ">
+                        <label>@L["Expertise Branch"]</label>
+                        <input type="text" class="form-control" value="@Student?.Program?.ExpertiseBranch?.Name" disabled />
+                    </div>
+                    <div class="form-group ">
+                        <label>@L["Educational Institution / Faculty"]</label>
+                        <input type="text" class="form-control" value="@Student?.Program?.Hospital?.Faculty?.Name" disabled />
+                    </div>
+
+                    <FluentValidator TValidator="StudentValidator"></FluentValidator>
+                    <div class="form-group">
+                        <label>@L["Curriculum"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchCurriculum" class="@GetCurriculumClass()"
+                                           placeholder="@L["_Search", L["Curriculum"]]"
+                                           TItem="CurriculumResponseDTO"
+                                           TValue="CurriculumResponseDTO"
+                                           Value="Student.Curriculum"
+                                           ValueExpression="() => Student.Curriculum"
+                                           ValueChanged="OnChangeCurriculum"
+                                           EnableDropDown="true"
+                                           MinimumLength="2"
+                                           Disabled="(Student?.Program == null || Student?.ProtocolProgramId != null)"
+                                           MaximumSuggestions=int.MaxValue>
+                            <SelectedTemplate Context="curriculum">
+                                @(curriculum.ExpertiseBranch.Name + " v" + curriculum.Version + " " + (curriculum.Duration != null ? curriculum.Duration + " " : "-") + L["Year"])
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="curriculum">
+                                @(curriculum.ExpertiseBranch.Name + " v" + curriculum.Version + " " + (curriculum.Duration != null ? curriculum.Duration + " " : "-") + L["Year"])
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => Student.Curriculum"></ValidationMessage>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group ">
+                        <label>@L["Institution of Education"]</label>
+                        <input type="text" class="form-control" value="@Student?.Program?.Hospital?.Name" disabled />
+                    </div>
+                    <div class="form-group ">
+                        <label>@L["Ministry / University"]</label>
+                        <input type="text" class="form-control" value="@Student?.Program?.Hospital?.Faculty?.University?.Name" disabled />
+                    </div>
+                    <div class="form-group ">
+                        <label>@L["Education Officer"]</label>
+                        <input type="text" class="form-control" value="@(Student.Program?.EducationOfficers?.FirstOrDefault(x => x.EndDate == null)?.Educator?.StaffTitleName + " " + Student.Program?.EducationOfficers?.FirstOrDefault(x => x.EndDate == null)?.Educator?.User?.Name ?? "-")" disabled />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @foreach (var item in _studentFormerPrograms)
+    {
+
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="flaticon2-pin text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@L["_Information", L["Previous Expertise Training Program"]]</h3>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group ">
+                            <label>@L["Expertise Branch"]</label>
+                            <input type="text" class="form-control" value="@item?.ExpertiseBranch?.Name" disabled />
+                        </div>
+                        <div class="form-group ">
+                            <label>@L["Educational Institution / Faculty"]</label>
+                            <input type="text" class="form-control" value="@item?.Faculty?.Name" disabled />
+                        </div>
+
+
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group ">
+                            <label>@L["Institution of Education"]</label>
+                            <input type="text" class="form-control" value="@item?.Hospital?.Name" disabled />
+                        </div>
+                        <div class="form-group ">
+                            <label>@L["Ministry / University"]</label>
+                            <input type="text" class="form-control" value="@item?.Faculty?.University?.Name" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</EditForm>
+<div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon-doc"></i>
+            </span>
+            <h3 class="card-label">@L["OSYM Result Document"]</h3>
+        </div>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentDocumentUpload}">
+            <div class="card-toolbar">
+                <SpinnerButton Spinning="false" Disabled="false" OnClick="() => _OsymFileAddingModal.OpenModal()">
+                    <i class="fas fa-plus"></i>@L["File Upload"]
+                </SpinnerButton>
+            </div>
+        </PermissionWrapper>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+
+            <div class="table-responsive">
+                <FileItem CanDownloaded=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.StudentDocumentDownload})) Documents="Student.Documents.Where(x=>x.DocumentType == DocumentTypes.OsymResultDocument).ToList()" Loaded="_fileLoaded" IsEditing=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.StudentDocumentDelete}))></FileItem>
+            </div>
+        </div>
+    </div>
+</div>
+
+<MyModal @ref="_OsymFileAddingModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <Dropzone @ref="dropzone" EntityId="@Student.Id" DocumentType="@Shared.Types.DocumentTypes.OsymResultDocument" />
+    </Body>
+</MyModal>

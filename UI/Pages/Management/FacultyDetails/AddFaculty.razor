@@ -1,0 +1,37 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/faculties/add-faculty"
+@inherits FluxorComponent
+
+<AppContent  IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="ProfessionValidator"></FluentValidator>
+                    <div>
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                    <label>@L["_name", L["Expertise Branch"]]</label>
+                                <InputText @ref="_focusTarget" class="form-control" @bind-Value="_faculty.Name"/>
+                                 <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                <ValidationMessage For="() => _faculty.Name"></ValidationMessage>
+                            </div>
+                      </div>
+                    </div>
+                    </div>
+                </EditForm>
+                
+            </div>
+        </div>
+        
+    </Content>
+</AppContent>

@@ -1,0 +1,796 @@
+﻿@using Shared.Types;
+@using Shared.Extensions;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inject NavigationManager _navigationManager
+@if (!_loading)
+{
+    @if (_selectedForm.IsOnSiteVisit)
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-body">
+                        <!--begin::Top-->
+                        <div class="d-flex flex-wrap position-relative">
+                            <!--begin::Pic-->
+                            <div class="flex-shrink-0 mr-7">
+                                <div class="image-input image-input-outline">
+                                    <div class="image-input-wrapper" style="width:150px; height:150px; background-image: url(@("/assets/media/logos/ueys-amblem.png")); background-position: center; background-repeat: no-repeat; background-size: auto;"></div>
+                                </div>
+                            </div>
+                            <!--end::Pic-->
+                            <!--begin: Info-->
+                            <div class="flex-grow-1">
+                                <!--begin::Title-->
+                                <div class="d-flex align-items-center justify-content-between flex-wrap mt-2">
+                                    <!--begin::User-->
+                                    <div class="mr-3">
+                                        <!--begin::Name-->
+                                        <a class="d-flex align-items-center text-dark text-hover-primary font-size-h3 font-weight-bold mr-3">
+                                            @_selectedForm?.Program?.Hospital?.Name
+                                        </a>
+                                        <!--end::Name-->
+                                    </div>
+                                    <!--begin::User-->
+                                </div>
+                                <!--end::Title-->
+
+                                <div class="d-flex align-items-center flex-wrap justify-content-between">
+                                    <!--begin::Description-->
+                                    <div class="flex-grow-1 font-weight-bold text-dark-50 py-2 py-lg-2 mr-5">
+                                        @_selectedForm?.Program?.ExpertiseBranch?.Name
+                                    </div>
+                                    <!--end::Description-->
+                                </div>
+
+
+                                <!--begin::Separator-->
+                                <div class="separator separator-solid my-5"></div>
+                                <!--end::Separator-->
+
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <!--begin: Item-->
+                                    <div class="d-flex align-items-center my-1 mr-20">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fas fa-user-tie icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark-75 font-weight-bolder font-size-sm">@_selectedForm.NumberOfEducator</span>
+                                                <button @onclick="OpenEducatorModal" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-search"></i>  @L["Educators"]
+                                                </button>
+
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <!--end: Item-->
+                                    <!--begin: Item-->
+                                    <div class="d-flex align-items-center my-1 mr-20">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fas fa-users icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark-75 font-weight-bolder font-size-sm">@_selectedForm.NumberOfStudent</span>
+                                                <button @onclick="OpenStudentModal" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-search"></i>  @L["Students"]
+                                                </button>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <!--end: Item-->
+
+                                    <div class="d-flex align-items-center my-1 mr-20">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fa fa-info icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <div class="cursor-pointer" @onclick="()=>GetAuthorizationDetails(_selectedForm.ProgramId.Value)">
+                                                    <span class="text-dark-75 font-weight-bolder font-size-sm">@_selectedForm.CurrentAuthorizationCategory</span>
+                                                </div>
+                                                <span class="text-dark-75 font-weight-bolder">@L["Current Authorization Category"]</span>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center my-1 mr-20">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fa fa-calendar icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark-75 font-weight-bolder font-size-sm">@(_selectedForm.VisitDate?.ToString("dd MMMM yyyy") ?? "-")</span>
+                                                <span class="text-dark-75 font-weight-bolder">@L["Planlanan Ziyaret Tarihi"]</span>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center my-1">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fa fa-calendar icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark-75 font-weight-bolder font-size-sm">@(_selectedForm.ApplicationDate?.ToString("dd MMMM yyyy") ?? "-")</span>
+                                                <span class="text-dark-75 font-weight-bolder">@L["Başvuru Tarihi"]</span>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Info-->
+
+
+                        </div>
+                        <!--end::Top-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <!--begin::List Widget 1-->
+                <div class="card card-custom card-stretch gutter-b">
+                    <!--begin::Header-->
+                    <div class="card-header border-0 pt-6">
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label font-weight-bolder font-size-h4 text-dark-75">Komisyon Üyeleri</span>
+                            <span class="text-muted mt-3 font-weight-bold font-size-lg">Toplam Üye @_selectedForm.OnSiteVisitCommittees?.Count</span>
+                        </h3>
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="card-body pt-5">
+                        <!--begin::Item-->
+                        @foreach (var item in _selectedForm.OnSiteVisitCommittees)
+                        {
+                            <div class="d-flex align-items-center mb-6">
+                                <div class="symbol symbol-35 flex-shrink-0 mr-3">
+                                    <img alt="Pic" src="@(item.User.ProfilePhoto??"assets/media/misc/no-image-uets.png")">
+                                </div>
+                                <!--begin::Content-->
+                                <div class="d-flex flex-wrap flex-row-fluid">
+                                    <!--begin::Text-->
+                                    <div class="d-flex flex-column pr-5 flex-grow-1">
+                                        <a href="#" class="text-dark text-hover-primary mb-1 font-weight-bolder font-size-lg">@item.User?.Name</a>
+                                        <span class="text-muted font-weight-bold">@(string.Join(",", item.User.UserRoles.Select(x => x.Role.RoleName)))</span>
+                                    </div>
+                                    <!--end::Text-->
+                                </div>
+                                <!--end::Content-->
+                            </div>
+                        }
+                        <!--end::Item-->
+                    </div>
+                    <!--end::Body-->
+                </div>
+                <!--end::List Widget 1-->
+            </div>
+            <div class="col-lg-8">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-body">
+
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3 class="card-label">
+                                    @(_selectedForm?.Program?.Hospital?.Name)
+                                </h3>
+                            </div>
+                        </div>
+                        <Grid Items="_selectedForm.FormStandards" class="table table-hover table-bordered text-center">
+                            <GridColumn TRowData="FormStandardResponseDTO" Title=@L["Expertise Branch"] Expression="s=>s.Standard.Curriculum.ExpertiseBranch.Name"></GridColumn>
+                            <GridColumn TRowData="FormStandardResponseDTO" Title=@L["Standard Category"] Expression="s=>s.Standard.StandardCategory.Name"></GridColumn>
+                            <GridColumn TRowData="FormStandardResponseDTO" Title=@L["Standard"] Expression="s=>s.Standard.Name"></GridColumn>
+                            <GridColumn Context="cx" class="min-w-200px align-middle" TRowData="FormStandardResponseDTO" Title=@L["Kurum Beyanı"]>
+                                <ChildContent>
+                                    @if (cx.InstitutionStatement == true)
+                                    {
+                                        <span class="label label-xl label-success label-pill label-inline">Standart Karşılanıyor</span>
+
+                                    }
+                                    else if (cx.InstitutionStatement == false)
+                                    {
+                                        <span class="label label-xl label-danger label-pill label-inline">Standart Karşılanmıyor</span>
+
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn Context="cx" class="min-w-200px align-middle" TRowData="FormStandardResponseDTO" Title=@L["Komisyon Heyetinin Değerlendirmesi"]>
+                                <ChildContent>
+                                    @if (cx.CommitteeStatement == true)
+                                    {
+                                        <span class="label label-xl label-success label-pill label-inline">Standart Karşılanıyor</span>
+
+                                    }
+                                    else if (cx.CommitteeStatement == false)
+                                    {
+                                        <span class="label label-xl label-danger label-pill label-inline">Standart Karşılanmıyor</span>
+
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </ChildContent>
+                            </GridColumn>
+                            <GridColumn Context="cx" class="min-w-200px align-middle" TRowData="FormStandardResponseDTO" Title=@L["Description"]>
+                                <ChildContent>
+                                    <textarea class="form-control" value="@cx.CommitteeDescription" disabled></textarea>
+                                </ChildContent>
+                            </GridColumn>
+
+                        </Grid>
+
+                        <div class="form-group row mt-10">
+                            <div class="col-lg-3">
+                                <label>Komisyon Heyetinin Değerlendirmesi</label>
+                                <div class="radio-list">
+                                    <label class="radio radio-disabled radio-success">
+                                        <input type="radio" disabled="disabled" checked="@(_selectedForm.CommitteeOpinionType == CommitteeOpinionType.Suitable)" name="radios1" />
+                                        <span></span>@L[CommitteeOpinionType.Suitable.Description()]
+                                    </label>
+                                    <label class="radio radio-disabled radio-danger">
+                                        <input type="radio" disabled="disabled" checked="@(_selectedForm.CommitteeOpinionType == CommitteeOpinionType.NotSuitable)" name="radios2" />
+                                        <span></span>@L[CommitteeOpinionType.NotSuitable.Description()]
+                                    </label>
+                                    <label class="radio radio-disabled radio-primary">
+                                        <input type="radio" disabled="disabled" checked="@(_selectedForm.CommitteeOpinionType == CommitteeOpinionType.ReserveToTuk)" name="radios3" />
+                                        <span></span>@L[CommitteeOpinionType.ReserveToTuk.Description()]
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <label>Komisyon Heyetinin Açıklaması:</label>
+                                <textarea class="form-control" value="@_selectedForm.CommitteeDescription" disabled></textarea>
+                            </div>
+                            <div class="col-lg-5">
+                                <label>Komisyon Heyetinin Dosyaları:</label>
+                                <FileItem Documents="@_selectedForm.CommitteeDocuments" Loaded="!_loading" IsEditing=false></FileItem>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>TUK Kararı Dosyası Ekle:</label>
+                                <Dropzone @ref="dropzone" EntityId="@(_selectedForm.Id)" DocumentType="DocumentTypes.TUKForm"></Dropzone>
+
+                            </div>
+                            @if (_selectedForm.TUKDocuments?.Any() == true)
+                            {
+                                <div class="col-lg-6">
+                                    <label>TUK Kararının Dosyaları:</label>
+                                    <FileItem Documents="@_selectedForm.TUKDocuments" Loaded="!_loading" IsEditing></FileItem>
+                                 </div>
+                            }
+                        </div>
+                        <div class="form-group row col-lg-12">
+                            <label>TUK Kararının Açıklaması:</label>
+                            <InputTextArea class="form-control" @bind-Value="_selectedForm.TUKDescription"></InputTextArea>
+                        </div>
+                        <Grid Items="_authDetailList" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization End Date"]">
+                                @context.AuthorizationEndDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Category"]">
+                                <span class="badge text-white" data-toggle="tooltip" data-original-title="@context.AuthorizationCategory?.Description" style="background-color:@context.AuthorizationCategory?.ColorCode?.ToString();">@context.AuthorizationCategory?.Name</span>
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Date of Visit"]">
+                                @context.VisitDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Decision Date"]">
+                                @context.AuthorizationDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Decision No"]">
+                                @context.AuthorizationDecisionNo
+                            </GridColumn>
+                        </Grid>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <button class="btn btn-danger form-control" @onclick="async()=>{await OnCancel.InvokeAsync(true);}">
+                                    <i class="ki ki-close icon-sm"></i>@L["Cancel"]
+                                </button>
+                            </div>
+                            <div class="col-lg-6">
+                                <button @onclick="OnOpenAuthorizationDetailList" class="btn btn-primary form-control">@L["add_new", L["Authorization Detail"]]</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-body">
+                        <!--begin::Top-->
+                        <div class="d-flex flex-wrap position-relative">
+                            <!--begin::Pic-->
+                            <div class="flex-shrink-0 mr-7">
+                                <div class="image-input image-input-outline">
+                                    <div class="image-input-wrapper" style="width:150px; height:150px; background-image: url(@("/assets/media/logos/ueys-amblem.png")); background-position: center; background-repeat: no-repeat; background-size: auto;"></div>
+                                </div>
+                            </div>
+                            <!--end::Pic-->
+                            <!--begin: Info-->
+                            <div class="flex-grow-1">
+                                <!--begin::Title-->
+                                <div class="d-flex align-items-center justify-content-between flex-wrap mt-2">
+                                    <!--begin::User-->
+                                    <div class="mr-3">
+                                        <!--begin::Name-->
+                                        <a class="d-flex align-items-center text-dark text-hover-primary font-size-h3 font-weight-bold mr-3">
+                                            @_selectedForm?.Program?.Hospital?.Name
+                                        </a>
+                                        <!--end::Name-->
+                                    </div>
+                                    <!--begin::User-->
+                                </div>
+                                <!--end::Title-->
+
+                                <div class="d-flex align-items-center flex-wrap justify-content-between">
+                                    <!--begin::Description-->
+                                    <div class="flex-grow-1 font-weight-bold text-dark-50 py-2 py-lg-2 mr-5">
+                                        @_selectedForm?.Program?.ExpertiseBranch?.Name
+                                    </div>
+                                    <!--end::Description-->
+                                </div>
+
+                                <!--begin::Separator-->
+                                <div class="separator separator-solid my-5"></div>
+                                <!--end::Separator-->
+
+                                <div class="d-flex align-items-center flex-wrap">
+                                    <!--begin: Item-->
+                                    <div class="d-flex align-items-center my-1 mr-20">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fas fa-user-tie icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark-75 font-weight-bolder font-size-sm">@_selectedForm.NumberOfEducator</span>
+                                                <button @onclick="OpenEducatorModal" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-search"></i>  @L["Educators"]
+                                                </button>
+
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <!--end: Item-->
+                                    <!--begin: Item-->
+                                    <div class="d-flex align-items-center my-1 mr-20">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fas fa-users icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark-75 font-weight-bolder font-size-sm">@_selectedForm.NumberOfStudent</span>
+                                                <button @onclick="OpenStudentModal" class="btn btn-outline-secondary">
+                                                    <i class="fas fa-search"></i>  @L["Students"]
+                                                </button>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <!--end: Item-->
+
+                                    <div class="d-flex align-items-center my-1 mr-20">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fa fa-info icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <div class="cursor-pointer" @onclick="()=>GetAuthorizationDetails(_selectedForm.ProgramId.Value)">
+                                                    <span class="text-dark-75 font-weight-bolder font-size-sm">@_selectedForm.CurrentAuthorizationCategory</span>
+                                                </div>
+                                                <span class="text-dark-75 font-weight-bolder">@L["Current Authorization Category"]</span>
+                                            </div>
+                                        </span>
+                                    </div>
+                                    <div class="d-flex align-items-center my-1">
+                                        <span class="d-flex align-items-center mr-4">
+                                            <i class="fa fa-calendar icon-2x mr-3"></i>
+                                            <div class="d-flex flex-column">
+                                                <span class="text-dark-75 font-weight-bolder font-size-sm">@(_selectedForm.ApplicationDate?.ToString("dd MMMM yyyy") ?? "-")</span>
+                                                <span class="text-dark-75 font-weight-bolder">@L["Başvuru Tarihi"]</span>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Info-->
+                        </div>
+                        <!--end::Top-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-body">
+
+                        <div class="card-header">
+                            <div class="card-title">
+                                <h3 class="card-label">
+                                    @(_selectedForm?.Program?.Hospital?.Name)
+                                </h3>
+                            </div>
+                        </div>
+                        <Grid Items="_selectedForm.FormStandards" class="table table-hover table-bordered text-center">
+                            <GridColumn TRowData="FormStandardResponseDTO" Title=@L["Expertise Branch"] Expression="s=>s.Standard.Curriculum.ExpertiseBranch.Name"></GridColumn>
+                            <GridColumn TRowData="FormStandardResponseDTO" Title=@L["Standard Category"] Expression="s=>s.Standard.StandardCategory.Name"></GridColumn>
+                            <GridColumn TRowData="FormStandardResponseDTO" Title=@L["Standard"] Expression="s=>s.Standard.Name"></GridColumn>
+                            <GridColumn Context="cx" class="min-w-200px align-middle" TRowData="FormStandardResponseDTO" Title=@L["Kurum Beyanı"]>
+                                <ChildContent>
+                                    @if (cx.InstitutionStatement == true)
+                                    {
+                                        <span class="label label-xl label-success label-pill label-inline">Standart Karşılanıyor</span>
+
+                                    }
+                                    else if (cx.InstitutionStatement == false)
+                                    {
+                                        <span class="label label-xl label-danger label-pill label-inline">Standart Karşılanmıyor</span>
+
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </ChildContent>
+                            </GridColumn>
+                        </Grid>
+
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <label>TUK Kararı Dosyası Ekle:</label>
+                                <Dropzone @ref="dropzone" EntityId="@(_selectedForm.Id)" DocumentType="DocumentTypes.TUKForm"></Dropzone>
+
+                            </div>
+                            @if (_selectedForm.TUKDocuments?.Any() == true)
+                            {
+                                <div class="col-lg-6">
+                                    <label>TUK Kararının Dosyaları:</label>
+                                    <FileItem Documents="@_selectedForm.TUKDocuments" Loaded="!_loading" IsEditing></FileItem>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group row col-lg-12">
+                            <label>TUK Kararının Açıklaması:</label>
+                            <InputTextArea class="form-control" @bind-Value="_selectedForm.TUKDescription"></InputTextArea>
+                        </div>
+                        <Grid Items="_authDetailList" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization End Date"]">
+                                @context.AuthorizationEndDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Category"]">
+                                <span class="badge text-white" data-toggle="tooltip" data-original-title="@context.AuthorizationCategory?.Description" style="background-color:@context.AuthorizationCategory?.ColorCode?.ToString();">@context.AuthorizationCategory?.Name</span>
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Date of Visit"]">
+                                @context.VisitDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Decision Date"]">
+                                @context.AuthorizationDate?.ToString("dd.MM.yyyy")
+                            </GridColumn>
+                            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Decision No"]">
+                                @context.AuthorizationDecisionNo
+                            </GridColumn>
+                        </Grid>
+                        <div class="form-group row">
+                            <div class="col-lg-6">
+                                <button class="btn btn-danger form-control" @onclick="async()=>{await OnCancel.InvokeAsync(true);}">
+                                    <i class="ki ki-close icon-sm"></i>@L["Cancel"]
+                                </button>
+                            </div>
+                            <div class="col-lg-6">
+                                <button @onclick="OnOpenAuthorizationDetailList" class="btn btn-primary form-control">@L["add_new", L["Authorization Detail"]]</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <Spinner></Spinner>
+}
+
+<UI.SharedComponents.DetailCards.AuthorizationDetailsModal @ref="_authDetailsModal"></UI.SharedComponents.DetailCards.AuthorizationDetailsModal>
+<MyModal @ref="_educatorModal" Size="MyModal.ModalSize.Large">
+    <Title>Kurumdaki Eğiticiler</Title>
+    <Body>
+        @if (_educatorPaginationModel?.Items != null)
+        {
+
+            <Grid Items="_educatorPaginationModel?.Items" class="table table-hover table-bordered" Sort="_filterEducator.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChangeEducator(sort)" RowClass='(row, index) =>""'>
+                <GridColumn Context="educator" Sort="IdentityNo" TRowData="EducatorPaginateResponseDTO" Title="@L["T.R. Identity Number"]">
+                    <ChildContent>
+                        @educator.IdentityNo
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                                @if (IsFilteredEducator(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="AcademicTitle" TRowData="EducatorPaginateResponseDTO" Title="@L["Academic Title"]">
+                    <ChildContent>
+                        @context.AcademicTitle
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                                @if (IsFilteredEducator(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Name" TRowData="EducatorPaginateResponseDTO" Title="@L["Name Surname"]">
+                    <ChildContent>
+                        @context.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                                @if (IsFilteredEducator(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn TRowData="EducatorPaginateResponseDTO" Title="@L["Roles"]">
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <select class="selectpicker" data-actions-box="true" data-selected-text-format="count" multiple name="@filter" title="Lütfen seçiniz..." @onchange='(args) => OnChangeSelectFilter(args, "Role")'>
+                                @foreach (var role in _roles)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+
+                            </select>
+                        </div>
+                    </FilterTemplate>
+                    <ChildContent>
+                        @if (context.Roles?.Count > 0 && context.Roles != null)
+                        {
+                            @foreach (var item in context.Roles)
+                            {
+                                <span class="badge badge-warning mb-1 mr-1">
+                                    @(item)
+                                </span>
+                            }
+                        }
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="EducatorPaginateResponseDTO" Title="@L["Transactions"]">
+                    <ChildContent>
+                        <button class="btn btn-light-primary btn-sm btn-icon" title="@L["Details"]" @onclick=@(()=>{_educatorModal.CloseModal();_navigationManager.NavigateTo($"./educator/educators/{context.Id}");})>
+                            <i class="flaticon2-search-1 icon-md"></i>
+                        </button>
+                    </ChildContent>
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandlerEducator" Count="_educatorPaginationModel.TotalItemCount" Page="_educatorPaginationModel.Page"
+                        DefaultPageSize="10" Loading="_educatorLoading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner />
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="_studentModal" Size="MyModal.ModalSize.Large">
+    <Title>Kurumdaki Öğrenciler</Title>
+    <Body>
+        @if (_studentPaginationModel?.Items != null)
+        {
+            <Grid Items="_studentPaginationModel.Items" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn Sort="IdentityNo" TRowData="StudentPaginateResponseDTO" Title="@L["T.R. Identity Number"]">
+                    <ChildContent>
+                        @context.IdentityNo
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeStudentFilter(args, filter)' autocomplete="false">
+                                @if (IsStudentFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetStudentFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn Sort="Name" TRowData="StudentPaginateResponseDTO" Title="@L["Specialization Student's Name Surname"]">
+                    <ChildContent>
+                        @context.Name
+                    </ChildContent>
+                    <FilterTemplate Context="filter">
+                        <div class="form-group mb-0">
+                            <div class="input-icon input-icon-right">
+                                <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeStudentFilter(args, filter)' autocomplete="false">
+                                @if (IsStudentFiltered(filter))
+                                {
+                                    <span class="cursor-pointer" @onclick='() => OnResetStudentFilter(filter)'>
+                                        <i class="flaticon2-cross icon- text-danger"></i>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="cursor-pointer">
+                                        <i class="flaticon2-search-1 icon-md"></i>
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </FilterTemplate>
+                </GridColumn>
+                <GridColumn TRowData="StudentPaginateResponseDTO" Title="@L["Status"]">
+                    <ChildContent>
+                        @if (context.ProtocolProgramId != null)
+                        {
+                            if (context.Status == StudentStatus.Rotation)
+                            {
+                                @L[context.Status?.GetDescription() ?? "-"]
+                            }
+                            else if (context.ProtocolType == ProgramType.Protocol)
+                            {
+                                @L["Under Protocol Program"]
+                            }
+                            else
+                            {
+                                @L["Under Complement Program"]
+                            }
+                        }
+                        else
+                        {
+                            @(L[context.Status?.Description() ?? "-"])
+                        }
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="StudentPaginateResponseDTO" Title="@L["Transactions"]">
+                    <ChildContent>
+                        <button class="btn btn-light-primary btn-sm btn-icon" title="@L["Details"]" @onclick=@(()=>{_studentModal.CloseModal();_navigationManager.NavigateTo($"./student/students/{context.Id}");})>
+                            <i class="flaticon2-search-1 icon-md"></i>
+                        </button>
+                    </ChildContent>
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandlerStudent" Count="_studentPaginationModel.TotalItemCount" Page="_studentPaginationModel.Page"
+                        DefaultPageSize="10" Loading="_studentsLoading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner />
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="_authorizationDetailModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_authorizationEc">
+            <FluentValidator TValidator="AuthorizationDetailValidator"></FluentValidator>
+            <div id="form-exams-list">
+                <div id="authorization-form">
+                    <div class="form-group">
+                        <label>@L["_Date", L["Visit"], string.Empty]</label>
+                        <InputDate class="form-control" @bind-Value="_authorizationDetail.VisitDate" TValue="DateTime?"></InputDate>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Authorization Decision Date"]</label>
+                        <InputDate class="form-control" Value="_authorizationDetail.AuthorizationDate" ValueExpression="()=>_authorizationDetail.AuthorizationDate" ValueChanged="OnChangeAuthorizationDate" TValue="DateTime?"></InputDate>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Authorization Decision Number"]</label>
+                        <InputText type="text" class="form-control" @bind-Value="_authorizationDetail.AuthorizationDecisionNo" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Current Authorization Category"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchAuthorizationCategories"
+                                           TItem="AuthorizationCategoryResponseDTO"
+                                           TValue="AuthorizationCategoryResponseDTO"
+                                           Value="_authorizationDetail.AuthorizationCategory"
+                                           ValueExpression="@(() => _authorizationDetail.AuthorizationCategory)"
+                                           ValueChanged="OnChangeAuthorizationCategory"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions="int.MaxValue">
+                            <SelectedTemplate Context="autCat">
+                                @if (autCat.Name != null)
+                                {
+                                    @autCat.Name
+                                    <i class="fa fa-circle icon-lg" style="display:flex;  margin-left:5px; font-size:80px; color: @autCat.ColorCode"></i>
+                                }
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="autCat">
+                                @autCat.Name
+                                <i class="fa fa-circle icon-lg" style="display:flex;  font-size:80px; color: @autCat.ColorCode"></i>
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _authorizationDetail.AuthorizationCategoryId"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["_Date", L["End"]]</label>
+                        <input type="text" class="form-control" value="@_authorizationDetail.AuthorizationEndDate?.ToString("dd MMMM yyyy")" disabled />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Description"]</label>
+                        <BlazoredTypeahead SearchMethod="ExtensionMethods.GetDescriptionOptions"
+                                           Values="_authorizationDetail.Descriptions"
+                                           ValuesExpression="()=>_authorizationDetail.Descriptions"
+                                           ValuesChanged="(IList<string> values)=>OnChangeDescription(values)"
+                                           EnableDropDown="true"
+                                           MinimumLength="1" AddItemOnEmptyResultMethod="AddItemOnEmptyResult" ShowDropDownOnFocus
+                                            MaximumSuggestions=10>
+                             <SelectedTemplate Context="group">
+                                 @group
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 2 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                @if (string.IsNullOrEmpty(searchText))
+                                {
+                                    @L["Could not find an item"]
+                                }
+                                else
+                                {
+                                    <div>@searchText @L["Could not find an item named"]</div>
+                                }
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="group">
+                                @group
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _authorizationDetail.Descriptions"></ValidationMessage>
+                        <ValidationMessage For="() => _authorizationDetail.AuthorizationEndDate"></ValidationMessage>
+                    </div>
+                </div>
+            </div>
+            <SpinnerButton Disabled="_savingForm" Spinning="_savingForm" OnClick="AddAuthorizationDetail" ButtonClass="btn btn-clean btn-primary form-control"> @L["Yuep'e Gönder"] </SpinnerButton>
+            </EditForm>
+        </Body>
+    </MyModal>

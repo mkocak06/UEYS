@@ -1,0 +1,218 @@
+﻿@using Shared.ResponseModels
+
+<EditForm EditContext="_ec">
+    <div class="card card-custom gutter-b shadow-xs border border-2">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="card-icon">
+                    <i class="flaticon2-pin text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["_Information", L["Institution of Education"]]</h3>
+            </div>
+        </div>
+        <div class="card-body pt-2">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <FluentValidator TValidator="HospitalValidator" />
+                    <div class="form-group mt-2">
+                        <label>@L["_name", L["Institution of Education"]]</label>
+                        <InputText class="form-control" @bind-Value="_hospital.Name" />
+                        <ValidationMessage For="() => _hospital.Name"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Province"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                           TItem="ProvinceResponseDTO"
+                                           TValue="ProvinceResponseDTO"
+                                           Value="_hospital.Province"
+                                           ValueExpression="() => _hospital.Province"
+                                           ValueChanged="OnChangeProvince"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions=100>
+                            <SelectedTemplate Context="province">
+                                @province.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least one character to search"]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Not found"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="province">
+                                @province.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Parent Institution"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchInstitutions"
+                                           TItem="InstitutionResponseDTO"
+                                           TValue="InstitutionResponseDTO"
+                                           Value="_hospital.Institution"
+                                           ValueExpression="() => _hospital.Institution"
+                                           ValueChanged="OnChangeInstitution"
+                                           EnableDropDown="true"
+                                           MinimumLength="1">
+                            <SelectedTemplate Context="ins">
+                                @ins.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least one character to search"]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Not found"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="ins">
+                                @ins.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => _hospital.InstitutionId"></ValidationMessage>
+                    </div>
+                        <div class="form-group">
+                            <label>@L["Ministry / University"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchUniversities"
+                                           TItem="UniversityResponseDTO"
+                                           TValue="UniversityResponseDTO"
+                                           Value="_university"
+                                           ValueExpression="() => _university"
+                                           ValueChanged="OnChangeUniversity"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions="int.MaxValue">
+                                <SelectedTemplate Context="university">
+                                    @university.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="university">
+                                    @university.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Educational Institution / Faculty"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchFaculties"
+                                           TItem="FacultyResponseDTO"
+                                           TValue="FacultyResponseDTO"
+                                           Value="_faculty"
+                                           ValueExpression="() => _faculty"
+                                           ValueChanged="OnChangeFaculty"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           Disabled=@( _university == null)
+                                           MaximumSuggestions="int.MaxValue">
+                                <SelectedTemplate Context="faculty">
+                                    @faculty.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="faculty">
+                                    @faculty.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                            <ValidationMessage For="() => _hospital.FacultyId" />
+
+                        </div>
+                    <div class="form-group">
+                        <label>@L["Manager"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchUsers"
+                                           TItem="UserAccountDetailInfoResponseDTO"
+                                           TValue="UserAccountDetailInfoResponseDTO"
+                                           Value="_hospital.Manager"
+                                           ValueExpression="() => _hospital.Manager"
+                                           ValueChanged="OnChangeManager"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions=100>
+                            <SelectedTemplate Context="user">
+                                @user.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least one character to search"]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Not found"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="user">
+                                @user.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Latitude"]</label>
+                        <InputNumber Value="_hospital.Latitude" ValueExpression="()=>_hospital.Latitude" TValue="float?" ValueChanged="OnChangeLatitude" class="form-control" placeholder="__.____" step="0.1" />
+                        <ValidationMessage For="() => _hospital.Latitude"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Longitude"]</label>
+                        <InputNumber Value="_hospital.Longitude" ValueExpression="()=>_hospital.Longitude" TValue="float?" ValueChanged="OnChangeLongitude" class="form-control" placeholder="__.____" step="0.1" />
+                        <ValidationMessage For="() => _hospital.Longitude"></ValidationMessage>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <SingleMapView @ref="_map" FullHeight EditMode="true" Lat="@(_hospital.Latitude ?? 0)" Lng="@(_hospital.Longitude ?? 0)"
+                                   MarkerName="@_hospital.Name" OnLocationChanged="LocationChanged" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card card-custom gutter-b shadow-xs border border-2">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="card-icon">
+                    <i class="flaticon2-pin text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["Contact Info"]</h3>
+            </div>
+        </div>
+        <div class="card-body pt-2">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group row mt-3">
+                        <label class="col-lg-2 col-form-label">@L["Phone"]:</label>
+                        <div class="col-lg-8">
+                            <input @bind="_hospital.Phone" type="text" class="form-control" placeholder="@L["Phone"]">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label">@L["Email"]:</label>
+                        <div class="col-lg-8">
+                            <input @bind=_hospital.Email type="email" class="form-control" placeholder="@L["Email"]">
+                        </div>
+                    </div><div class="form-group row">
+                        <label class="col-lg-2 col-form-label">@L["Web Address"]:</label>
+                        <div class="col-lg-8">
+                            <input @bind=_hospital.WebAddress class="form-control" placeholder="@L["Web Address"]">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group row mt-3">
+                        <label class="col-lg-2 col-form-label">@L["Address"]:</label>
+                        <div class="col-lg-8">
+                            <textarea @bind=_hospital.Address class="form-control" placeholder="@L["Address"]" rows="4" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-toolbar position-absolute top-0 right-0 mt-3 mr-3">
+        <div class="d-flex self-align-end">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </div>
+</EditForm>

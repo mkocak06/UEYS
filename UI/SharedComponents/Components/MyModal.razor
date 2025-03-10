@@ -1,0 +1,152 @@
+﻿@inject IJSRuntime JSRuntime
+<!-- Modal-->
+<div class="modal fade" tabindex="-1" role="dialog" id="@Guid" data-backdrop="@(Backdrop ? "true" : "static")" aria-hidden="true">
+    <div class="modal-dialog @(Scrollable?"modal-dialog-scrollable":"") modal-dialog-centered @GetSize()" role="document">
+        <div class="modal-content">
+            @if (ShowHeader)
+            {
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">@Title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+            }
+            <div class="modal-body">@Body</div>
+            @if (ShowFooter)
+            {
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal" @onclick="CloseModal">@L["Close"]</button>
+                    @if (ActionName != null)
+                    {
+                        <button type="button" class="btn btn-primary font-weight-bold @((isLoading ? "spinner spinner-white spinner-right" : ""))" disabled="@isLoading" @onclick="async () => await InvokeActionMethod()">@ActionName</button>
+                    }
+                    @if (DeleteFunction != null)
+                    {
+                        <button type="button" class="btn btn-danger font-weight-bold @((isDeleteLoading ? "spinner spinner-white spinner-right" : ""))" disabled="@isDeleteLoading" @onclick="InvokeDeleteMethod">@L["Delete"]</button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    [Parameter]
+    public RenderFragment Title { get; set; }
+    [Parameter]
+    public RenderFragment Body { get; set; }
+    [Parameter]
+    public RenderFragment Footer { get; set; }
+    [Parameter]
+    public bool Backdrop { get; set; } = true;
+    [Parameter]
+    public bool ShowHeader { get; set; } = true;
+    [Parameter]
+    public bool ShowFooter { get; set; } = true;
+    [Parameter]
+    public string ActionName { get; set; }
+    [Parameter]
+    public bool Scrollable { get; set; } = true;
+    [Parameter]
+    public Action ActionMethod { get; set; }
+    [Parameter]
+    public Action DeleteMethod { get; set; }
+    [Parameter]
+    public Func<Task<bool>> DeleteFunction { get; set; }
+    [Parameter]
+    public Func<bool> Function { get; set; }
+    [Parameter]
+    public Func<Task<bool>> AsyncFunction { get; set; }
+    [Parameter]
+    public ModalSize Size { get; set; } = ModalSize.Normal;
+
+    private bool isLoading = false;
+    private bool isDeleteLoading = false;
+    public Guid Guid = Guid.NewGuid();
+
+    public enum ModalSize
+    {
+        Small,
+        Normal,
+        Large,
+        XLarge,
+    }
+
+    public void OpenModal()
+    {
+        JSRuntime.InvokeVoidAsync("openModal", Guid);
+    }
+    public void CloseModal()
+    {
+        JSRuntime.InvokeVoidAsync("closeModal", Guid);
+    }
+    
+    public void SetModalBackdrop(bool isStatic = false, bool value = true)
+    {
+        if (isStatic)
+        {
+            JSRuntime.InvokeVoidAsync("setModalBackdrop", Guid, "static");
+        }
+        else
+        {
+            JSRuntime.InvokeVoidAsync("setModalBackdrop", Guid, value);
+        }
+    }
+
+    private async Task InvokeActionMethod()
+    {
+        if (Function != null)
+        {
+            if (Function.Invoke())
+                CloseModal();
+        }
+        else if (AsyncFunction != null)
+        {
+            isLoading = true;
+            StateHasChanged();
+            var result = await AsyncFunction.Invoke();
+            isLoading = false;
+            StateHasChanged();
+            if (result)
+                CloseModal();
+        }
+        else
+        {
+           // CloseModal();
+            ActionMethod?.Invoke();
+        }
+    }
+
+    private async Task InvokeDeleteMethod()
+    {
+        if (DeleteFunction != null)
+        {
+            if (await DeleteFunction.Invoke())
+                CloseModal();
+        }
+        else
+        {
+            CloseModal();
+            DeleteMethod?.Invoke();
+        }
+    }
+    private string GetSize()
+    {
+        switch (Size)
+        {
+            case ModalSize.Small:
+                return "modal-sm";
+            case ModalSize.Normal:
+                return "";
+            case ModalSize.Large:
+                return "modal-lg";
+            case ModalSize.XLarge:
+                return "modal-xl";
+            default:
+                return "";
+        }
+    }
+}

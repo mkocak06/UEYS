@@ -1,0 +1,243 @@
+﻿@using Majorsoft.Blazor.Components.GdprConsent
+
+@inherits LayoutComponentBase
+
+<!--begin::Header Mobile-->
+<HeaderMobile />
+<div class="d-flex flex-column flex-root">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+        <!--begin::Aside-->
+        <Aside></Aside>
+        <!--end::Aside-->
+        <!--begin::Wrapper-->
+        <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+            <Header></Header>
+            @Body
+            <!--begin::Footer-->
+            <GdprBanner @ref="_gdprBanner"
+                        BannerBackgroundColor="#404853"
+                        AnswerValidUntil="@DateTime.UtcNow.AddDays(365)">
+                <Content>
+                    <div class="gdpr-banner">
+                        <span class="fa fa-lg fa-cookie-bite m-1" aria-hidden="true"></span>
+                        <strong>
+                            @L["Sitemizde sizlere daha iyi hizmet verebilmek için gizliliğe uygun şekilde çerezler kullanmaktayız. Çerez politikamızı inceleyebilirsiniz."]
+                            <a role="button" style="text-decoration: underline;" @onclick="()=>NavigateToCookie()">@L["Cookie Policy"]</a>
+                        </strong>
+
+                        <button type="button" class="btn btn-primary ml-5" style="background-color:#db0d15; color:#ffffff;" @onclick="async () => await _gdprBanner.AcceptAll()">@L["Ok"]</button>
+                    </div>
+                </Content>
+            </GdprBanner>
+            <Footer></Footer>
+            <!--end::Footer-->
+        </div>
+
+        <!--end::Wrapper-->
+    </div>
+    <!--end::Page-->
+</div>
+<!--end::Main-->
+<style>
+    .gdpr-banner {
+        font-size: 13px;
+        font-weight: 500;
+        font-family: Helvetica,Calibri,Arial,sans-serif;
+        padding: 10px 0;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        z-index: 9999;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #404853;
+        color: #ffffff;
+        /*border: 1px solid #e0e0e0;*/
+    }
+</style>
+<MyModal @ref="_clarificationTextModal" ShowFooter="false" ShowHeader="true" Size="MyModal.ModalSize.XLarge">
+    <Title>Aydınlatma Metni</Title>
+    <Body>
+        <div class="card-body">
+            @* <iframe src="/files/UEYS_Aydinlatma_Metni.pdf" width="476px" height="288px" frameborder="0"></iframe> *@
+            <h2>T.C. SAĞLIK BAKANLIĞI</h2>
+            <h3>UZMANLIK EĞİTİMİ YÖNETİM SİSTEMİ</h3>
+            <h4>AYDINLATMA METNİ</h4>
+            <p>
+                Bu Aydınlatma Metni, 6698 sayılı Kişisel Verilerin Korunması Kanunu’nun (“KVK Kanunu”)
+                “Veri Sorumlusunun Aydınlatma Yükümlülüğü” kenar başlıklı 10’uncu maddesi uyarınca ve
+                KVK Kanunu kapsamında veri sorumlusu olan T.C. Sağlık Bakanlığı (Bakanlık) tarafından
+                Uzmanlık Eğitimi Yönetim Sistemi (UEYS) kullanıcılarına, kullanıcılara ait kişisel veriler
+                hususunda bilgilendirme yapmak amacıyla hazırlanmıştır. KVK Kanunu uyarınca veri sorumlusu
+                sıfatını haiz Bakanlığın merkez adresi “Bilkent Yerleşkesi, Üniversiteler Mah. Dumlupınar
+                Bulvarı 6001. Cad. No:9 Çankaya/Ankara 06800”dir.
+            </p>
+
+            <h4>Veri Sorumlusunun Kimliği</h4>
+            <p>
+                Bu sistemde işlenen kişisel verileriniz bakımından veri sorumlusu T.C. Sağlık Bakanlığı’dır.
+            </p>
+
+            <h4>Kişisel Verilerin İşlenme Amaçları</h4>
+            <p>
+                Bu sistemde aşağıda yer alan kişisel verileriniz şu amaçlarla işlenebilmektedir.
+            </p>
+            <ul>
+                <li>Kimlik verisi: T.C. kimlik numarası, adı, soyadı, doğum yeri, doğum tarihi, cinsiyet ve uyruk bilgileriniz; kimliğinizin doğrulanması, iş faaliyetlerinin yürütülmesi, idari faaliyetlerin yürütülmesi, bilgi güvenliği süreçlerinin yürütülmesi, erişim yetkilerinin yürütülmesi, yönetim faaliyetlerinin yürütülmesi amacıyla işlenebilmektedir.</li>
+                <li>İletişim verisi: Telefon, adres, e-posta adresi; iş faaliyetlerinin yürütülmesi, idari faaliyetlerin yürütülmesi, iletişim faaliyetlerinin yürütülmesi, bilgi güvenliği süreçlerinin yürütülmesi, erişim yetkilerinin yürütülmesi, yönetim faaliyetlerinin yürütülmesi amacıyla işlenebilmektedir.</li>
+                <li>Özlük verisi: Çalışılan birim, sicil numarası ve sınav bilgileriniz; iş faaliyetlerinin yürütülmesi, idari faaliyetlerin yürütülmesi, erişim yetkilerinin yürütülmesi, yönetim faaliyetlerinin yürütülmesi amacıyla işlenebilmektedir.</li>
+                <li>Mesleki deneyim verisi: Unvan, uzmanlık alanı, yetkinlikler, meslek ve diploma bilgileriniz; iş faaliyetlerinin yürütülmesi, idari faaliyetlerin yürütülmesi, erişim yetkilerinin yürütülmesi, yönetim faaliyetlerinin yürütülmesi amacıyla işlenebilmektedir.</li>
+                <li>İşlem güvenliği verisi: Sisteme giriş tarih ve saati, çıkış tarih ve saati, kullanıcı tarafından sisteme eklenen kayıtların tarih ve saati ile kullanıcı tarafından sistemde değiştirilen kayıtların tarih ve saat bilgileri; iş faaliyetlerinin yürütülmesi, sistemsel faaliyetlerin yürütülmesi, bilgi güvenliği süreçlerinin yürütülmesi, erişim yetkilerinin yürütülmesi, yönetim faaliyetlerinin yürütülmesi amacıyla işlenebilmektedir.</li>
+            </ul>
+
+            <h4>Kişisel Verilerin Aktarımı</h4>
+            <p>
+                Sistemde bulunan kişisel verileriniz KVK Kanunu’nun 8’inci maddesi ve 28’inci maddesinin
+                ilk fıkrasında yer alan muafiyet halleri saklı kalmak üzere, hiçbir şekilde üçüncü taraflarla
+                paylaşılmamaktadır.
+            </p>
+
+            <h4>Kişisel Veri Toplamanın Yöntemi ve Hukuki Sebebi</h4>
+            <p>
+                Kişisel verileriniz tamamen otomatik yollarla (UEYS aracılığı ile) elde edilmekte olup kişisel
+                verilerinizin işlenmesinin hukuki dayanağı, KVK Kanunu’nun 5’inci maddesinin ikinci
+                fıkrasının (a) bendi “Kanunlarda açıkça öngörülmesi” ve (ç) bendi uyarınca “Veri
+                sorumlusunun hukuki yükümlülüğünü yerine getirebilmesi için zorunlu olması” hukuki
+                sebeplerine dayanarak işlenebilmektedir.
+            </p>
+
+            <h4>İlgili Kişilerin Hakları ve Veri Sorumlusuna Başvuru</h4>
+            <p>
+                UEYS kullanıcıları KVK Kanunu’nun 11’inci maddesinde düzenlenen haklarını,
+                KVK Kanunu’nun 13’üncü maddesi ve Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında
+                Tebliğ hükümleri çerçevesinde Bakanlığa başvurmak suretiyle kullanabilmektedir.
+                KVK Kanunu’nun 13’üncü maddesi uyarınca yapılacak yazılı başvurular "T.C. Sağlık
+                Bakanlığı, Üniversiteler Mahallesi, 6001. Cadde, No:9, Çankaya, Ankara" adresine; Kayıtlı
+                Elektronik Posta (KEP) ile yapılacak başvurular ise "sb@hs01.kep.tr" adresine iletilmelidir.
+            </p>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            <button @onclick="()=> _clarificationTextModal.CloseModal()" class="btn btn-light-success">
+                @L["Ok"]
+            </button>
+        </div>
+    </Body>
+</MyModal>
+<MyModal @ref="_profileSettings" ShowFooter="false" ShowHeader="false" ActionName="@L["Save"]" AsyncFunction="()=>UpdateProfile()" Size="MyModal.ModalSize.Large" Backdrop="false">
+    <Title>@_user?.Name İletişim Bilgileri</Title>
+    <Body>
+        <div class="card card-custom">
+
+            <!--begin::Form-->
+            <form class="form">
+                <!--begin::Body-->
+                <div class="card-body">
+
+                    <div class="alert alert-custom alert-outline-2x alert-outline-primary fade show mb-5" role="alert">
+                        <div class="alert-icon"><i class="flaticon-warning"></i></div>
+                        <div class="alert-text">@L["You cannot log in to the system unless you verify your contact information."]</div>
+                        @* <div class="alert-close">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true"><i class="ki ki-close"></i></span>
+                        </button>
+                        </div> *@
+                    </div>
+                    <EditForm EditContext="_ecProfile" class="form">
+                        <FluentValidator TValidator="UpdateUserValidator" />
+                        <div class="row">
+                            @* <label class="col-xl-3"></label> *@
+                            <div class="col-lg-9 col-xl-6">
+                                <h5 class="font-weight-bold">@L["Contact Info"]</h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>@L["Phone"]</label>
+                                    <InputMask @bind-Value="@_user.Phone" class="form-control" data-mask="(999) 999 99 99" disabled="@(_user.IsPhoneVerified == true || _loading == true)" />
+                                </div>
+                                @if (_user.IsPhoneVerified != true)
+                                {
+                                    <div class="form-group">
+                                        <SpinnerButton OnClick="() => SendVerificationMessage()" Disabled="_loading" Spinning="_loading">
+                                            <i class="fas fa-save"></i>@L["Send Verification Code"]
+                                        </SpinnerButton>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-6">
+                                @if (_user.IsPhoneVerified != true)
+                                {
+                                    <div class="form-group">
+                                        <label>@L["Verification Code"]</label>
+                                        <InputNumber @bind-Value="@_phoneVerificationCode" class="form-control" disabled="@(_user.IsPhoneVerified == true)" />
+                                    </div>
+                                    <div class="form-group">
+                                        <SpinnerButton OnClick="() => VerifyPhone()" Disabled="_loading" Spinning="_loading">
+                                            <i class="fas fa-save"></i>@L["Verify"]
+                                        </SpinnerButton>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-light-success disabled mt-8">
+                                        <i class="fas fa-check-circle"></i>@L["Phone Verified"]
+                                    </a>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>@L["E-mail"]</label>
+                                    <InputText @bind-Value="@_user.Email" class="form-control" type="email" autocomplete="off" disabled="@(_user.IsMailVerified == true || _loading == true)" />
+                                    <ValidationMessage For="()=>_user.Email" />
+                                </div>
+                                @if (_user.IsMailVerified != true)
+                                {
+                                    <div class="form-group">
+                                        <SpinnerButton OnClick="() => SendVerificationMail()" Disabled="_loading" Spinning="_loading">
+                                            <i class="fas fa-save"></i>@L["Send Verification Mail"]
+                                        </SpinnerButton>
+                                    </div>
+                                }
+                            </div>
+                            <div class="col-6">
+                                @if (_user.IsMailVerified != true)
+                                {
+                                    <div class="form-group">
+                                        <label>@L["Verification Code"]</label>
+                                        <InputNumber @bind-Value="@_mailVerificationCode" class="form-control" />
+                                    </div>
+                                    <div class="form-group">
+                                        <SpinnerButton OnClick="() => VerifyMail()" Disabled="_loading" Spinning="_loading">
+                                            <i class="fas fa-save"></i>@L["Verify"]
+                                        </SpinnerButton>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-light-success disabled mt-8">
+                                        <i class="fas fa-check-circle"></i>@L["E-mail Verified"]
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                        <!--end::Body-->
+                    </EditForm>
+                </div>
+                <!--end::Body-->
+            </form>
+            <!--end::Form-->
+        </div>
+    </Body>
+</MyModal>

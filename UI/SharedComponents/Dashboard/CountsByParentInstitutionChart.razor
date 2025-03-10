@@ -1,0 +1,54 @@
+﻿@using ApexCharts;
+@using Shared.ResponseModels.StatisticModels
+@using Shared.Types;
+@inherits FluxorComponent
+@if (_chartLoaded)
+{
+    <div class="card card-custom card-stretch gutter-b bg-diagonal bg-diagonal">
+        <div class="card-body">
+            <div style="overflow-x:auto;overflow-y:auto">
+                <ApexChart @ref=_apexChart TItem="CountsByParentInstitutionModel" Title="Üst Kuruma Bağlı Sayısal İstatistikler" Options="_options">
+                    <ApexPointSeries TItem="CountsByParentInstitutionModel"
+                                     Items="countsModelList"
+                                     Name=@L["{0} Count", L["Program"]]
+                                     XValue="@(e => e.ParentInstitutionName)"
+                                     YAggregate="@(e => e.Sum(e => e.ProgramCount))"
+                                     SeriesType="SeriesType.Bar"
+                                     ShowDataLabels />
+                    <ApexPointSeries TItem="CountsByParentInstitutionModel"
+                                     Items="countsModelList"
+                                     Name=@L["{0} Count", L["Place of Education"]]
+                                     XValue="@(e => e.ParentInstitutionName)"
+                                     YAggregate="@(e => e.Sum(e => e.HospitalCount))"
+                                     SeriesType="SeriesType.Bar"
+                                     ShowDataLabels />
+                    <ApexPointSeries TItem="CountsByParentInstitutionModel"
+                                     Items="countsModelList"
+                                     Name=@L["{0} Count", L["Ministry / University"]]
+                                     XValue="@(e => e.ParentInstitutionName)"
+                                     YAggregate="@(e => e.Sum(e => e.UniversityCount))"
+                                     SeriesType="SeriesType.Bar"
+                                     ShowDataLabels />
+                    <ApexPointSeries TItem="CountsByParentInstitutionModel"
+                                     Items="countsModelList"
+                                     Name=@L["{0} Count", L["Educator"]]
+                                     XValue="@(e => e.ParentInstitutionName)"
+                                     YAggregate="@(e => e.Sum(e => e.EducatorCount))"
+                                     SeriesType="SeriesType.Bar"
+                                     ShowDataLabels />
+                    <ApexPointSeries TItem="CountsByParentInstitutionModel"
+                                     Items="countsModelList"
+                                     Name=@L["{0} Count", L["Student"]]
+                                     XValue="@(e => e.ParentInstitutionName)"
+                                     YAggregate="@(e => e.Sum(e => e.StudentCount))"
+                                     SeriesType="SeriesType.Bar"
+                                     ShowDataLabels />
+                </ApexChart>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}

@@ -1,0 +1,7 @@
+﻿@using System.Collections.ObjectModel
+<MultiMapView @ref="_bigMap" FullHeight=true Layers="MapLayers" />
+
+@code {
+    [Parameter] public ObservableCollection<MapLayerModel> MapLayers { get; set; }
+    private MultiMapView _bigMap;
+}

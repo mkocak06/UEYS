@@ -1,0 +1,63 @@
+﻿@page "/management/specific-education-place/add-specific-education-place"
+@using Shared.Types
+@using Shared.Extensions;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="SpecificEducationPlaceValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["_name", L["Specific Education Place"]]</label>
+                                    <InputText class="form-control" @bind-Value="_specificEducationPlace.Name" />
+                                    <ValidationMessage For="() => _specificEducationPlace.Name"></ValidationMessage>
+                                    <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["Province"]</label>
+                                    <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                                       TItem="ProvinceResponseDTO"
+                                                       TValue="ProvinceResponseDTO"
+                                                       Value="_specificEducationPlace.Province"
+                                                       ValueExpression="() => _specificEducationPlace.Province"
+                                                       ValueChanged="OnChangeProvince"
+                                                       MaximumSuggestions="85"
+                                                       EnableDropDown="true"
+                                                       MinimumLength="1">
+                                        <SelectedTemplate Context="province">
+                                            @province.Name
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 1 character to search."]
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L["Could not find an item named"]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="province">
+                                            @province.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                    <ValidationMessage For="() => _specificEducationPlace.ProvinceId" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>

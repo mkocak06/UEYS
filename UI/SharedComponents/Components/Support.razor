@@ -1,0 +1,175 @@
+﻿@using System.Globalization
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _nav
+
+
+<div class="topbar-item">
+    <div @onclick="OpenCanvas" class="btn btn-icon btn-clean btn-dropdown btn-lg" title=@L["Support"]>
+        <span class="svg-icon svg-icon-info svg-icon-2x">
+            <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo1/dist/../src/media/svg/icons/Code/Question-circle.svg-->
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <rect x="0" y="0" width="24" height="24" />
+                    <circle fill="#000000" opacity="0.3" cx="12" cy="12" r="10" />
+                    <path d="M12,16 C12.5522847,16 13,16.4477153 13,17 C13,17.5522847 12.5522847,18 12,18 C11.4477153,18 11,17.5522847 11,17 C11,16.4477153 11.4477153,16 12,16 Z M10.591,14.868 L10.591,13.209 L11.851,13.209 C13.447,13.209 14.602,11.991 14.602,10.395 C14.602,8.799 13.447,7.581 11.851,7.581 C10.234,7.581 9.121,8.799 9.121,10.395 L7.336,10.395 C7.336,7.875 9.31,5.922 11.851,5.922 C14.392,5.922 16.387,7.875 16.387,10.395 C16.387,12.915 14.392,14.868 11.851,14.868 L10.591,14.868 Z" fill="#000000" />
+                </g>
+            </svg><!--end::Svg Icon-->
+        </span>
+    </div>
+</div>
+
+<UI.SharedComponents.AdvancedFilters.AdvancedSearchOffCanvas Id="kt_quick_panel_support">
+    <div class="mb-5">
+        @* <h5 class="font-weight-bold text-dark mb-5">@L["Educational Videos"]</h5>
+
+        <!--begin::Item-->
+        <div class="d-flex align-items-center mb-6">
+            <!--begin::Symbol-->
+            <span class="svg-icon svg-icon-danger mr-3 ">
+                <span class="svg-icon svg-icon-primary svg-icon-2x">
+                    <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo1/dist/../src/media/svg/icons/Media/Youtube.svg-->
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <rect x="0" y="0" width="24" height="24" />
+                            <path d="M4.22266882,4 L19.8367728,4.00001353 C21.3873185,4.00001353 22.6823897,5.1816009 22.8241881,6.72564925 C22.9414021,8.00199653 23.0000091,9.40113909 23.0000091,10.9230769 C23.0000091,12.7049599 22.9196724,14.4870542 22.758999,16.26936 L22.7589943,16.2693595 C22.6196053,17.8155637 21.3235899,19 19.7711155,19 L4.22267091,19.0000022 C2.6743525,19.0000022 1.38037032,17.8217109 1.23577882,16.2801587 C1.07859294,14.6043323 1,13.0109461 1,11.5 C1,9.98905359 1.07859298,8.39566699 1.23577893,6.7198402 L1.23578022,6.71984032 C1.38037157,5.17828994 2.67435224,4 4.22266882,4 Z" fill="#000000" opacity="0.3" />
+                            <path d="M11.1821576,14.8052934 L15.5856084,11.7952868 C15.8135802,11.6394552 15.8720614,11.3283211 15.7162299,11.1003494 C15.6814583,11.0494808 15.6375838,11.0054775 15.5868174,10.970557 L11.1833666,7.94156929 C10.9558527,7.78507001 10.6445485,7.84263875 10.4880492,8.07015268 C10.4307018,8.15352258 10.3999996,8.25233045 10.3999996,8.35351969 L10.3999996,14.392514 C10.3999996,14.6686564 10.6238572,14.892514 10.8999996,14.892514 C11.000689,14.892514 11.0990326,14.8621141 11.1821576,14.8052934 Z" fill="#000000" />
+                        </g>
+                    </svg><!--end::Svg Icon-->
+                </span>
+            </span>
+            <!--end::Symbol-->
+            <!--begin::Content-->
+            <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1 justify-content-center">
+                    <a href="https://youtu.be/kYDytUU23go" target="_blank" class="text-dark text-hover-primary font-size-sm">Eğitici Ekleme</a>
+                </div>
+                <!--end::Text-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Item-->
+        <!--begin::Item-->
+        <div class="d-flex align-items-center mb-6">
+            <!--begin::Symbol-->
+            <span class="svg-icon svg-icon-danger mr-3 ">
+                <span class="svg-icon svg-icon-primary svg-icon-2x">
+                    <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo1/dist/../src/media/svg/icons/Media/Youtube.svg-->
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <rect x="0" y="0" width="24" height="24" />
+                            <path d="M4.22266882,4 L19.8367728,4.00001353 C21.3873185,4.00001353 22.6823897,5.1816009 22.8241881,6.72564925 C22.9414021,8.00199653 23.0000091,9.40113909 23.0000091,10.9230769 C23.0000091,12.7049599 22.9196724,14.4870542 22.758999,16.26936 L22.7589943,16.2693595 C22.6196053,17.8155637 21.3235899,19 19.7711155,19 L4.22267091,19.0000022 C2.6743525,19.0000022 1.38037032,17.8217109 1.23577882,16.2801587 C1.07859294,14.6043323 1,13.0109461 1,11.5 C1,9.98905359 1.07859298,8.39566699 1.23577893,6.7198402 L1.23578022,6.71984032 C1.38037157,5.17828994 2.67435224,4 4.22266882,4 Z" fill="#000000" opacity="0.3" />
+                            <path d="M11.1821576,14.8052934 L15.5856084,11.7952868 C15.8135802,11.6394552 15.8720614,11.3283211 15.7162299,11.1003494 C15.6814583,11.0494808 15.6375838,11.0054775 15.5868174,10.970557 L11.1833666,7.94156929 C10.9558527,7.78507001 10.6445485,7.84263875 10.4880492,8.07015268 C10.4307018,8.15352258 10.3999996,8.25233045 10.3999996,8.35351969 L10.3999996,14.392514 C10.3999996,14.6686564 10.6238572,14.892514 10.8999996,14.892514 C11.000689,14.892514 11.0990326,14.8621141 11.1821576,14.8052934 Z" fill="#000000" />
+                        </g>
+                    </svg><!--end::Svg Icon-->
+                </span>
+            </span>
+            <!--end::Symbol-->
+            <!--begin::Content-->
+            <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1 justify-content-center">
+                    <a href="https://youtu.be/nNQCMbqwD3s" target="_blank" class="text-dark text-hover-primary font-size-sm">TUEY Kapsamında Eğitici Ekleme</a>
+                </div>
+                <!--end::Text-->
+            </div>
+            <!--end::Content-->
+        </div>
+        <!--end::Item-->
+        <!--begin::Item-->
+        <div class="d-flex align-items-center mb-6">
+            <!--begin::Symbol-->
+            <span class="svg-icon svg-icon-danger mr-3 ">
+                <span class="svg-icon svg-icon-primary svg-icon-2x">
+                    <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo1/dist/../src/media/svg/icons/Media/Youtube.svg-->
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <rect x="0" y="0" width="24" height="24" />
+                            <path d="M4.22266882,4 L19.8367728,4.00001353 C21.3873185,4.00001353 22.6823897,5.1816009 22.8241881,6.72564925 C22.9414021,8.00199653 23.0000091,9.40113909 23.0000091,10.9230769 C23.0000091,12.7049599 22.9196724,14.4870542 22.758999,16.26936 L22.7589943,16.2693595 C22.6196053,17.8155637 21.3235899,19 19.7711155,19 L4.22267091,19.0000022 C2.6743525,19.0000022 1.38037032,17.8217109 1.23577882,16.2801587 C1.07859294,14.6043323 1,13.0109461 1,11.5 C1,9.98905359 1.07859298,8.39566699 1.23577893,6.7198402 L1.23578022,6.71984032 C1.38037157,5.17828994 2.67435224,4 4.22266882,4 Z" fill="#000000" opacity="0.3" />
+                            <path d="M11.1821576,14.8052934 L15.5856084,11.7952868 C15.8135802,11.6394552 15.8720614,11.3283211 15.7162299,11.1003494 C15.6814583,11.0494808 15.6375838,11.0054775 15.5868174,10.970557 L11.1833666,7.94156929 C10.9558527,7.78507001 10.6445485,7.84263875 10.4880492,8.07015268 C10.4307018,8.15352258 10.3999996,8.25233045 10.3999996,8.35351969 L10.3999996,14.392514 C10.3999996,14.6686564 10.6238572,14.892514 10.8999996,14.892514 C11.000689,14.892514 11.0990326,14.8621141 11.1821576,14.8052934 Z" fill="#000000" />
+                        </g>
+                    </svg><!--end::Svg Icon-->
+                </span>
+            </span>
+            <!--end::Symbol-->
+            <!--begin::Content-->
+            <div class="d-flex flex-wrap flex-row-fluid">
+                <!--begin::Text-->
+                <div class="d-flex flex-column pr-5 flex-grow-1 justify-content-center">
+                    <a href="https://youtu.be/U5ndcXtW55A" target="_blank" class="text-dark text-hover-primary font-size-sm">Uzmanlık Öğrencisi Ekleme</a>
+                </div>
+                <!--end::Text-->
+            </div>
+            <!--end::Content-->
+        </div> *@
+        <!--end::Item-->
+
+        <h5 class="font-weight-bold text-dark mb-5">@L["Support"]</h5>
+       @*  <a href="https://yazilimdestek.saglik.gov.tr/" target="_blank" class="bg-gray-100 d-flex align-items-center p-5 rounded gutter-b">
+            <!--begin::Icon-->
+            <div class="d-flex flex-center position-relative ml-4 mr-6 ml-lg-6 mr-lg-10">
+                <span class="svg-icon svg-icon-4x svg-icon-primary position-absolute opacity-15">
+                    <!--begin::Svg Icon | path:/keen-v2/theme/demo1/dist/assets/media/svg/icons/Layout/Layout-polygon.svg-->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70px" height="70px" viewBox="0 0 70 70" fill="none">
+                        <g stroke="none" stroke-width="1" fill-rule="evenodd">
+                            <path d="M28 4.04145C32.3316 1.54059 37.6684 1.54059 42 4.04145L58.3109 13.4585C62.6425 15.9594 65.3109 20.5812 65.3109 25.5829V44.4171C65.3109 49.4188 62.6425 54.0406 58.3109 56.5415L42 65.9585C37.6684 68.4594 32.3316 68.4594 28 65.9585L11.6891 56.5415C7.3575 54.0406 4.68911  49.4188 4.68911 44.4171V25.5829C4.68911 20.5812 7.3575 15.9594 11.6891 13.4585L28 4.04145Z" fill="#000000"></path>
+                        </g>
+                    </svg><!--end::Svg Icon-->
+                </span>                <span class="svg-icon svg-icon-lg svg-icon-primary position-absolute">
+                    <!--begin::Svg Icon | path:/keen-v2/theme/demo1/dist/assets/media/svg/icons/Files/File-done.svg-->
+                    <span class="svg-icon svg-icon-primary svg-icon-2x">
+                        <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo1/dist/../src/media/svg/icons/Communication/Chat4.svg-->
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <rect x="0" y="0" width="24" height="24" />
+                                <path d="M21.9999843,15.009808 L22.0249378,15 L22.0249378,19.5857864 C22.0249378,20.1380712 21.5772226,20.5857864 21.0249378,20.5857864 C20.7597213,20.5857864 20.5053674,20.4804296 20.317831,20.2928932 L18.0249378,18 L5,18 C3.34314575,18 2,16.6568542 2,15 L2,6 C2,4.34314575 3.34314575,3 5,3 L19,3 C20.6568542,3 22,4.34314575 22,6 L22,15 C22,15.0032706 21.9999948,15.0065399 21.9999843,15.009808 Z M6.16794971,10.5547002 C7.67758127,12.8191475 9.64566871,14 12,14 C14.3543313,14 16.3224187,12.8191475 17.8320503,10.5547002 C18.1384028,10.0951715 18.0142289,9.47430216 17.5547002,9.16794971 C17.0951715,8.86159725 16.4743022,8.98577112 16.1679497,9.4452998 C15.0109146,11.1808525 13.6456687,12 12,12 C10.3543313,12 8.9890854,11.1808525 7.83205029,9.4452998 C7.52569784,8.98577112 6.90482849,8.86159725 6.4452998,9.16794971 C5.98577112,9.47430216 5.86159725,10.0951715 6.16794971,10.5547002 Z" fill="#000000" />
+                            </g>
+                        </svg><!--end::Svg Icon-->
+                    </span><!--end::Svg Icon-->
+                </span>
+            </div>
+            <!--end::Icon-->
+            <!--begin::Description-->
+            <div class="ml-1">
+                <p class="m-0 text-dark-50 font-weight-bold ">
+                    Detaylı yardım için tıklayınız.
+                </p>
+            </div>
+            <!--end::Description-->
+        </a> *@
+
+        <div class="card-toolbar mt-1">
+            <a href="/files/Sikca_Sorulan_Sorular.pdf" target="_blank" class="btn btn-light-primary form-control">
+                <i class="fas fa-info-circle"></i>@L["Frequently Asked Questions"]
+            </a>
+        </div>
+
+        <div class="card-toolbar mt-1">
+            <a href="/files/Sistem_Kullanim_Kilavuzu.pdf" target="_blank" class="btn btn-light-primary form-control">
+                <i class="fas fa-book"></i>@L["User Manual"]
+            </a>
+        </div>
+
+        <div class="card-toolbar mt-1">
+            <a href="/files/UEYS_Aydinlatma_Metni.pdf" target="_blank" class="btn btn-light-primary form-control">
+                <i class="fas fa-gavel"></i>@L["Clarification Text"]
+            </a>
+        </div>
+
+        <div class="card-toolbar mt-1">
+            <a href="https://yazilimdestek.saglik.gov.tr/" target="_blank" class="btn btn-light-primary form-control">
+                <i class="fas fa-comments"></i>@L["Software Support"]
+            </a>
+        </div>
+    </div>
+</UI.SharedComponents.AdvancedFilters.AdvancedSearchOffCanvas>
+@code {
+    [Inject] public IJSRuntime JsRuntime { get; set; }
+    [Inject] public NavigationManager NavigationManager { get; set; }
+
+    private void OpenCanvas()
+    {
+        JsRuntime.InvokeVoidAsync("initQuickPanelForSupport");
+        JsRuntime.InvokeVoidAsync("ShowSupportLayout");
+    }
+}

@@ -1,0 +1,234 @@
+﻿@using Shared.ResponseModels
+@using Shared.Types
+@inherits FluxorComponent
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityUpdate}">
+            <SpinnerButton ButtonClass="btn-primary font-weight-bold" Spinning="_loading" Disabled="_loading" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Update"]
+            </SpinnerButton>
+        </PermissionWrapper>
+    </div>
+</div>
+<EditForm EditContext="_ec">
+    <FluentValidator TValidator="UniversityValidator"></FluentValidator>
+    <div class="card card-custom gutter-b shadow-xs border border-2">
+        <div class="card-header">
+            <div class="card-title">
+                <span class="card-icon">
+                    <i class="flaticon2-pin text-primary"></i>
+                </span>
+                <h3 class="card-label">@L["_Information", L["Ministry / University"]]</h3>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group">
+                        <label>@L["_name", L["Ministry / University"]]</label>
+                        <InputText class="form-control" @bind-Value="University.Name" />
+                        <ValidationMessage For="() => University.Name"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Province"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                           TItem="ProvinceResponseDTO"
+                                           TValue="ProvinceResponseDTO"
+                                           Value="University.Province"
+                                           ValueExpression="@(() => University.Province)"
+                                           ValueChanged="OnChangeProvince"
+                                           EnableDropDown="true"
+                                           MinimumLength="1">
+                            <SelectedTemplate Context="province">
+                                @province.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="province">
+                                @province.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => University.Province" />
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Parent Institution"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchInstitutions"
+                                           TItem="InstitutionResponseDTO"
+                                           TValue="InstitutionResponseDTO"
+                                           Value="University.Institution"
+                                           ValueExpression="() => University.Institution"
+                                           ValueChanged="OnChangeInstitution"
+                                           EnableDropDown="true"
+                                           MinimumLength="1">
+                            <SelectedTemplate Context="ins">
+                                @ins.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="ins">
+                                @ins.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="() => University.Institution"></ValidationMessage>
+                    </div>
+                    @if (University.Institution?.Code == "YOK")
+                    {
+                        <div class="form-group">
+                            <label><b>@L["Foundation University"]/ @L["Public University"]</b></label>
+                            <div></div>
+                            <div class="radio-inline">
+                                <label class="radio radio-lg">
+                                    <input type="radio" checked="@(University.IsPrivate == true)" @onchange="OnChangeIsPrivatetUpdate" name="radios3_1" />
+                                    <span></span>
+                                    @L["Foundation University"]
+                                </label>
+                                <label class="radio radio-lg">
+                                    <input type="radio" checked="@(University.IsPrivate == false)" @onchange="OnChangeIsPrivatetUpdate" name="radios3_1" />
+                                    <span></span>
+                                    @L["Public University"]
+                                </label>
+                            </div>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <label>@L["Latitude"]</label>
+                        <InputNumber Value="University.Latitude" ValueExpression="()=>University.Latitude" TValue="float?" ValueChanged="OnChangeLatitude" class="form-control" placeholder="__.____" step="0.1" />
+                        <ValidationMessage For="() => University.Latitude"></ValidationMessage>
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Longitude"]</label>
+                        <InputNumber Value="University.Longitude" ValueExpression="()=>University.Longitude" TValue="float?" ValueChanged="OnChangeLongitude" class="form-control" placeholder="__.____" step="0.1" />
+                        <ValidationMessage For="() => University.Longitude"></ValidationMessage>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+
+
+                    <SingleMapView @ref="_singleMapView" FullHeight EditMode="true" Lat="@(University.Latitude ?? 0)" Lng="@(University.Longitude ?? 0)"
+                                    MarkerName="@University.Name" OnLocationChanged="LocationChanged" />
+
+                 </div>
+             </div>
+         </div>
+     </div>
+
+     <div class="card card-custom gutter-b shadow-xs border border-2">
+         <div class="card-header">
+             <div class="card-title">
+                 <span class="card-icon">
+                     <i class="flaticon2-pin text-primary"></i>
+                 </span>
+                 <h3 class="card-label"> @L["_Information", L["Educational Institution / Faculty"]]</h3>
+            </div>
+            <div class="card-toolbar">
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityUpdate}">
+                    <SpinnerButton ButtonClass="btn-outline-primary" Spinning="false" Disabled="false" OnClick="() => AddFaculty()">
+                        @L["add_new", L["Educational Institution / Faculty"]]
+                    </SpinnerButton>
+                </PermissionWrapper>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (University.Faculties != null && University.Faculties.Any())
+            {
+                <div class="row">
+                    @{
+                        var i = 0;
+                    }
+                    @foreach (var universityFacultyResponseDto in University.Faculties)
+                    {
+                        <div class="col-6 col-md-4">
+                            <FacultyEdit @bind-Faculty="University.Faculties[i]"
+                                         OnRemove="RemoveFaculty"></FacultyEdit>
+                        </div>
+                        i++;
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="col-12">@L["_Not Defined", @L["Educational Institution / Faculty"]]</div>
+            }
+        </div>
+    </div>
+</EditForm>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-pin text-primary"></i>
+            </span>
+            <h3 class="card-label"> @L["_Information", L["Contact"]]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        <EditForm EditContext="_ec">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="form-group row mt-3">
+                        <label class="col-lg-2 col-form-label">@L["Phone"]:</label>
+                        <div class="col-lg-8">
+                            <InputText @bind-Value="University.Phone" type="text" class="form-control" placeholder="@L["Phone"]" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label">@L["Email"]:</label>
+                        <div class="col-lg-8">
+                            <InputText @bind-Value="University.Email" type="email" class="form-control" placeholder="@L["Email"]" />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-lg-2 col-form-label">@L["Web Address"]:</label>
+                        <div class="col-lg-8">
+                            <InputText @bind-Value="University.WebAddress" type="email" class="form-control" placeholder="@L["Web Address"]" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="form-group row mt-3">
+                        <label class="col-lg-2 col-form-label">@L["Address"]:</label>
+                        <div class="col-lg-8">
+                            <InputTextArea @bind-Value="University.Address" class="form-control" placeholder="@L["Address"]" rows="5" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+
+<MyModal @ref="_facultyListModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        @if (_faculties != null)
+        {
+            <Grid IsFilter="false" Items="_faculties" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn TRowData="ProfessionResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Educational Institution / Faculty"]]"></GridColumn>
+                <GridColumn class="max-w-50px align-middle" TRowData="ProfessionResponseDTO" Title="#">
+                    @if (University.Faculties != null && University.Faculties.Any(x => x.Programs.Any(x => x.ExpertiseBranch.ProfessionId == context.Id)))
+                    {
+                        <a class="btn btn-success btn-sm disabled">@L["Added"]</a>
+                    }
+                    else
+                    {
+                        <a @onclick="() => AddFaculty()" class="btn btn-primary btn-sm">@L["Add"]</a>
+                    }
+                </GridColumn>
+            </Grid>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Body>
+</MyModal>

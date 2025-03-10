@@ -1,0 +1,252 @@
+﻿@using Shared.Extensions
+@using Shared.ResponseModels
+@inherits FluxorComponent
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+
+    <div class="d-flex self-align-end">
+ 
+
+    </div>
+</div>
+
+@if (_isAddingPage)
+{
+    <AddStudentThesis @ref="AddStudentThesis" SelectedStudent="@SelectedStudent"></AddStudentThesis>
+}
+else
+{
+    @if (_isUpdatePage)
+    {
+        <AddStudentThesis @ref="UpdateStudentThesis" SelectedStudent="@SelectedStudent" ThesisForUpdate="_thesisForUpdate"></AddStudentThesis>
+
+    }
+    else
+    {
+        <div class="card card-custom">
+            <div class="card-body">
+                <div class="card-title">
+                    <h3 class="card-label">@L["_Information", L["Thesis"]]</h3>
+                </div>
+                @if (_thesisPaginationModel.Items != null)
+                {
+                    <Grid Items="_thesisPaginationModel.Items" class="table table-hover table-bordered text-center" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortThesisChange(sort)" RowClass='(row, index) => ""'>
+                        <GridColumn TRowData="ThesisResponseDTO" Title="@L["Thesis Advisors"]">
+                            <ChildContent>
+                                @if (context.AdvisorTheses.Count > 0)
+                                {
+
+                                    <table class="table mb-0 mt-0">
+
+                                        <tbody>
+                                            @foreach (var item in context.AdvisorTheses)
+                                            {
+
+                                                <tr>
+
+                                                    <td class="font-weight-bold border-right-0 border-left-0">
+                                                        @if (item.IsCoordinator == true)
+                                                        {
+                                                            @((MarkupString)GetAdminStyle(item))
+                                                        }
+                                                        &nbsp;
+                                                        @item.Educator?.User?.Name
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                                else
+                                {
+                                    <span class="text-warning">
+                                        <cite> @L["Belirlenmemiştir"] </cite>
+                                    </span>
+                                }
+                            </ChildContent>
+
+                        </GridColumn>
+                        <GridColumn Sort="Subject" TRowData="ThesisResponseDTO" Title="@L["Thesis Subject"]">
+                            <ChildContent>
+                                @if (!string.IsNullOrEmpty(context.Subject))
+                                {
+                                    @context.Subject
+                                }
+                                else
+                                {
+                                    <span class="text-warning">
+                                        <cite> @L["Belirlenmemiştir"] </cite>
+                                    </span>
+                                }
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeThesisFilter(args, filter)' autocomplete="false">
+                                        @if (IsThesisFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetThesisFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="ThesisTitle" TRowData="ThesisResponseDTO" Title="@L["Thesis Title"]">
+                            <ChildContent>
+                                @if (!string.IsNullOrEmpty(context.ThesisTitle))
+                                {
+                                    @context.ThesisTitle
+                                }
+                                else
+                                {
+                                    <span class="text-warning">
+                                        <cite> @L["Belirlenmemiştir"] </cite>
+                                    </span>
+                                }
+
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeThesisFilter(args, filter)' autocomplete="false">
+                                        @if (IsThesisFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetThesisFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn TRowData="ThesisResponseDTO" Title="@L["Ethic Committee Decision"]">
+                            <ChildContent>
+                                @if (context.EthicCommitteeDecisions.Count > 0)
+                                {
+                                    if (context.EthicCommitteeDecisions.Count > 1)
+                                    {
+
+                                        <ul>
+                                            @foreach (var item in context.EthicCommitteeDecisions)
+                                            {
+                                                <li>@item.Date.Value.ToString("dd.MM.yyyy") tarih @item.Number sayılı @item.Description</li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            @context.EthicCommitteeDecisions.FirstOrDefault().Date.Value.ToString("dd.MM.yyyy") tarih @context.EthicCommitteeDecisions.FirstOrDefault().Number sayılı @context.EthicCommitteeDecisions.FirstOrDefault().Description
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-warning">
+                                        <cite> @L["Belirlenmemiştir"] </cite>
+                                    </span>
+                                }
+
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeThesisFilter(args, filter)' autocomplete="false">
+                                        @if (IsThesisFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetThesisFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Status" TRowData="ThesisResponseDTO" Title="@L["Status"]">
+                            <ChildContent>
+                                @if (context.Status == Shared.Types.ThesisStatusType.Successful)
+                                {
+                                    <a class="btn btn-light-success disabled">
+                                        <i class="fas fa-check-circle"></i>@L[context.Status.Value.GetDescription()]
+                                    </a>
+                                }
+                                else if (context.Status == Shared.Types.ThesisStatusType.Unsuccessful)
+                                {
+                                    <span class="label label-lg font-weight-bold label-light-danger label-inline">
+                                        @L[context.Status.Value.GetDescription()]
+
+                                    </span>
+                                }
+                                else if (context.Status == null)
+                                {
+                                    <span class="text-warning">
+                                        <cite> @L["Belirlenmemiştir"] </cite>
+                                    </span>
+                                }
+                                else
+                                {
+
+                                    <span class="label label-lg font-weight-bold label-light-primary label-inline">
+                                        @L[context.Status.Value.GetDescription()]
+                                        <span class="label pulse pulse-primary" style="background-color:transparent;">
+                                            <span class="position-relative"><span class="label label-xl label-dot label-primary"></span></span>
+                                            <span class="pulse-ring"></span>
+                                        </span>
+                                    </span>
+                                }
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeThesisFilter(args, filter)' autocomplete="false">
+                                        @if (IsThesisFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetThesisFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        
+                    </Grid>
+                    <Pagination Action="PaginationHandlerThesis" Count="_thesisPaginationModel.TotalItemCount" Page="_thesisPaginationModel.Page"
+                                DefaultPageSize="10" Loading="_loadingThesis">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    }
+}
+
+

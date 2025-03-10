@@ -1,0 +1,45 @@
+﻿@using Shared.ResponseModels.Ekip
+@using Shared.Types
+
+<Grid Items="_specialists" class="table table-hover table-bordered">
+    <GridColumn TRowData="PersonelResponseDTO" Title="@L["Ünvanı"]">
+        <ChildContent>
+            <span>
+                @context.aktif_unvan_ad
+            </span>
+        </ChildContent>
+    </GridColumn>
+    <GridColumn TRowData="PersonelResponseDTO" Title="@L["Adı"]">
+        <ChildContent>
+            @context.ad
+        </ChildContent>
+    </GridColumn>
+    <GridColumn TRowData="PersonelResponseDTO" Title="@L["Soyadı"]">
+        <ChildContent>
+            <span>
+                @context.soyad
+            </span>
+        </ChildContent>
+    </GridColumn>
+    <GridColumn TRowData="PersonelResponseDTO" Title="@L["Education Institution"]">
+        <ChildContent>
+            <span>
+                @context.aktif_birim_ad
+            </span>
+        </ChildContent>
+    </GridColumn>
+    <GridColumn TRowData="PersonelResponseDTO" Title="@L["Principle Branch"]">
+        <ChildContent>
+            <span>
+                @context.aktif_brans_ad
+            </span>
+        </ChildContent>
+    </GridColumn>
+    <GridColumn TRowData="PersonelResponseDTO" Title="@L["Çalışma Durumu"]">
+        <ChildContent>
+            <span>
+                @context.calisma_durumu
+            </span>
+        </ChildContent>
+    </GridColumn>
+</Grid>

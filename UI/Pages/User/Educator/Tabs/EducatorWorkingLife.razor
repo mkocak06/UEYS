@@ -1,0 +1,52 @@
+﻿@using Shared.ResponseModels.Ekip
+@if (workingPlaces != null)
+{
+    <Grid Items="workingPlaces" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title="@L["Ad"]">
+            <ChildContent>
+                @context.ad
+            </ChildContent>
+        </GridColumn>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title="@L["Soyad"]">
+            <ChildContent>
+                @context.soyad
+            </ChildContent>
+        </GridColumn>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title="@L["Tür"]">
+            <ChildContent>
+                @context.turad
+            </ChildContent>
+        </GridColumn>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title="@L["Birim"]">
+            <ChildContent>
+                @context.birim_ad
+            </ChildContent>
+        </GridColumn>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title="@L["Ünvan"]">
+            <ChildContent>
+                @context.unvan_ad
+            </ChildContent>
+        </GridColumn>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title=@L["Branş"]>
+            <ChildContent>
+                @context.brans_ad
+            </ChildContent>
+        </GridColumn>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title="@L["Göreve Başlama Tarihi"]">
+            <ChildContent>
+                @(context.grv_bsl_trh != null ? context.grv_bsl_trh.Value.ToShortDateString() : "")
+            </ChildContent>
+        </GridColumn>
+        <GridColumn TRowData="PersonelHareketiResponseDTO" Title="@L["Görevden Ayrılış Tarihi"]">
+            <ChildContent>
+                @(context.grv_ayr_trh != null ? context.grv_ayr_trh.Value.ToShortDateString() : "")
+            </ChildContent>
+        </GridColumn>
+    </Grid>
+}
+else
+{
+    <span>
+        @L["There is no record belong to this field"]
+    </span>
+}

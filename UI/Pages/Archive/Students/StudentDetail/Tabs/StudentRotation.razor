@@ -1,0 +1,372 @@
+﻿@using Shared.Extensions;
+@using Shared.ResponseModels
+@using Shared.Types;
+@using Radzen
+@using Radzen.Blazor
+@inherits FluxorComponent
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fa fa-cog text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Uncompleted Rotations"]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        @if (!_loadingRotations)
+        {
+            @if (_uncompletedStudentRotations != null)
+            {
+                <RadzenDataGrid @ref="uncompletedRotationGrid" TItem="StudentRotationResponseDTO" EmptyText="@L["There is no record belong to this field"]" AllowColumnResize="true" ColumnWidth="100px" AllowPaging="true" PageSize="5" Data="_uncompletedStudentRotations" ExpandMode="DataGridExpandMode.Single" AllowSorting="true">
+                    <Columns>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Property="Rotation.ExpertiseBranch.Name" Title="@L["Expertise Branch"]"></RadzenDataGridColumn>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["_name", L["Program"]]">
+                            <Template Context="rt">
+                                <p style="white-space:pre-wrap">@rt.Program?.Name</p>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["Start Date"]">
+                            <Template Context="rt">
+                                <p style="white-space:pre-wrap">@rt.BeginDate?.ToShortDateString()</p>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Title="@L["End Date"]">
+                            <Template Context="rt">
+                                <p style="white-space:pre-wrap">@rt.EndDate?.ToShortDateString()</p>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Property="RemainingDays" Title="@L["Remaining Days"]"></RadzenDataGridColumn>
+                       
+                    </Columns>
+                    <Template Context="uncompletedRotationContext">
+                        <RadzenTabs>
+                            <Tabs>
+                                <RadzenTabsItem Text="@L["Perfections"]">
+                                    <RadzenDataGrid @ref="uncompletedStudentRotationPerfectionGrid" EmptyText="@L["There is no record belong to this field"]" Data="@(_rotations.FirstOrDefault(x=>x.RotationId == uncompletedRotationContext.RotationId).Perfections)" TItem="PerfectionResponseDTO">
+                                        <Columns>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Perfection Type"]">
+                                                <Template Context="p">
+                                                    @L[p.PerfectionType.GetDescription()]
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Name"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">@p.PName?.Name</p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Level"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @foreach (var item in p.LevelList)
+                                                        {
+                                                        <li>@item.Name</li>
+                                                        }
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Process Date"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(uncompletedRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.ProcessDate?.ToShortDateString() ?? "-")
+
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Evaluator Educator"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(uncompletedRotationContext?.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.Educator?.User?.Name ?? "-")
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="PerfectionResponseDTO" Title="@L["Status"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @if (uncompletedRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.IsSuccessful == true)
+                                                        {
+                                                            <a class="btn btn-light-success disabled">
+                                                                <i class="fas fa-check-circle"></i>@L["Successful"]
+                                                            </a>
+                                                        }
+                                                        else if (uncompletedRotationContext.StudentRotationPerfections?.FirstOrDefault(x => x.PerfectionId == p.Id)?.IsSuccessful == false)
+                                                        {
+                                                            <span class="label label-lg font-weight-bold label-light-danger label-inline">
+                                                                @L["Unsuccessful"]
+
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>-</span>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                        </Columns>
+                                    </RadzenDataGrid>
+                                </RadzenTabsItem>
+                            </Tabs>
+                        </RadzenTabs>
+                    </Template>
+                </RadzenDataGrid>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fa fa-cog text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Completed Rotations"]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        @if (!_loadingRotations)
+        {
+            @if (_completedStudentRotations != null)
+            {
+                <RadzenDataGrid TItem="StudentRotationResponseDTO" EmptyText="@L["There is no record belong to this field"]" Data="@_completedStudentRotations?.OrderBy(x=>x.BeginDate)" class="table table-hover table-bordered">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Property="Rotation.ExpertiseBranch.Name" Title="@L["Rotation Branch"]" />
+                        <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="StudentRotationResponseDTO" Property="Program.Name" Title="@L["_name", L["Program"]]" />
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["_name", L["Educator"]]">
+                            <Template Context="context">
+                                <span class="white-space:pre-wrap">
+                                    @(context.Educator?.User?.Name ?? context.EducatorName)
+                                </span>
+                            </Template>
+                        </RadzenDataGridColumn><RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["Begin and End Date"]">
+                            <Template Context="context">
+                                <span class="white-space:pre-wrap">
+                                    @context.BeginDate?.ToLocalTime().ToString("dd/MM/yyyy") - @context.EndDate?.ToLocalTime().ToString("dd/MM/yyyy")
+                                </span>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        
+                    </Columns>
+                    <Template Context="completeRotationContext">
+                        <RadzenTabs>
+                            <Tabs>
+                                <RadzenTabsItem Text="@L["Perfections"]">
+                                    <RadzenDataGrid @ref="rotationPerfectionGrid" EmptyText="@L["There is no record belong to this field"]" Data="@(completeRotationContext.StudentRotationPerfections)" TItem="StudentRotationPerfectionResponseDTO">
+                                        <Columns>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Perfection Type"]">
+                                                <Template Context="p">
+                                                    @L[p.Perfection.PerfectionType.GetDescription()]
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Name"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">@p.Perfection.PName?.Name</p>
+
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Level"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @foreach (var item in p.Perfection.LevelList)
+                                                        {
+                                                        <li>@item.Name</li>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Process Date"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @(p.ProcessDate?.ToShortDateString() ?? "-")
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Evaluator Educator"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @(p.Educator?.User?.Name ?? "-")
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Status"]">
+                                                <Template Context="rt">
+                                                    <p style="white-space:pre-wrap">
+                                                        @if (rt.IsSuccessful == true)
+                                                        {
+                                                            <a class="btn btn-light-success disabled">
+                                                                <i class="fas fa-check-circle"></i>@L["Successful"]
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="label label-lg font-weight-bold label-light-danger label-inline">
+                                                                @L["Unsuccessful"]
+                                                            </a>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                        </Columns>
+                                    </RadzenDataGrid>
+                                </RadzenTabsItem>
+                            </Tabs>
+                        </RadzenTabs>
+                    </Template>
+                </RadzenDataGrid>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="fa fa-cog text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["Former Rotations"]</h3>
+        </div>
+    </div>
+    <div class="card-body pt-2">
+        @if (!_loadingformerRotations)
+        {
+            @if (_formerStudentRotations != null)
+            {
+                <RadzenDataGrid TItem="StudentRotationResponseDTO" EmptyText="@L["There is no record belong to this field"]" Data="@_formerStudentRotations" class="table table-hover table-bordered">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Property="Rotation.ExpertiseBranch.Name" Title="@L["Rotation Branch"]" />
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Property="Rotation.Duration" Title="@L["Rotation Time (Day)"]">
+                            <Template Context="f">
+                                <p style="white-space:pre-wrap"> @f.Rotation.Duration</p>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["Is Required"]">
+                            <Template Context="f">
+                                <BoolLabel PositiveString="Yes" NegativeString="No" Value="@f.Rotation.IsRequired" />
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="StudentRotationResponseDTO" Title="@L["Begin and End Date"]">
+                            <Template Context="f">
+                                <span class="font-size-lg font-weight-bold">
+                                    @f.BeginDate?.ToShortDateString() - @f.EndDate?.ToShortDateString()
+                                </span>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                    <Template Context="formerRotationContext">
+                        <RadzenTabs>
+                            <Tabs>
+                                <RadzenTabsItem Text="@L["Perfections"]">
+                                    <RadzenDataGrid @ref="rotationPerfectionGrid" EmptyText="@L["There is no record belong to this field"]" Data="@(formerRotationContext.StudentRotationPerfections)" TItem="StudentRotationPerfectionResponseDTO">
+                                        <Columns>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Perfection Type"]">
+                                                <Template Context="p">
+                                                    @L[p.Perfection.PerfectionType.GetDescription()]
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Name"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">@p.Perfection.PName?.Name</p>
+
+                                                </Template>
+
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Level"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+                                                        @foreach (var item in p.Perfection.LevelList)
+                                                        {
+                                                        <li>@item.Name</li>
+                                                        }
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Process Date"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(p.ProcessDate?.ToShortDateString() ?? "-")
+
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Evaluator Educator"]">
+                                                <Template Context="p">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @(p.Educator?.User?.Name ?? "-")
+
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                            <RadzenDataGridColumn TItem="StudentRotationPerfectionResponseDTO" Title="@L["Status"]">
+                                                <Template Context="rt">
+                                                    <p style="white-space:pre-wrap">
+
+                                                        @if (rt.IsSuccessful.Value)
+                                                        {
+                                                            <a class="btn btn-light-success disabled">
+                                                                <i class="fas fa-check-circle"></i>@L["Successful"]
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="label label-lg font-weight-bold label-light-danger label-inline">
+                                                                @L["Unsuccessful"]
+                                                            </a>
+                                                        }
+                                                    </p>
+                                                </Template>
+                                            </RadzenDataGridColumn>
+                                        </Columns>
+                                    </RadzenDataGrid>
+                                </RadzenTabsItem>
+                            </Tabs>
+                        </RadzenTabs>
+                    </Template>
+                </RadzenDataGrid>
+            }
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </div>
+</div>
+
+ 
+<MyModal @ref="_fileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+        <FileItem Documents="responseDocuments" Loaded="true"></FileItem>
+    </Body>
+</MyModal>
+<MyModal @ref="UploaderModal" ShowHeader="true" ShowFooter="true" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone(dropzone))">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        @if (_studentRotation != null && _studentRotation?.Id > 0)
+        {
+            <Dropzone @ref="dropzone" EntityId="_studentRotation.Id.Value" DocumentType="DocumentTypes.StudentRotation"></Dropzone>
+        }
+    </Body>
+</MyModal>
+ 

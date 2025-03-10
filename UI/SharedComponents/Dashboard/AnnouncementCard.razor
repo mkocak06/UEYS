@@ -1,0 +1,119 @@
+@using Shared.FilterModels.Base
+@using Shared.ResponseModels
+
+@if (!_loading && _paginationModel.Items?.Any() == true)
+{
+    <div class="card card-custom card-stretch gutter-b">
+
+        <!--begin::Header-->
+        <div class="card-header border-0 pt-7">
+            <h3 class="card-title align-items-start flex-column">
+                <span class="card-label font-weight-bolder font-size-h4 text-dark-75">DUYURULAR</span>
+            </h3>
+        </div>
+        <!--end::Header-->
+        <!--begin::Body-->
+        <div class="card-body pt-2">
+            <div class="tab-content mt-5">
+                <!--begin::Tap pane-->
+                <div class="tab-pane fade show active">
+
+                    @foreach (var item in _paginationModel.Items)
+                    {
+                        <div class="d-flex flex-center pb-6">
+                            <!--begin::Bullet-->
+                            <span class="bullet bullet-bar bg-light-primary align-self-stretch mr-4 my-1"></span>
+                            <!--end::Bullet-->
+                            <!--begin::Text-->
+                            <div class="d-flex flex-column flex-grow-1">
+                                <a href="#" class="text-dark-75 text-hover-primary font-weight-bolder font-size-lg mb-1">
+                                    @item.Title
+                                </a>
+                                <span class="text-muted font-weight-bold">
+                                    @item.PublishDate?.ToShortDateString()
+                                </span>
+                            </div>
+                            <!--end::Text-->
+                            <button @onclick="() => OpenDetailModal(item)" class="btn btn-icon-primary btn-hover-light-primary btn-sm btn-icon ml-2">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    }
+
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="5" Loading="_loading">
+                    </Pagination>
+                </div>
+                <!--end::Tap pane-->
+
+            </div>
+        </div>
+        <!--end::Body-->
+    </div>
+}
+<MyModal @ref="_detailModal" ShowFooter="true" ShowHeader="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        <div class="card card-custom gutter-b">
+            <div class="card-header">
+                <div class="card-title">
+                    <h3 class="card-label">
+                        @_selectedAnnouncement.Title
+                        <small>@_selectedAnnouncement.PublishDate?.ToShortDateString()</small>
+                    </h3>
+                </div>
+            </div>
+            <div class="card-body">
+                @_selectedAnnouncement.Explanation
+            </div>
+        </div>
+    </Body>
+</MyModal>
+
+@code {
+    [Inject] IAnnouncementService AnnouncementService { get; set; }
+    private FilterDTO _filter;
+    private bool _loading = false;
+    private PaginationModel<AnnouncementResponseDTO> _paginationModel;
+    private AnnouncementResponseDTO _selectedAnnouncement = new();
+    private MyModal _detailModal;
+    protected override async Task OnInitializedAsync()
+    {
+        _filter = FilterHelper.CreateFilter(1, 5).Filter("IsDeleted", "eq", false, "and").Sort("PublishDate", Shared.Types.SortType.DESC);
+        await GetAnnouncements();
+        await base.OnInitializedAsync();
+    }
+
+    private void OpenDetailModal(AnnouncementResponseDTO announcement)
+    {
+        _selectedAnnouncement = announcement;
+        StateHasChanged();
+        _detailModal.OpenModal();
+
+    }
+    private async Task GetAnnouncements()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            _paginationModel = await AnnouncementService.GetPaginateList(_filter);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task PaginationHandler(PaginationInfo val)
+    {
+        var (item1, item2) = (val.Page, val.PageSize);
+
+        _filter.page = item1;
+        _filter.pageSize = item2;
+
+        await GetAnnouncements();
+    }
+}

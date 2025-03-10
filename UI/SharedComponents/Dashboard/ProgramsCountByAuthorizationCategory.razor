@@ -1,0 +1,34 @@
+﻿@using ApexCharts;
+@using Shared.ResponseModels.StatisticModels;
+@inherits FluxorComponent
+<style>
+    .apexcharts-tooltip.apexcharts-theme-dark {
+        color: black;
+    }
+</style>
+@if (_chartLoaded)
+{
+        <div class="card card-custom card-stretch gutter-b bg-diagonal bg-diagonal-light-success">
+            <div class="card-body">
+    <div style="overflow-x:auto;overflow-y:auto">
+                <ApexChart @ref=_apexChart TItem="AuthorizationCategoryChartModel"
+                           Title="Yetki Kategorisine Bağlı Program Sayısı"
+                           Options="_options">
+                    <ApexPointSeries TItem="AuthorizationCategoryChartModel"
+                                     Items="educationFieldCounts"
+                                     Name="Aktif Sayı"
+                                     XValue="@(e => {
+                                       string lcl = e.SeriesName != null ? L[e.SeriesName] : "";
+                                       return lcl;
+                                   })"
+                                     YAggregate="@(e => e.Sum(e => e.Count))"
+                                     SeriesType="SeriesType.Donut" />
+                </ApexChart>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}

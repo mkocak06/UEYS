@@ -1,0 +1,21 @@
+﻿@page "/archive/curriculumdetails/"
+@using UI.Pages.Archive.Curriculums.Tabs
+@using UI.SharedComponents.Components.TabbedCard
+@inherits FluxorComponent
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        <TabControl>
+            <TabPage Text="@L["_Information", L["Curriculum"]]">
+                <ArchiveCurriculums/>
+            </TabPage>
+            <TabPage Text="@L["_Information", L["Rotation"]]">
+                <ArchiveCurriculumRotations />
+            </TabPage>
+            <TabPage Text="@L["_Information", L["Perfection"]]">
+                <ArchiveCurriculumPerfections />
+            </TabPage>
+        </TabControl>
+    </Content>
+</AppContent>
+

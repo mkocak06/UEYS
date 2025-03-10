@@ -1,0 +1,97 @@
+﻿@using UI.Models
+@layout MainLayout
+@inject IDispatcher _dispatcher
+
+<!--begin::Content-->
+<div class="content d-flex flex-column @(IsFluid ? "flex-column-fluid" : "flex-column")" id="kt_content" style="margin-bottom: 50px;">
+    <!--begin::Subheader-->
+    <div class="subheader py-6 py-lg-8 subheader-solid">
+        <div class="@(IsFluid ? "container-fluid" : "container") d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+            <!--begin::Info-->
+            <div class="d-flex align-items-center flex-wrap mr-1">
+                <!--begin::Page Heading-->
+                <div class="d-flex align-items-baseline flex-wrap mr-5">
+                    <!--begin::Page Title-->
+                    <h5 class="text-dark font-weight-bold my-1 mr-5">@Title</h5>
+                    <!--end::Page Title-->
+                    <!--begin::Breadcrumb-->
+                    <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+                        @if (!BreadCrumbLoading)
+                        {
+                            @if (BreadCrumbLinks != null)
+                            {
+                                @foreach (var breadcrumb in BreadCrumbLinks.OrderBy(x => x.OrderIndex))
+                                {
+                                    <li class="breadcrumb-item">
+
+                                        @if (breadcrumb.DropdownList is not null)
+                                        {
+                                            <BreadCrumbSearch BreadCrumb="breadcrumb" />
+                                        }
+                                        else if (breadcrumb.IsActive)
+                                        {
+                                            <a href="@breadcrumb.To" class="">@breadcrumb.Title</a>
+                                        }
+                                        else
+                                        {
+                                            <span>@breadcrumb.Title</span>
+                                        }
+                                    </li>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <Spinner/>
+                        }
+                    </ul>
+                    <!--end::Breadcrumb-->
+                </div>
+                <!--end::Page Heading-->
+            </div>
+            <!--end::Info-->
+            <!--begin::Toolbar-->
+            @Toolbar
+            <!--end::Toolbar-->
+        </div>
+    </div>
+    <!--begin::Entry-->
+    <div class="d-flex @(IsFluid ? "flex-column-fluid" : "flex-column")">
+        <!--begin::Container-->
+        <div class="@(IsFluid ? "container-fluid" : "container")">
+            @Content
+        </div>
+        <!--end::Container-->
+    </div>
+    <!--end::Entry-->
+</div>
+<!--end::Content-->
+@code {
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public bool IsFluid { get; set; } = true;
+
+    [Parameter]
+    public RenderFragment Toolbar { get; set; }
+
+    [Parameter]
+    public RenderFragment Content { get; set; }
+
+    [Parameter]
+    public virtual List<BreadCrumbLink> BreadCrumbLinks { get; set; }
+
+    [Parameter]
+    public bool BreadCrumbLoading { get; set; } = false;
+
+    [Parameter]
+    public long? Total { get; set; }
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+}

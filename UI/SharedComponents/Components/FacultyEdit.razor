@@ -1,0 +1,67 @@
+﻿@using Shared.ResponseModels
+@using Shared.Types
+@inherits FluxorComponent
+
+<div class="d-flex align-items-center justify-content-between bg-light px-5 py-3 rounded shadow-xs border border-light-dark mb-5">
+    <div class="d-flex flex-column w-100">
+        <div class="font-size-lg font-weight-bolder">@*TO DO professiona göre değiştir*@</div>
+        <div class="d-flex flex-column">
+            <div class="form-group mb-3">
+                <label>@L["_name", L["Educational Institution / Faculty"]]</label>
+                <InputText class="form-control" @bind-Value="Faculty.Name" />
+                <ValidationMessage For="() => Faculty.Name"></ValidationMessage>
+            </div>
+            <div class="form-group mb-3">
+                <label>@L["Education Field"]</label>
+                <BlazoredTypeahead SearchMethod="SearchProfessions"
+                                   TItem="ProfessionResponseDTO"
+                                   TValue="ProfessionResponseDTO"
+                                   Value="_profession"
+                                   ValueExpression="@(() => _profession)"
+                                   ValueChanged="OnChangeProfession"
+                                   EnableDropDown="true"
+                                   MinimumLength="1">
+                    <SelectedTemplate Context="profession">
+                        @_profession.Name
+                    </SelectedTemplate>
+                    <HelpTemplate>
+                        @L["Please enter at least 1 character to search."]
+                    </HelpTemplate>
+                    <NotFoundTemplate Context="searchText">
+                        "@searchText" @L["Could not find an item named"]
+                    </NotFoundTemplate>
+                    <ResultTemplate Context="profession">
+                        @profession.Name
+                    </ResultTemplate>
+                </BlazoredTypeahead>
+                <ValidationMessage For="() => _profession" />
+                @*<InputSelect @bind-Value="Faculty.Profession" class="form-control">
+                @if (Faculty.Profession != null)
+                {
+                <option value="@Faculty.Profession">@L[Faculty.Profession.Name] </option>
+                }
+                else
+                {
+                @foreach (var profession in _professions)
+                {
+                <option value="@profession">@L[profession.Name] </option>
+                }
+                }
+                </InputSelect>*@
+            </div>
+            <div class="form-group mb-3">
+                <label>@L["Phone"]</label>
+                <InputText class="form-control" @bind-Value="Faculty.Phone" />
+                <ValidationMessage For="() => Faculty.Phone"></ValidationMessage>
+            </div>
+            <div class="form-group mb-3">
+                <label>@L["Address"]</label>
+                <InputTextArea class="form-control" @bind-Value="Faculty.Address" />
+                <ValidationMessage For="() => Faculty.Address"></ValidationMessage>
+            </div>
+        </div>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UniversityUpdate}">
+            <button @onclick="() => OnRemove.InvokeAsync(Faculty)" class="btn btn-outline-danger btn-sm"> @L["Remove"]</button>
+        </PermissionWrapper>
+    </div>
+</div>

@@ -1,0 +1,361 @@
+﻿@using AutoMapper
+@using Shared.Extensions;
+@using Shared.RequestModels
+@using Shared.ResponseModels
+@using Shared.Types;
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.PerformanceRatingAdd, PermissionEnum.PerformanceRatingUpdate}">
+            <button @onclick="Save" class="btn btn-outline-primary">@L["Save"]</button>
+        </PermissionWrapper>
+    </div>
+</div>
+<div class="card card-custom">
+    <div class="card-header ribbon ribbon-clip ribbon-right">
+        <div class="ribbon-target" style="top: 12px;">
+            <span class="ribbon-inner bg-warning"></span>@L["Evaluator"]: &nbsp; @(!string.IsNullOrWhiteSpace(_pRating?.Educator?.User?.Name) ? _pRating?.Educator?.User?.Name : _user.Name)
+        </div>
+        <h3 class="card-title">
+            @(_student.User.Name) - Değerlendirme Bilgileri
+        </h3>
+    </div>
+    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.PerformanceRatingDocumentUpload}">
+        <div class="form-group">
+            <Dropzone @ref="dropzone" EntityId="0" DocumentType="DocumentTypes.PerformanceRating"></Dropzone>
+        </div>
+    </PermissionWrapper>
+    @if (_pRating?.Documents?.Count > 0)
+    {
+        <FileItem Documents="_pRating.Documents" Loaded="true" CanDownloaded=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.PerformanceRatingDocumentDownload}))
+                  IsEditing=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.PerformanceRatingDocumentDelete}))></FileItem>
+    }
+    <div class="card-body">
+        <div class="accordion  accordion-toggle-arrow" id="accordionExample4">
+            <EditForm EditContext="_ec">
+                <FluentValidator TValidator="PerformanceRatingValidator"></FluentValidator>
+                <div class="card">
+                    <div class="card-header" id="headingOne4" @onclick="() => Collapsed[0] =! Collapsed[0]">
+                        <div class="card-title @(Collapsed[0]?"collapsed":"")" data-target="#collapseOne4">
+                            <i class="flaticon-calendar-3"></i> @L["İletişim"]
+                        </div>
+                    </div>
+                    <div id="collapseOne4" class="collapse @(Collapsed[0]?"":"show")" data-parent="#accordionExample4">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Kriter</th>
+                                        <th scope="col">Yetkinlik</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Kişilere Uygun Şekilde Hitapta Bulunur"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.AppropriateAppealToPeople"></SelectPerformanceRating>
+                                            <ValidationMessage For="() => _pRating.AppropriateAppealToPeople" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Etkili Dinleme Yapar"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.Listening"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.Listening)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Geri Bildirimi Kurallarına Uygun Olarak Kullanır"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.FeedBack"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.FeedBack)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["İletişimde Empati Yapar"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.Empathy"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.Empathy)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Çalışma Ortamında İletişim Engellerini Ortadan Kaldırır"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.CommunicationObstacleRemove"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.CommunicationObstacleRemove)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Olumsuz, Kötü Haber Verebilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.NegativeNews"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.NegativeNews)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo4" @onclick="() => Collapsed[1] =! Collapsed[1]">
+                        <div class="card-title @(Collapsed[1]?"collapsed":"")" data-target="#collapseTwo4">
+                            <i class="flaticon-list-3"></i> @L["Ekip Üyeliği "]
+                        </div>
+                    </div>
+                    <div id="collapseTwo4" class="collapse @(Collapsed[1]?"":"show")" data-parent="#accordionExample4">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Kriter</th>
+                                        <th scope="col">Yetkinlik</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Ekip İçinde Çalışabilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.WorkInTeam"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.WorkInTeam)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Ekip Lideri Olabilir "]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.Leadership"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.Leadership)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Ekip İçi Çatışmalarda Çözüm Sağlayabilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.ConflictResolution"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.ConflictResolution)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Ekibine Motivasyon Sağlayabilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.MotivatePeople"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.MotivatePeople)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Ekibinin Haklarını Gözetir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.StandUpForTeam"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.StandUpForTeam)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingFour4" @onclick="() => Collapsed[2] =! Collapsed[2]">
+                        <div class="card-title @(Collapsed[2]?"collapsed":"")" data-target="#collapseFour4">
+                            <i class="flaticon-notes"></i> @L["Değerler-Sorumluluk "]
+                        </div>
+                    </div>
+                    <div id="collapseFour4" class="collapse @(Collapsed[2]?"":"show")" data-parent="#accordionExample4">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Kriter</th>
+                                        <th scope="col">Yetkinlik</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["İnsani Değerleri Tutum Halindedir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.HumanValues"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.HumanValues)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Adil Olmaya Çalışır"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.Fair"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.Fair)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Diğerkamlık Özelliği Gelişmiştir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.Altruism"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.Altruism)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Hukuki Sorumluluk Durumlarının Farkındadır"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.LegalLiabilityAwareness"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.LegalLiabilityAwareness)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Hukuki Sorumluluklarını Yerine Getirir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.LegalLiabilityCompletion"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.LegalLiabilityCompletion)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingFive4" @onclick="() => Collapsed[3] =! Collapsed[3]">
+                        <div class="card-title @(Collapsed[3]?"collapsed":"")" data-target="#collapseFive4">
+                            <i class="flaticon-users"></i> @L["Management"]
+                        </div>
+                    </div>
+                    <div id="collapseFive4" class="collapse @(Collapsed[3]?"":"show")" data-parent="#accordionExample4">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Kriter</th>
+                                        <th scope="col">Yetkinlik</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Çalışma Ortamlarında Yöneticilik Yapabilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.WorkPlaceManagement"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.WorkPlaceManagement)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Toplantı, Görüşme Yönetimini Yapabilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.MeetingManagement"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.MeetingManagement)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Kriz-Çatışma Yönetimi Yapabilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.CrisisManagement"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.CrisisManagement)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Yönetim Tekniklerini Uygulayabilir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.ManagementTechniquesApply"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.ManagementTechniquesApply)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingSix4" @onclick="() => Collapsed[4] =! Collapsed[4]">
+                        <div class="card-title @(Collapsed[4]?"collapsed":"")" data-target="#collapseSix4">
+                            <i class="flaticon-comment"></i> @L["Öğrenen-Öğreten"]
+                        </div>
+                    </div>
+                    <div id="collapseSix4" class="collapse @(Collapsed[4]?"":"show")" data-parent="#accordionExample4">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Kriter</th>
+                                        <th scope="col">Yetkinlik</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Sürekli Öğrenme ve Öğretme İdealini Benimser"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.EmbraceLearningAndTeaching"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.EmbraceLearningAndTeaching)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Bildiklerini Öğretme Gayreti Gösterir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.TeachingEffort"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.TeachingEffort)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Bilimsel Düşünceye Sahiptir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.ScientificThinking"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.ScientificThinking)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingSix5" @onclick="() => Collapsed[5] =! Collapsed[5]">
+                        <div class="card-title @(Collapsed[5]?"collapsed":"")" data-target="#collapseSix5">
+                            <i class="flaticon-comment"></i> @L["Sağlık Koruyuculuğu"]
+                        </div>
+                    </div>
+                    <div id="collapseSix5" class="collapse @(Collapsed[5]?"":"show")" data-parent="#accordionExample4">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Kriter</th>
+                                        <th scope="col">Yetkinlik</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Sağlığın Tehditlerinin Farkındadır"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.HealthRiskAwareness"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.HealthRiskAwareness)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Sağlığın Korunması İçin Gönüllüdür"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.HealthProtectionVolunteer"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.HealthProtectionVolunteer)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Bağımlılık ile Mücadele Eder"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.FightAddiction"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.FightAddiction)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Sağlık İçin Yaşam Tarzı Değişikliğini Rol Model Olarak Gösterir"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.LifeStyleChangeRoleModel"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.LifeStyleChangeRoleModel)" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><p class="text-secondary font-size-h4 mt-3">@L["Kendisini, Personeli ve Hasta Güvenliğini Sağlar"]</p></td>
+                                        <td>
+                                            <SelectPerformanceRating @bind-Value="@_pRating.SafetyProviding"></SelectPerformanceRating>
+                                            <ValidationMessage For="@(() => _pRating.SafetyProviding)" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>

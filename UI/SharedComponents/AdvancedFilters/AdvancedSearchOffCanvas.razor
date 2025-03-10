@@ -1,0 +1,53 @@
+﻿<div id=@Id class="offcanvas offcanvas-right pt-5">
+    <div class="offcanvas-header offcanvas-header-navs d-flex align-items-center justify-content-between mb-5">
+        @if (IsTabView)
+        {
+            <ul class="nav nav-bold nav-tabs nav-tabs-line nav-tabs-line-3x nav-tabs-primary flex-grow-1 px-5" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#kt_quick_panel_activities">Filtre</a>
+                </li>
+            </ul>
+        }
+        <div class="offcanvas-close mt-n1 pr-5">
+            <a class="btn btn-xs btn-icon btn-light btn-hover-primary" id="kt_quick_panel_close">
+                <i class="ki ki-close icon-xs text-muted"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="offcanvas-content px-5">
+        <div class="tab-content">
+            <div class="tab-pane fade show px-5 pt-3 active scroll" id="kt_quick_panel_activities" role="tabpanel">
+                @ChildContent
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .offcanvas {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    .offcanvas-content {
+        flex: 1;
+        overflow-y: auto;
+        max-height: calc(100vh - 160px);
+    }
+
+    .offcanvas-footer {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        border-top: 1px solid #ebedf3;
+        z-index: 1;
+    }
+</style>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public bool IsTabView { get; set; } = false;
+    [Parameter] public string Id { get; set; } = "kt_quick_panel";
+}

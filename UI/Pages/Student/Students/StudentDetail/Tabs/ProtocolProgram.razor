@@ -1,0 +1,249 @@
+﻿@using Shared.ResponseModels
+@using Shared.ResponseModels.ProtocolProgram;
+@using Shared.Types;
+@inherits FluxorComponent
+@if (!_loading)
+{
+    @if (_studentDependentPrograms?.Count > 0)
+    {
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="fa fa-cog text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@L["Protokolde Bulunan Ana Program"]</h3>
+                </div>
+            </div>
+            <div class="card-body pt-2">
+                <InputText disabled="true" class="form-control" Value="@_mainProgram.Name" ValueExpression="() => _mainProgram.Name"></InputText>
+            </div>
+        </div>
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="fa fa-cog text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@L["Protokolde Bulunan Bağlı Programlar"]</h3>
+                </div>
+            </div>
+            <div class="card-body pt-2">
+                <Grid Items="_studentDependentPrograms" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                    <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.ProgramName" Title="@L["Program"]"></GridColumn>
+                    <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.Duration" Title="@L["Duration (Month)"]"></GridColumn>
+                    <GridColumn class="min-w-100px align-middle" TRowData="StudentDependentProgramPaginateDTO" Title="@L["Transactions"]">
+                        @if (context.IsCompleted == true)
+                        {
+                            <a class="btn btn-light-success disabled">
+                                <i class="fas fa-check-circle"></i> @L["Completed"]
+                            </a>
+                        }
+                        else if (context.IsUnCompleted == true)
+                        {
+                            <a class="btn btn-light-danger disabled">
+                                <i class="fas fa-times-circle"></i> @L["Uncompleted"]
+                            </a>
+                            if (!_studentDependentPrograms.Any(x => x.IsActive == true))
+                            {
+                                //TODO: İlgili Permmissionlar bulunmuyor
+                                <SpinnerButton Spinning="_loading" Disabled="_loading" OnClick="async () => await SendToDependentProgramHandler(context)">
+                                    <i class="fas fa-plus"></i>@L["Eğitime Gönder"]
+                                </SpinnerButton>
+                            }
+                        }
+                        else if (_studentDependentPrograms.Any(x => x.IsActive == true))
+                        {
+                            if (context.IsActive == true)
+                            {
+                                <a class="btn btn-light-danger disabled">
+                                    <span class="label pulse pulse-danger" style="background-color:transparent;">
+                                        <span class="position-relative"><span class="label label-xl label-dot label-danger"></span></span>
+                                        <span class="pulse-ring"></span>
+                                    </span>
+                                    @L["Active Dependent Program"]
+                                </a>
+                            }
+                        }
+                        else
+                        {
+                            //TODO: İlgili Permmissionlar bulunmuyor
+                            <SpinnerButton Spinning="_loading" Disabled="_loading" OnClick="async () => await SendToDependentProgramHandler(context)">
+                                <i class="fas fa-plus"></i>@L["Eğitime Gönder"]
+                            </SpinnerButton>
+                        }
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentDocumentUpload}">
+                            <SpinnerButton ButtonClass="btn btn-light-success btn-icon btn-sm ml-2" OnClick="() => OnUploadHandler(context)">
+                                <i class="fas fa-upload"></i>
+                            </SpinnerButton>
+                        </PermissionWrapper>
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentDocumentDownload}">
+                            <a @onclick="async () => await OnDownloadHandler(context)" class="btn btn-light-info btn-icon btn-sm ml-2 "><i title=@L["Download"] class="fas fa-download"></i></a>
+                        </PermissionWrapper>
+                    </GridColumn>
+                </Grid>
+            </div>
+        </div>
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="fa fa-cog text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@L["Active Dependent Program"]</h3>
+                </div>
+            </div>
+            <div class="card-body pt-2">
+                <Grid Items="_studentDependentPrograms.Where(x=>x.IsActive== true).ToList()" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                    <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.ProgramName" Title="@L["Program"]"></GridColumn>
+                    <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.Duration" Title="@L["Duration (Month)"]"></GridColumn>
+                    <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["Start Date"]">
+                        <ChildContent>
+                            @context.StartDate?.ToShortDateString()
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn class="min-w-100px align-middle" TRowData="StudentDependentProgramPaginateDTO" Title="@L["Transactions"]">
+                        @*TODO: İlgili Permmissionlar bulunmuyor*@
+                        <a @onclick="()=>FinishDependentProgramEducationHandler(context)" class="btn btn-primary">
+                            <i class="fas fa-check-circle"></i>@L["Complete"]
+                        </a>
+                    </GridColumn>
+                </Grid>
+            </div>
+            <div class="card card-custom gutter-b shadow-xs border border-2">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">
+                            <i class="fa fa-cog text-primary"></i>
+                        </span>
+                        <h3 class="card-label">@L["Uncompleted Dependent Programs"]</h3>
+                    </div>
+                </div>
+                <div class="card-body pt-2">
+                    <Grid Items="_studentDependentPrograms.Where(x=>x.IsUnCompleted == true).ToList()" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.ProgramName" Title="@L["Program"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.Duration" Title="@L["Duration (Month)"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.Explanation" Title="@L["Explanation"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.RemainingDays" Title="@L["Remaining Days"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["Start Date"]">
+                            <ChildContent>
+                                @context.StartDate?.ToShortDateString()
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["End Date"]">
+                            <ChildContent>
+                                @context.EndDate?.ToShortDateString()
+                            </ChildContent>
+                        </GridColumn>
+                    </Grid>
+                </div>
+            </div>
+            <div class="card card-custom gutter-b shadow-xs border border-2">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">
+                            <i class="fa fa-cog text-primary"></i>
+                        </span>
+                        <h3 class="card-label">@L["Completed Dependent Programs"]</h3>
+                    </div>
+                </div>
+                <div class="card-body pt-2">
+                    <Grid Items="_studentDependentPrograms.Where(x=>x.IsCompleted == true).ToList()" class="table table-hover table-bordered " RowClass='(row, index) =>""'>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.ProgramName" Title="@L["Program"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.Duration" Title="@L["Duration (Month)"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Expression="c => c.Explanation" Title="@L["Explanation"]"></GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["Start Date"]">
+                            <ChildContent>
+                                @context.StartDate?.ToShortDateString()
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="StudentDependentProgramPaginateDTO" Title="@L["End Date"]">
+                            <ChildContent>
+                                @context.EndDate?.ToShortDateString()
+                            </ChildContent>
+                        </GridColumn>
+                    </Grid>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <span>@L["Student's program is not protocol program."]</span>
+    }
+}
+else
+{
+    <Spinner></Spinner>
+}
+
+<MyModal @ref="_modal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <div class="row">
+            <div class="col-12 col-lg-12">
+                <div class="form-group">
+                    @if (_student.ProtocolProgramId == null)
+                    {
+                        <div class="form-group">
+                            <label>@L["Start Date"]</label>
+                            <InputDate class="form-control" Value="@_date" ValueExpression="()=>_date" ValueChanged="(DateTime? e) => OnChangeDate(e)"></InputDate>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label>@L["Explanation"]</label>
+                            <InputText class="form-control" @bind-Value="_studentDependentProgram.Explanation" />
+                        </div>
+                        <div class="form-group">
+                            <label>@L["End Date"]</label>
+                            <InputDate class="form-control" Value="@_date" ValueExpression="()=>_date" ValueChanged=" (DateTime? e)=> OnChangeDate(e)"></InputDate>
+                        </div>
+                    }
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId="@(_studentDependentProgram.Id.HasValue ? (long)_studentDependentProgram.Id : 0)" DocumentType="DocumentTypes.StudentDependentProgram"></Dropzone>
+                    </div>
+                    <div class="form-group">
+                        <FileItem Documents="_studentDependentProgram.Documents" Loaded="true"></FileItem>
+                    </div>
+                    @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                    {
+                        <div class="validation-message">@_documentValidatorMessage</div>
+                    }
+                    @if (!string.IsNullOrEmpty(_dateValidatorMessage))
+                    {
+                        <div class="validation-message">@_dateValidatorMessage</div>
+                    }
+                    @if (!string.IsNullOrEmpty(_remainingDateMessage))
+                    {
+                        <div class="message">@_remainingDateMessage</div>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (_student.ProtocolProgramId == null)
+        {
+            <button @onclick="SendToDependentProgram" class="btn btn-clean btn-primary"> @L["Send"]</button>
+        }
+        else
+        {
+            <button @onclick="()=>FinishDependentProgramEducation(false)" class="btn btn-clean btn-primary" disabled="@(!string.IsNullOrEmpty(_remainingDateMessage) || _date == null)">@L["Complete"]</button>
+            <button @onclick="()=>FinishDependentProgramEducation(true)" class="btn btn-clean btn-primary" disabled="@(string.IsNullOrEmpty(_remainingDateMessage) || _date == null)">@L["Leave Before the Education Is Over"]</button>
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="_fileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+        <FileItem Documents="_studentDependentProgram.Documents" Loaded="true"></FileItem>
+    </Body>
+</MyModal>
+<MyModal @ref="_uploaderModal" ShowHeader="true" ShowFooter="true" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone())">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        @if (_studentDependentProgram != null && _studentDependentProgram?.Id > 0)
+        {
+            <Dropzone @ref="dropzone_1" EntityId="_studentDependentProgram.Id.Value" DocumentType="DocumentTypes.StudentDependentProgram"></Dropzone>
+        }
+    </Body>
+</MyModal>

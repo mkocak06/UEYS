@@ -1,0 +1,190 @@
+﻿@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/universities/add-university"
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="true" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="UniversityValidator"></FluentValidator>
+                    <div class="row">
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group">
+                                <label>@L["_name", L["Ministry / University"]]</label>
+                                <InputText @ref="_focusTarget" class="form-control" @bind-Value="_university.Name" />
+                                <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                <ValidationMessage For="() => _university.Name"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Province"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchProvinces"
+                                                   TItem="ProvinceResponseDTO"
+                                                   TValue="ProvinceResponseDTO"
+                                                   Value="_university.Province"
+                                                   ValueExpression="@(() => _university.Province)"
+                                                   ValueChanged="OnChangeProvince"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                    <SelectedTemplate Context="province">
+                                        @province.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="province">
+                                        @province.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => _university.Province" />
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Parent Institution"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchInstitutions"
+                                                   TItem="InstitutionResponseDTO"
+                                                   TValue="InstitutionResponseDTO"
+                                                   Value="_university.Institution"
+                                                   ValueExpression="() => _university.Institution"
+                                                   ValueChanged="OnChangeInstitution"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1">
+                                    <SelectedTemplate Context="ins">
+                                        @ins.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="ins">
+                                        @ins.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Address"]</label>
+                                <InputTextArea class="form-control" @bind-Value="_university.Address" />
+                                <ValidationMessage For="() => _university.Address"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Telephone Number"]</label>
+                                <InputMask @ref="_inputMask" Value="@_university.Phone" ValueExpression="()=>_university.Phone" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(PhoneNoChanged)" class="form-control" type="text" data-mask="(999) 999-9999" />
+                                <ValidationMessage For="() => _university.Phone"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Web Address"]</label>
+                                <InputText class="form-control" @bind-Value="_university.WebAddress" />
+                                <ValidationMessage For="() => _university.WebAddress"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Email"]</label>
+                                <InputText class="form-control" @bind-Value="_university.Email" />
+                                <ValidationMessage For="() => _university.Email"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Latitude"]</label>
+                                <Input class="form-control" value="@_university.Latitude" @onchange=" OnChangeLatitude" />
+                                <ValidationMessage For="() => _university.Latitude"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Longitude"]</label>
+                                <Input class="form-control" value="@_university.Longitude" @onchange=" OnChangeLongitude" />
+                                <ValidationMessage For="() => _university.Longitude"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label><b>@L["Foundation University"]/ @L["Public University"]</b></label>
+                                <div></div>
+                                <div class="radio-inline">
+                                    <label class="radio radio-lg">
+                                        <input type="radio" @onchange="OnChangeIsPrivate2" name="radios3_1" />
+                                        <span></span>
+                                        @L["Foundation University"]
+                                    </label>
+                                    <label class="radio radio-lg">
+                                        <input type="radio" @onchange="OnChangeIsPrivate1" name="radios3_1" />
+                                        <span></span>
+                                        @L["Public University"]
+                                    </label>
+                                </div>
+                                <ValidationMessage For="() => _university.IsPrivate"></ValidationMessage>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-8">
+                            <div class="form-group">
+                                <label>@L["Location"]</label>
+                                <SingleMapView @ref="_singleMapView" EditMode="true" Lat="@(_university.Latitude ?? 0)" Lng="@(_university.Longitude ?? 0)" OnLocationChanged="OnChangeLocation"></SingleMapView>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex flex-row w-100 justify-content-between mb-6">
+                                        <div class="font-size-h3">@L["Educational Institution / Faculty"]</div>
+                                        <div class="text-left">
+                                            <button @onclick="OnOpenFacultyList" class="btn btn-outline-primary">@L["add_new", L["Educational Institution / Faculty"]]</button>
+                                        </div>
+                                    </div>
+                                    @if (_university.Faculties != null && _university.Faculties.Any())
+                                    {
+                                        <div class="row">
+                                            @{
+                                                var i = 0;
+                                            }
+                                            @foreach (var universityFacultyResponseDto in _university.Faculties)
+                                            {
+                                                <div class="col-6 col-md-4">
+                                                    <FacultyEdit @bind-Faculty="_university.Faculties[i]"
+                                                         OnRemove="RemoveFaculty"></FacultyEdit>
+                                                    @universityFacultyResponseDto.Phone
+                                                </div>
+                                                i++;
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>@L["_Not Defined", L["Educational Institution / Faculty"]]</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        <MyModal @ref="_facultyListModal" ShowFooter="false" ShowHeader="false">
+            <Body>
+                @if (_faculties != null)
+                {
+                    <Grid IsFilter="false" Items="_faculties" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                        <GridColumn TRowData="ProfessionResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Educational Institution / Faculty"]]"></GridColumn>
+                        <GridColumn class="max-w-50px align-middle" TRowData="ProfessionResponseDTO" Title="#">
+                            @if (_university.Faculties != null && _university.Faculties.Any(x => x.Programs.Any(x => x.ExpertiseBranch.ProfessionId == context.Id)))
+                            {
+                                <a class="btn btn-success btn-sm disabled">@L["Added"]</a>
+                            }
+                            else
+                            {
+                                <a @onclick="() => AddFaculty(context)" class="btn btn-primary btn-sm">@L["Add"]</a>
+                            }
+                        </GridColumn>
+                    </Grid>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </Body>
+        </MyModal>
+    </Content>
+</AppContent>

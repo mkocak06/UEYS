@@ -1,0 +1,537 @@
+﻿@page "/student/students/add-student/{programId:long?}"
+@page "/student/students/add-student"
+@using Shared.Extensions;
+@using Shared.Types;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentAdd}">
+            <div class="d-flex">
+                <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                    <i class="fas fa-save"></i>@L["Save"]
+                </SpinnerButton>
+            </div>
+        </PermissionWrapper>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom mb-30">
+            <div class="card-body @(programId!=null?"ribbon ribbon-right":"")">
+                @if (programId != null)
+                {
+                    <div class="ribbon-target bg-danger" style="top: 10px; right: -2px;">@_programFromYUEP?.Name </div>
+
+                } <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.StudentAdd}">
+                    <div class="row">
+                        <div class="col-12">
+                            @if (isDomainAllowed && _showCaptcha)
+                            {
+                                <div class="d-flex justify-content-center">
+                                    @if (captcha != null)
+                                    {
+                                        <div class="form-group">
+                                            <label class="col-form-label text-right">@L["Güvenlik Kodu"]</label>
+                                            <div class="card card-custom overlay mb-3">
+                                                <div class="card-body p-0">
+                                                    <div class="overlay-wrapper">
+                                                        <img src="data:image/png;base64, @captcha.Captcha" alt="" class="w-100 rounded" />
+                                                    </div>
+                                                    <div class="overlay-layer align-items-start justify-content-end pt-5 pr-5">
+                                                        <a @onclick="ReloadCaptcha" class="btn btn-clean btn-icon mr-2">
+                                                            <i class="flaticon2-reload icon-lg text-primary"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <InputText @bind-Value="inputCaptcha" class="form-control rounded-lg" />
+                                            @if (!string.IsNullOrEmpty(_captchaValidatorMessage))
+                                            {
+                                                <div class="validation-message">@_captchaValidatorMessage</div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="spinner spinner-dark spinner-primary spinner-lg my-5"></div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            <div class="d-flex justify-content-center">
+                                <EditForm Model="@_identityNo" OnSubmit="SearchByIdentityNo">
+                                    <div class="form-group">
+                                        <label>@L["T.R. Identity Number"]</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="flaticon2-browser"></i></span>
+                                            </div>
+                                            <InputMask Value="@_identityNo" ValueExpression="()=>_identityNo" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(IdentyNoChanged)" type="text" class="@GetIdentiyClass()" data-mask="99999999999" disabled="@(_searchingIdentity || _user is not null)" />
+                                            <div class="input-group-append">
+                                                @if (_user is null)
+                                                {
+                                                    <SpinnerButton Type="submit" Spinning="_searchingIdentity" Disabled="_searchingIdentity">
+                                                        @L["Fetch"]
+                                                    </SpinnerButton>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-danger" type="button" @onclick="CancelUser"><i class="fa fa-window-close "></i></button>
+                                                }
+                                            </div>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(_tcValidatorMessage))
+                                        {
+                                            <div class="validation-message">@_tcValidatorMessage</div>
+                                        }
+                                    </div>
+                                </EditForm>
+                            </div>
+
+                        </div>
+                    </div>
+                </PermissionWrapper>
+
+                @if (_user is not null && !_searchingIdentity)
+                {
+                    <EditForm EditContext="_ec">
+                        <FluentValidator TValidator="UserResponseStudentValidator" />
+                        <div class="validation-summary" id="validationSummary">
+                            <ValidationSummary />
+                        </div>
+                        <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                            <div class="card-header ribbon ribbon-top ribbon-ver">
+                                <div class="ribbon-target bg-dark-o-5 d-block" style="top: -2px; right: 20px;">
+                                    <ImageUpload @ref="@_addStudentProfile" imagePath="@(_user.ProfilePhoto)" EditMode="@true" OnImageChanged="@ImageChanged" />
+                                </div>
+                                <div class="card-title">
+                                    <span class="card-icon">
+                                        <i class="flaticon2-avatar text-primary"></i>
+                                    </span>
+                                    <h3 class="card-label">@L["Personal Info"]</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label>@L["Name Surname"]</label>
+                                            <input type="text" class="form-control" value="@(_user.Name??"-")" disabled />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>@L["Gender"]</label>
+                                            <input type="text" class="form-control" value="@(L[_user.Gender?.Description()??"-"])" disabled />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>@L["Mobile Phone"]</label>
+                                            <InputMask @ref="PhoneInput" @bind-Value="_user.Phone" class="form-control" data-mask="(999) 999 99 99" placeholder="(5__) ___ __ __" />
+                                            <ValidationMessage For="() => _user.Phone"></ValidationMessage>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label>@L["Birth Date"]</label>
+                                            <input type="text" class="form-control w-50" value="@(_user.BirthDate?.ToString("dd.MM.yyyy")??"-")" disabled />
+                                            <ValidationMessage For="() => _user.BirthDate"></ValidationMessage>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>@L["Birthplace"]</label>
+                                            <input type="text" class="form-control" value="@(_user.BirthPlace??"-")" disabled />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>@L["Email"]</label>
+                                            <CustomInputText class="form-control" @bind-Value="_user.Email" />
+                                            <ValidationMessage For="() => _user.Email"></ValidationMessage>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        @*<label class="col-3 col-form-label">@L["Successful"]/@L["Unsuccessful"]</label>*@
+                                        <div class="col-9 col-form-label">
+                                            <div class="radio-inline">
+                                                <label class="radio radio-primary">
+                                                    <input type="radio" checked="@(_isNative)" @onchange="OnChangeNative" name="radios3_1" />
+                                                    <span></span>
+                                                    @L["T.C."]
+                                                </label>
+                                                <label class="radio radio-primary">
+                                                    <input type="radio" checked="@(_isNative == false)" @onchange="OnChangeNative" name="radios3_1" />
+                                                    <span></span>
+                                                    @L["Yabancı"]
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-form-label">
+                                            @if (!_isNative)
+                                            {
+                                                <label>Yabancı Tipi</label>
+                                                <InputSelect @bind-Value="_user.ForeignType" class="form-control blazored-typeahead">
+                                                    <option value="">Seçiniz </option>
+                                                    @foreach (ForeignType foreignType in Enum.GetValues(typeof(ForeignType)))
+                                                    {
+                                                        <option value="@foreignType">@L[foreignType.Description()] </option>
+                                                    }
+                                                </InputSelect>
+                                            }
+                                            <label class="mt-4">@L["Country"]</label>
+                                            <BlazoredTypeahead SearchMethod="(string searchQuery)=> SearchCountries(searchQuery)"
+                                                               Disabled="_isNative"
+                                                               TItem="CountryResponseDTO"
+                                                               TValue="CountryResponseDTO"
+                                                               Value="_user.Country"
+                                                               ValueExpression="() => _user.Country"
+                                                               ValueChanged="OnChangeCountry"
+                                                               EnableDropDown="true"
+                                                               MinimumLength="2"
+                                                               MaximumSuggestions=99999>
+                                                <SelectedTemplate Context="country">
+                                                    @country?.Name
+                                                </SelectedTemplate>
+                                                <HelpTemplate>
+                                                    @L["Please enter at least 2 character to search."]
+                                                </HelpTemplate>
+                                                <NotFoundTemplate Context="searchText">
+                                                    @if (string.IsNullOrEmpty(searchText))
+                                                    {
+                                                        @L["Could not find an item"]
+                                                    }
+                                                    else
+                                                    {
+                                                        <div>@searchText @L["Could not find an item named"]</div>
+                                                    }
+                                                </NotFoundTemplate>
+                                                <ResultTemplate Context="country">
+                                                    @country?.Name
+                                                </ResultTemplate>
+                                            </BlazoredTypeahead>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">
+                                        <i class="flaticon2-chart text-primary"></i>
+                                    </span>
+                                    <h3 class="card-label">@L["_Information", L["Academic"]]</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    @*@if (_user.Student?.StudentExpertiseBranches?.Any() == false)
+                                {
+                                <a class="btn btn-outline-primary" @onclick="()=>{_user.Student?.StudentExpertiseBranches?.Add(new StudentExpertiseBranchResponseDTO(){IsPrincipal=null, RegistrationDate=DateTime.UtcNow, ExpertiseBranch = null}); StateHasChanged();}">
+                                <i class="fas fa-plus"></i> @L["add_new", L["Expertise Branch"]]
+                                </a>
+                                }*@
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <Grid Items="_user.Student.StudentExpertiseBranches" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                                    <GridColumn TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Principal Branch / Sub Branch"]">
+                                        <ChildContent Context="edx">
+                                            @if (edx.IsPrincipal.HasValue)
+                                            {
+                                                if (edx.IsPrincipal.Value)
+                                                {
+                                                    <label>@L["Principal Branch"]</label>
+                                                }
+                                                else
+                                                {
+                                                    <label>@L["Sub Branch"]</label>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <label>-</label>
+                                            }
+                                        </ChildContent>
+                                    </GridColumn>
+                                    <GridColumn TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Expertise Branch"]">
+                                        <ChildContent Context="edx">
+                                            <InputSelect class="form-control" Value="edx.ExpertiseBranchId" TValue="long?" ValueExpression="()=>edx.ExpertiseBranchId" ValueChanged="(long? id)=>OnChangeNewBranch(id, edx)">
+                                                <option value="" selected="@(edx.ExpertiseBranchId == null)">@L["Select"]</option>
+                                                @foreach (var item in allExpBranches)
+                                                {
+                                                    <option value="@item.Id">
+                                                        @item.Name
+                                                    </option>
+                                                }
+                                            </InputSelect>
+                                        </ChildContent>
+                                    </GridColumn>
+                                    <GridColumn TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Registration Date"]">
+                                        <ChildContent Context="edx">
+                                            <InputDate class="form-control" @bind-Value="edx.RegistrationDate" />
+                                        </ChildContent>
+                                    </GridColumn>
+                                    <GridColumn TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Registration Number"]">
+                                        <ChildContent Context="edx">
+                                            <InputText class="form-control" @bind-Value="edx.RegistrationNo" />
+                                        </ChildContent>
+                                    </GridColumn>
+                                    <GridColumn class="min-w-100px align-middle" TRowData="StudentExpertiseBranchResponseDTO" Title="@L["Transactions"]">
+                                        <ChildContent Context="edx">
+                                            <a title="@L["Remove"]" @onclick="()=>{_user.Student.StudentExpertiseBranches.Remove(edx); StateHasChanged();}" class="btn btn-light-danger btn-icon btn-sm">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                            @if (edx == _user.Student?.StudentExpertiseBranches?.LastOrDefault())
+                                            {
+
+                                                <a class="btn btn-icon btn-outline-primary btn-sm ml-2" title="@L["add_new", L["Expertise Branch"]]"
+                                                   @onclick="()=>{_user.Student.StudentExpertiseBranches.Add(new StudentExpertiseBranchResponseDTO(){IsPrincipal=null, RegistrationDate=DateTime.UtcNow, ExpertiseBranch = null}); StateHasChanged();}">
+                                                    <i class="fas fa-plus"></i>
+                                                </a>
+                                            }
+                                        </ChildContent>
+                                    </GridColumn>
+                                </Grid>
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label>@L["Graduated School"]</label>
+                                            <input type="text" class="form-control" value="@(_user.Student?.GraduatedSchool??"-")" disabled />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>@L["Graduation Registration Date"]</label>
+                                            <input type="text" class="form-control" value="@(_user.Student?.MedicineRegistrationDate??"-")" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-group">
+                                            <label>@L["Graduated Date"]</label>
+                                            <input type="text" class="form-control" value="@(_user.Student?.GraduatedDate??"-")" disabled />
+                                        </div>
+                                        <div class="form-group">
+                                            <label>@L["Graduation Registration No"]</label>
+                                            <input type="text" class="form-control" value="@(_user.Student?.MedicineRegistrationNo??"-")" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <span class="card-icon">
+                                        <i class="flaticon2-list text-primary"></i>
+                                    </span>
+                                    <h3 class="card-label">@L["_Information", L["Expertise Training Program"]]</h3>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                @if (_user != null && programId == null)
+                                {
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <label>@L["Expertise Training Program"]</label>
+                                                <BlazoredTypeahead SearchMethod="(string searchQuery)=> SearchPrograms(searchQuery,false)" class="@GetProgramClass()"
+                                                                   placeholder="@L["_Search", L["Expertise Training Program"]]"
+                                                                   TItem="ProgramResponseDTO"
+                                                                   TValue="ProgramResponseDTO"
+                                                                   Value="_user.Student.Program"
+                                                                   ValueExpression="() => _user.Student.Program"
+                                                                   ValueChanged="OnChangeProgram"
+                                                                   EnableDropDown="false"
+                                                                   MinimumLength="3"
+                                                                   MaximumSuggestions=int.MaxValue>
+                                                    <SelectedTemplate Context="program">
+                                                        @(program.Id != null ? program.Name : "")
+                                                    </SelectedTemplate>
+                                                    <HelpTemplate>
+                                                        @L["Please enter at least 3 character to search."]
+                                                    </HelpTemplate>
+                                                    <NotFoundTemplate Context="searchText">
+                                                        "@searchText" @L["Could not find an item named"]
+                                                    </NotFoundTemplate>
+                                                    <ResultTemplate Context="program">
+                                                        @(program.Id != null ? program.Name : "")
+                                                    </ResultTemplate>
+                                                </BlazoredTypeahead>
+                                                <ValidationMessage For="()=>_user.Student.ProgramId" />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                }
+                                @if (_user.Student?.ProgramId is not null)
+                                {
+                                    <div class="row">
+                                        <div class="col-12 col-md-12">
+                                            <div class="form-group">
+                                                <label class="col-6 col-form-label">@L["Start Reason"]</label>
+                                                <InputSelect class="form-control" @bind-Value="_user.Student.StartReason">
+                                                    <option value="" selected>@L["Select"]</option>
+                                                    @foreach (var item in ProcessType.Start.GetReasonTypes(StudentStatus.EducationContinues))
+                                                    {
+                                                        <option value="@item">@L[item.GetDescription()] </option>
+                                                    }
+                                                </InputSelect>
+                                                <ValidationMessage For="()=>_user.Student.StartReason" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>@L["Program Start Date"]</label>
+                                            <InputDate max="@DateTime.UtcNow.ToString("yyyy-MM-dd")" class="form-control" Value="_processDate" ValueExpression="()=>_processDate" ValueChanged="(DateTime? e)=> OnChangeProcessDate(e)" />
+                                            @if (!string.IsNullOrEmpty(_curriculumValidatorMessage))
+                                            {
+                                                <div class="validation-message">@_curriculumValidatorMessage</div>
+                                            }
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>@L["Curriculum"]</label>
+                                            <input type="text" class="form-control" disabled value="@(_user?.Student?.Curriculum == null ? "" : _user.Student.Curriculum?.ExpertiseBranch?.Name+" v"+_user.Student.Curriculum?.Version+" "+
+                                    (_user.Student.Curriculum?.Duration!=null?_user.Student.Curriculum?.Duration:"-")+" Yıl")">
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>@L["Beginning Exam"]</label>
+                                            <InputSelect @bind-Value="_user.Student.BeginningExam" class="form-control">
+                                                <option value="" selected>@L["Select"]</option>
+                                                @foreach (PlacementExamType beginningExamType in Enum.GetValues(typeof(PlacementExamType)))
+                                                {
+                                                    <option value="@beginningExamType">@L[beginningExamType.Description()] </option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="()=>_user.Student.BeginningExam" />
+
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>@L["Placement Score"]</label>
+                                            <input type="number" class="form-control" @bind-value="_user.Student.PlacementScore">
+                                            <ValidationMessage For="()=>_user.Student.PlacementScore" />
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+
+                                        <div class="form-group col-md-6">
+                                            <label>@L["Placement Year"]</label>
+                                            <InputSelect @bind-Value="_user.Student.BeginningYear" class="form-control">
+                                                <option value="" selected>@L["Select"]</option>
+                                                @for (int i = DateTime.UtcNow.Year; i > DateTime.UtcNow.Year - 50; i--)
+                                                {
+                                                    <option value="@i">@i.ToString()</option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="()=>_user.Student.BeginningYear" />
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label>@L["Exam Period"]</label>
+                                            <InputSelect @bind-Value="_user.Student.BeginningPeriod" class="form-control">
+                                                <option value="" selected>@L["Select"]</option>
+                                                @foreach (PeriodType periodType in Enum.GetValues(typeof(YearPeriodType)))
+                                                {
+                                                    <option value="@periodType">@L[periodType.Description()] </option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="()=>_user.Student.BeginningPeriod" />
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <label>@L["Quota Type"]</label>
+                                            <InputSelect @bind-Value="_user.Student.QuotaType" class="form-control">
+                                                <option value="" selected>@L["Select"]</option>
+                                                @foreach (QuotaType quotaType in Enum.GetValues(typeof(QuotaType)))
+                                                {
+                                                    <option value="@quotaType">@L[quotaType.Description()] </option>
+                                                }
+                                            </InputSelect>
+                                            <ValidationMessage For="()=>_user.Student.QuotaType" />
+                                        </div>
+                                        @* <div class="form-group col-md-6">
+                                <label>@L["QuotaType_1"]</label>
+                                <InputSelect @bind-Value="_user.Student.QuotaType_1" class="form-control">
+                                <option value="" selected>@L["Select"]</option>
+                                @foreach (QuotaType_1 quotaType_1 in Enum.GetValues(typeof(QuotaType_1)))
+                                {
+                                <option value="@quotaType_1">@L[quotaType_1.Description()] </option>
+                                }
+                                </InputSelect>
+                                <ValidationMessage For="()=>_user.Student.QuotaType_1" />
+                                </div>
+                                @if (_user.Student.QuotaType_1 != null && _user.Student.QuotaType_1 != QuotaType_1.YBU && _user.Student.QuotaType_1 != QuotaType_1.ADL && _user.Student.QuotaType_1 != QuotaType_1.GuestMilitaryPersonnel)
+                                {
+                                <div class="form-group col-md-6">
+                                <label>@L["QuotaType_2"]</label>
+                                <InputSelect @bind-Value="_user.Student.QuotaType_2" class="form-control">
+                                <option value="" selected>@L["Select"]</option>
+                                @foreach (var item in _user.Student.QuotaType_1.Value.GetQuotaTypes())
+                                {
+                                <option value="@item">@L[item.GetDescription()] </option>
+                                }
+                                </InputSelect>
+                                <ValidationMessage For="()=>_user.Student.QuotaType_2" />
+                                </div>
+                                } *@
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </EditForm>
+
+
+                    <div class="card card-custom gutter-b shadow-xs border border-2 mt-10">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">
+                                    <i class="flaticon-doc"></i>
+                                </span>
+                                <h3 class="card-label">@L["OSYM Result Document"]</h3>
+                            </div>
+                            <div class="card-toolbar">
+                                <SpinnerButton Spinning="false" Disabled="false" OnClick="() => _osymFileAddingModal.OpenModal()">
+                                    <i class="fas fa-plus"></i>@L["File Upload"]
+                                </SpinnerButton>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrEmpty(_osymDocumentValidatorMessage))
+                            {
+                                <div class="validation-message">
+                                    @_osymDocumentValidatorMessage
+                                </div>
+                            }
+                            <div class="tab-content">
+                                <div class="table-responsive">
+                                    <FileItem Documents="responseDocuments.Where(x=>x.DocumentType == DocumentTypes.OsymResultDocument).ToList()" Loaded="_fileLoaded" IsEditing="true"></FileItem>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>
+
+<MyModal @ref="_osymFileAddingModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzoneOsym())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <div class="form-group">
+            <Dropzone @ref="dropzoneOsymFile" EntityId="0" DocumentType="@Shared.Types.DocumentTypes.OsymResultDocument" />
+        </div>
+    </Body>
+
+</MyModal>
+
+<MyModal @ref="_transferFileAddingModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzoneTransfer())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <div class="form-group">
+            <Dropzone @ref="dropzoneTransferFile" EntityId="0" DocumentType="@Shared.Types.DocumentTypes.Transfer" />
+        </div>
+    </Body>
+
+</MyModal>

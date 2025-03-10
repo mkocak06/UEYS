@@ -1,0 +1,84 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/management/authorizationCategories/{Id:long?}"
+@inherits FluxorComponent
+@using BlazorColorPicker
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AuthorizationCategoryUpdate}">
+                <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                    <i class="fas fa-save"></i>@L["Save"]
+                </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_loaded)
+                {
+                    if (!_notFound)
+                    {
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="AuthorizationCategoryValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["_name", L["Authorization Category"]]</label>
+                                        <InputText class="form-control" @bind-Value="_authorizationCategory.Name" />
+                                        <ValidationMessage For="() => _authorizationCategory.Name"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["_Description", L["Authorization Category"]]</label>
+                                        <InputText class="form-control" @bind-Value="_authorizationCategory.Description" />
+                                        <ValidationMessage For="() => _authorizationCategory.Description"></ValidationMessage>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>@L["Authorization Category Color"]</label>
+                                        <Radzen.Blazor.RadzenColorPicker class="form-control" @bind-Value="_authorizationCategory.ColorCode" ShowRGBA="false" Placeholder="@L["Select a color"]">
+                                        </Radzen.Blazor.RadzenColorPicker>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Additional Days(Day)"]</label>
+                                        <InputNumber class="form-control" @bind-Value="_authorizationCategory.Duration">
+                                        </InputNumber>
+                                        <ValidationMessage For="() => _authorizationCategory.Duration"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group">
+                                        <label><b>@L["Show when YUEP List is first opened"]</b></label>
+                                        <div></div>
+                                        <div class="radio-inline">
+                                            <label class="radio radio-lg">
+                                                <input type="radio" checked="@(_authorizationCategory.IsActive == true)" @onchange="OnChangeIsActiveUpdate1" name="radios3_1" />
+                                                <span></span>
+                                                @L["Yes"]
+                                            </label>
+                                            <label class="radio radio-lg">
+                                                <input type="radio" checked="@(_authorizationCategory.IsActive == false)" @onchange="OnChangeIsActiveUpdate2" name="radios3_1" />
+                                                <span></span>
+                                                @L["No"]
+                                            </label>
+                                        </div>
+                                        <ValidationMessage For="() => _authorizationCategory.IsActive"></ValidationMessage>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <_404Page ErrorText="No Records Found" ButtonText="Return Back" ReturnLink="/management/authorizationcategories"></_404Page>
+                    }
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

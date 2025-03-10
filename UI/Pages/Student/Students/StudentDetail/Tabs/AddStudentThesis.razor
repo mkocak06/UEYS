@@ -1,0 +1,1833 @@
+﻿@using Radzen.Blazor
+@using Shared.ResponseModels
+@using Shared.Types
+@using Shared.Extensions;
+@using System.Linq;
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-analytics"></i>
+            </span>
+            <h3 class="card-label">@L["Uyarılar-Resmi Yazılar"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.OfficialLetterAdd}">
+                    <button class="btn btn-primary" @onclick="() =>{_officialLetter = new(); _ecForLetter= new EditContext(_officialLetter); _letterModal.OpenModal();}">
+                        <i class="fas fa-plus"></i>@L["Add"]
+                    </button>
+                </PermissionWrapper>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <Grid Items="_thesisForAdd.OfficialLetters" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                <GridColumn TRowData="OfficialLetterResponseDTO" Title="@L["Description"]">
+                    <ChildContent>
+                        @context.Description
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="OfficialLetterResponseDTO" Title="@L["Date"]">
+                    <ChildContent>
+                        @(context.Date.HasValue ? context.Date?.ToString("dd.MM.yyyy") : null)
+                    </ChildContent>
+
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="OfficialLetterResponseDTO" Title="@L["Transactions"]">
+                    <button class="btn btn-clean btn-icon btn-sm" @onclick="()=>{DocumentView(context.Id.Value,DocumentTypes.OfficialLetter); _fileModal.OpenModal();}">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.OfficialLetterUpdate}">
+                        <button class="btn btn-light-success btn-icon btn-sm" @onclick="async ()=> await OpenUpdateLetterModal(context)">
+                            <i class="far fa-edit"></i>
+                        </button>
+                    </PermissionWrapper>
+                    @if (OnlyRead == false)
+                    {
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.OfficialLetterDelete}">
+                            <button class="btn btn-light-danger btn-icon btn-sm" @onclick="()=>DeleteLetterFunc(context)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </PermissionWrapper>
+                    }
+                </GridColumn>
+            </Grid>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-user"></i>
+            </span>
+            <h3 class="card-label">@L["Thesis Advisor"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                if (_thesisForAdd?.AdvisorTheses?.Any(x => x.IsCoordinator == true) == false)
+                {
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AdvisorThesisAdd}">
+                        <SpinnerButton Spinning="false" Disabled="false" OnClick="() => OnOpenCoordinatorEducatorsModal()">
+                            <i class="fas fa-user-plus"></i>@L["Add Coordinator Advisor"]
+                        </SpinnerButton>
+                    </PermissionWrapper>
+                }
+                else
+                {
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AdvisorThesisAdd}">
+                        <SpinnerButton Spinning="false" Disabled="false" OnClick="() => OnOpenEducatorsModal()">
+                            <i class="fas fa-user-plus"></i>@L["Add Instructor Advisor"]
+                        </SpinnerButton>
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EducatorAdd}">
+                            <SpinnerButton ButtonClass="btn-danger ml-2" Spinning="false" Disabled="false" OnClick="() => OnOpenNonEducatorModal()">
+                                <i class="fas fa-user-plus"></i>@L["Add Non-Instructor Advisor"]
+                            </SpinnerButton>
+                        </PermissionWrapper>
+                    </PermissionWrapper>
+                }
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <Grid Items="_thesisForAdd.AdvisorTheses" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Name Surname"]">
+                    <ChildContent>
+                        @(context.Educator?.User?.Name ?? context.User.Name)@((MarkupString)GetAdminStyle(context))
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Tez Danışmanı Atanma Tarihi"]">
+                    <ChildContent>
+                        @context.AdvisorAssignDate?.ToString("dd.MM.yyyy")
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Eğiticinin Tezde Yararlanılacak Uzmanlık Dalı"]">
+                    <ChildContent>
+                        @(context.ExpertiseBranch?.Name ?? "-")
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Danışman Tipi"]">
+                    <ChildContent>
+                        @(L[context.Type?.GetDescription() ?? "-"])
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="AdvisorThesisResponseDTO" Title="@L["Transactions"]">
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ThesisUpdate}">
+                        <button @onclick="()=>OpenUpdateAdvisorModal(context)" class="btn btn-light-success btn-icon btn-sm">
+                            <i class="far fa-edit"></i>
+                        </button>
+                    </PermissionWrapper>
+                    @if (OnlyRead == false)
+                    {
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AdvisorThesisDelete}">
+                            <button @onclick="()=>DeleteAdvisorFunc(context)" class="btn btn-light-danger btn-icon btn-sm">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </PermissionWrapper>
+                    }
+                </GridColumn>
+            </Grid>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-user"></i>
+            </span>
+            <h3 class="card-label">@L["Deleted Thesis Advisors"]</h3>
+        </div>
+        <div class="card-toolbar">
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <Grid Items="_thesisForAdd.DeletedAdvisorTheses" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Name Surname"]">
+                    <ChildContent>
+                        @(context.Educator?.User?.Name ?? context.User.Name)@((MarkupString)GetAdminStyle(context))
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Tez Danışmanı Atanma Tarihi"]">
+                    <ChildContent>
+                        @context.AdvisorAssignDate?.ToString("dd.MM.yyyy")
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Eğiticinin Tezde Yararlanılacak Uzmanlık Dalı"]">
+                    <ChildContent>
+                        @(context.ExpertiseBranch?.Name ?? "-")
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Delete Reason"]">
+                    <ChildContent>
+                        @(L[context.DeleteReason?.GetDescription() ?? "-"])
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Delete Reason Explanation"]">
+                    <ChildContent>
+                        @(context.DeleteExplanation ?? "-")
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="AdvisorThesisResponseDTO" Title="@L["Danışman Tipi"]">
+                    <ChildContent>
+                        @(L[context.Type?.GetDescription() ?? "-"])
+                    </ChildContent>
+                </GridColumn>
+            </Grid>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-checking"></i>
+            </span>
+            <h3 class="card-label">@L["Thesis Subject"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                <SpinnerButton Disabled="_thesisForAdd.AdvisorTheses.Count < 1 || !string.IsNullOrEmpty(_thesisForAdd.Subject)" Spinning="false" OnClick="() =>  {_subjectSavingModal.OpenModal();}">
+                    <i class="fas fa-plus"></i>
+                    @L["Add"]
+                </SpinnerButton>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered text-center">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>@L["Thesis Type"]</th>
+                            <th>@L["Thesis Subject"]</th>
+                            <th>@L["Subject Determine Date"]</th>
+                            <th>@L["Transactions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @if (_thesisForAdd.Subject != null)
+                        {
+
+                            <tr>
+                                <td>@L[_thesisForAdd.ThesisSubjectType_1?.GetDescription() ?? "-"] / @L[_thesisForAdd.ThesisSubjectType_2?.GetDescription() ?? "-"]</td>
+                                <td>@_thesisForAdd.Subject</td>
+                                <td>@(_thesisForAdd.SubjectDetermineDate.HasValue ? _thesisForAdd.SubjectDetermineDate?.ToString("dd.MM.yyyy") : null)</td>
+                                <td>
+                                    <button @onclick="()=>_subjectSavingModal.OpenModal()" class="btn btn-light-success btn-icon btn-sm">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                    @if (OnlyRead == false)
+                                    {
+                                        <button @onclick="()=>DeleteSubjectFunc()" class="btn btn-light-danger btn-icon btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4">@L["There is no record belong to this field"]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon-doc"></i>
+            </span>
+            <h3 class="card-label">@L["Thesis Title"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                <SpinnerButton Spinning="false" Disabled="@(string.IsNullOrEmpty(_thesisForAdd.Subject) || !string.IsNullOrEmpty(_thesisForAdd.ThesisTitle))" OnClick="() => {_titleAddingModal.OpenModal();}">
+                    <i class="fas fa-plus"></i>@L["Add"]
+                </SpinnerButton>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered text-center">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>@L["Thesis Title"]</th>
+                            <th>@L["Thesis Title Determine Date"]</th>
+                            <th>@L["Transactions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (_thesisForAdd.ThesisTitle != null)
+                        {
+                            <tr>
+                                <td>@_thesisForAdd.ThesisTitle</td>
+                                <td>@(_thesisForAdd.ThesisTitleDetermineDate.HasValue ? _thesisForAdd.ThesisTitleDetermineDate?.ToString("dd.MM.yyyy") : null)</td>
+                                <td>
+                                    <button @onclick="()=>_titleAddingModal.OpenModal()" class=" btn btn-light-success btn-icon btn-sm">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                    @if (OnlyRead == false)
+                                    {
+                                        <button @onclick="()=>{DeleteTitleFunc(); }" class="btn btn-light-danger btn-icon btn-sm">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3">@L["There is no record belong to this field"]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-analytics"></i>
+            </span>
+            <h3 class="card-label">@L["Ethic Committee Decisions"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EthicCommitteeDecisionAdd}">
+                    <SpinnerButton Spinning="false" Disabled="_thesisForAdd.AdvisorTheses.Count < 1" OnClick="() =>{_ethicCommitteeDecision = new(); _ecForEthic = new EditContext(_ethicCommitteeDecision);
+                             dropzoneEthic.ResetStatus(); StateHasChanged(); _ethicAddingModal.OpenModal();}">
+                        <i class="fas fa-plus"></i>@L["Add"]
+                    </SpinnerButton>
+                </PermissionWrapper>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <Grid Items="_thesisForAdd.EthicCommitteeDecisions" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                <GridColumn TRowData="EthicCommitteeDecisionResponseDTO" Title="@L["Ethic Committee Decisions"]">
+                    <ChildContent>
+                        @context.Date?.ToString("dd.MM.yyyy") tarih @context.Number sayılı @context.Description
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="EthicCommitteeDecisionResponseDTO" Title="@L["Transactions"]">
+                    <button @onclick="()=>{DocumentView(context.Id, DocumentTypes.EthicCommitteeDecision); _fileModal.OpenModal();}" class="btn btn-clean btn-icon btn-sm">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EthicCommitteeDecisionUpdate}">
+                        <button @onclick="()=>OpenUpdateEthicModal(context)" class="btn btn-light-success btn-icon btn-sm">
+                            <i class="far fa-edit"></i>
+                        </button>
+                    </PermissionWrapper>
+                    @if (OnlyRead == false)
+                    {
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.EthicCommitteeDecisionDelete}">
+                            <button @onclick="()=>RemoveEthicFunc(context)" class="btn btn-light-danger btn-icon btn-sm">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </PermissionWrapper>
+                    }
+                </GridColumn>
+            </Grid>
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-chart"></i>
+            </span>
+            <h3 class="card-label">@L["Thesis Progress Reports"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProgressReportAdd}">
+                    <SpinnerButton Spinning="false" Disabled="_thesisForAdd.AdvisorTheses.Count < 1" OnClick="@(() => OnOpenProgressReportModal())">
+                        <i class="fas fa-plus"></i>@L["Add"]
+                    </SpinnerButton>
+                </PermissionWrapper>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <Grid Items="_thesisForAdd.ProgressReports.OrderBy(x=>x.BeginDate).ToList()" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                <GridColumn TRowData="ProgressReportResponseDTO" Title="@L["Advisor"]">
+                    <ChildContent>
+                        @context.Educator?.User?.Name
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="ProgressReportResponseDTO" Title="@L["Description"]">
+                    <ChildContent>
+                        @context.Description
+                    </ChildContent>
+
+                </GridColumn>
+                <GridColumn TRowData="ProgressReportResponseDTO" Title="@L["Start Date"]">
+                    <ChildContent>
+                        @context.BeginDate?.ToString("dd.MM.yyyy")
+                    </ChildContent>
+
+                </GridColumn>
+                <GridColumn TRowData="ProgressReportResponseDTO" Title="@L["End Date"]">
+                    <ChildContent>
+                        @context.EndDate?.ToString("dd.MM.yyyy")
+                    </ChildContent>
+
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="ProgressReportResponseDTO" Title="@L["Transactions"]">
+                    <button @onclick="()=>{DocumentView(context.Id, DocumentTypes.ProgressReport); _fileModal.OpenModal();}" class="btn btn-clean btn-icon btn-sm">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    @if (_thesisForAdd.ProgressReports?.LastOrDefault().Id == context.Id)
+                    {
+                        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProgressReportUpdate}">
+                            <button @onclick="()=>OpenUpdateProgressModal(context)" class="btn btn-light-success btn-icon btn-sm">
+                                <i class="far fa-edit"></i>
+                            </button>
+                        </PermissionWrapper>
+                        @if (OnlyRead == false)
+                        {
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ProgressReportDelete}">
+                                <button @onclick="()=>RemoveProgressFunc(context)" class="btn btn-light-danger btn-icon btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </PermissionWrapper>
+                        }
+                    }
+                </GridColumn>
+            </Grid>
+        </div>
+        <p>*Tez ilerleme raporları öğrenciler tarafından doldurulmalıdır.</p>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon-doc"></i>
+            </span>
+            <h3 class="card-label">@L["Thesis Defence"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ThesisDefenceAdd}">
+                    <SpinnerButton Spinning="false" Disabled="false" OnClick="async () => await OnOpenDefenceAddingModal()">
+                        <i class="fas fa-plus"></i>@L["Add"]
+                    </SpinnerButton>
+                </PermissionWrapper>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+
+            <Grid Items="_thesisForAdd.ThesisDefences" class="table table-hover table-bordered text-center" RowClass='(row, index) => ""'>
+                <GridColumn TRowData="ThesisDefenceResponseDTO" Title="@L["Tez Savunmaları"]">
+                    <ChildContent>
+                        @(context.DefenceOrder + ". Savunma")
+                    </ChildContent>
+
+                </GridColumn>
+                <GridColumn TRowData="ThesisDefenceResponseDTO" Title="@L["Exam Date"]">
+                    <ChildContent>
+                        @context.ExamDate?.ToShortDateString()
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TRowData="ThesisDefenceResponseDTO" Title="@L["Exam Place"]">
+                    <ChildContent>
+                        @context.Hospital?.Name
+                    </ChildContent>
+
+                </GridColumn>
+                <GridColumn TRowData="ThesisDefenceResponseDTO" Title="@L["Thesis Defence Status"]">
+                    <ChildContent>
+                        @L[context.Result?.GetDescription() ?? "-"]
+                    </ChildContent>
+
+                </GridColumn>
+                <GridColumn class="min-w-100px align-middle" TRowData="ThesisDefenceResponseDTO" Title="@L["Transactions"]">
+
+                    <button @onclick="()=>{DocumentView(context.Id.Value, DocumentTypes.ThesisDefence); _fileModal.OpenModal();}" class="btn btn-clean btn-icon btn-sm">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ThesisDefenceUpdate}">
+                        <button @onclick="()=>OpenUpdateThesisDefenceModal(context.Id ?? 0)" class="btn btn-light-success btn-icon btn-sm">
+                            <i class="far fa-edit"></i>
+                        </button>
+                    </PermissionWrapper>
+                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ThesisDefenceDelete}">
+                        <button @onclick="()=>RemoveThesisDefenceFunc(context)" class="btn btn-light-danger btn-icon btn-sm">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </PermissionWrapper>
+                </GridColumn>
+            </Grid>
+
+
+        </div>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon-doc"></i>
+            </span>
+            <h3 class="card-label">@L["Tez Dökümanları"]</h3>
+        </div>
+        <div class="card-toolbar">
+            @if (OnlyRead == false)
+            {
+                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.ThesisDocumentUpload}">
+                    <SpinnerButton Spinning="false" Disabled="false" OnClick="() => _thesisFileAddingModal.OpenModal()">
+                        <i class="fas fa-plus"></i>@L["File Upload"]
+                    </SpinnerButton>
+                </PermissionWrapper>
+            }
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content">
+            <div class="table-responsive">
+                <FileItem Documents="_thesisForAdd.Documents" Loaded="!thesisFileLoading" CanDownloaded=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.ThesisDocumentDownload})) IsEditing=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.ThesisDocumentDelete}))></FileItem>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Modals-->
+<MyModal @ref="_letterModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecForLetter">
+            <FluentValidator TValidator="OfficialLetterValidator" />
+            <div class="form-group">
+                <label>@L["Description"]</label>
+                <InputTextArea class="form-control" @bind-Value="_officialLetter.Description" />
+                <ValidationMessage For="()=>_officialLetter.Description" />
+            </div>
+            <div class="form-group">
+                <label>@L["Tarih Bilgisi"]</label>
+                <InputDate class="form-control" @bind-Value="_officialLetter.Date" TValue="DateTime?" />
+                <ValidationMessage For="()=>_officialLetter.Date" />
+            </div>
+            <div class="form-group">
+                <Dropzone @ref="dropzoneLetter" EntityId="@(_officialLetter.Id>0?_officialLetter.Id.Value:0)" DocumentType="@Shared.Types.DocumentTypes.OfficialLetter" />
+                @if (!string.IsNullOrEmpty(_officialLetterValidationMessage))
+                {
+                    <div class="validation-message">@L[_officialLetterValidationMessage]</div>
+                }
+            </div>
+            @if (OnlyRead == false)
+            {
+                @if (_officialLetter.Id > 0)
+                {
+                    <FileItem Documents="_officialLetter.Documents" Loaded="true" IsEditing="true"></FileItem>
+                    <button class="btn btn-primary form-control" @onclick="UpdateLetterFunc">
+                        <i class="fas fa-save"></i>@L["Update"]
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-primary form-control" @onclick="AddLetterFunc">
+                        <i class="fas fa-plus"></i>@L["Add"]
+                    </button>
+                }
+            }
+        </EditForm>
+    </Body>
+
+</MyModal>
+<MyModal @ref="_advisorAddingModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm Model="_identityNo" OnSubmit="SearchByIdentityNo">
+            <div class="form-group">
+                <label>@L["Identity Number"]</label>
+                <div class="input-group">
+                    <InputMask @ref="_inputMask" FocusOnFirstRender="true" Value="@_identityNo" ValueExpression="()=>_identityNo" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(IdentyNoChanged)" type="text" class="@GetIdentiyClass()" data-mask="99999999999" disabled="@(_searching || _user is not null)" />
+                    @if (_user is null)
+                    {
+                        <div class="input-group-append">
+                            <SpinnerButton ButtonClass="btn btn-primary btn btn-primary" Spinning="_searching" Disabled="_searching" Type="submit">
+                                @L["Search"]
+                            </SpinnerButton>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="input-group-append">
+                            <button class="btn btn-primary btn btn-secondary" @onclick="CancelEducator">
+                                @L["Cancel"]
+                            </button>
+                        </div>
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(_tcValidatorMessage))
+                {
+                    <div class="validation-message">@_tcValidatorMessage</div>
+                }
+            </div>
+        </EditForm>
+        @if (_user is not null && !_searching)
+        {
+            <EditForm EditContext="_ec">
+                <div class="form-group">
+                    <label>@L["Name Surname"]</label>
+                    <input disabled class="form-control" value="@(_user.Name??"-")" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Mobile Phone"]</label>
+
+                    <InputMask @bind-Value="_user.Phone" @bind-Value:after="GetPhoneValidatorMessage" class="form-control" data-mask="(999) 999 99 99" placeholder="(5__) ___ __ __" />
+                    @if (!string.IsNullOrEmpty(_phoneValidatorMessage))
+                    {
+                        <div class="validation-message">@_phoneValidatorMessage</div>
+                    }
+                </div>
+                <div class="form-group">
+                    <label>@L["Email"]</label>
+                    <InputText class="form-control" @bind-Value="_user.Email" @bind-Value:after="GetEmailValidatorMessage" />
+                    @if (!string.IsNullOrEmpty(_emailValidatorMessage))
+                    {
+                        <div class="validation-message">@_emailValidatorMessage</div>
+                    }
+                </div>
+            </EditForm>
+            <EditForm EditContext="_ecForAdvisorThesis">
+                <FluentValidator TValidator="AdvisorThesisValidator" />
+                <div class="form-group">
+                    <label>@L["Description"]</label>
+                    <InputTextArea class="form-control" @bind-Value="_advisorThesis.Description" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Tez Danışmanı Atanma Tarihi"]</label>
+                    <InputDate @ref="_advisorAssignDatePicker" class="form-control" @bind-Value="_advisorThesis.AdvisorAssignDate" />
+                    <ValidationMessage For="@(() => _advisorThesis.AdvisorAssignDate)" />
+                </div>
+            </EditForm>
+            @if (OnlyRead == false)
+            {
+                <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="_adding" Disabled="_adding" OnClick="async()=>await AddNonEducatorAdvisor()">
+                    <i class="fas fa-plus"></i>@L["Add"]
+                </SpinnerButton>
+            }
+        }
+    </Body>
+</MyModal>
+<MyModal @ref="_subjectSavingModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecForSubject">
+            <FluentValidator TValidator="ThesisValidator" />
+            <div class="form-group">
+                <label>@L["Thesis Type-1"]</label>
+                <InputSelect Value="_thesisForAdd.ThesisSubjectType_1" TValue="ThesisSubjectType_1?" ValueExpression="()=>_thesisForAdd.ThesisSubjectType_1" ValueChanged="(ThesisSubjectType_1? e)=> OnChangeSubjectSelect(e)" class="form-control">
+                    <option value="" selected>@L["Select"]</option>
+                    @foreach (ThesisSubjectType_1 subjectType in Enum.GetValues(typeof(ThesisSubjectType_1)))
+                    {
+                        <option value="@subjectType">@L[subjectType.GetDescription()] </option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="()=>_thesisForAdd.ThesisSubjectType_1" />
+            </div>
+            <div class="form-group">
+                <label>@L["Thesis Type-2"]</label>
+                <InputSelect @bind-Value="_thesisForAdd.ThesisSubjectType_2" class="form-control" disabled="@(_thesisForAdd.ThesisSubjectType_1==null)">
+                    <option value="" selected>@L["Select"]</option>
+                    @if (_thesisForAdd.ThesisSubjectType_1 != null)
+                    {
+                        @foreach (var subjectType2 in _thesisForAdd.ThesisSubjectType_1?.GetThesisSubjects())
+                        {
+                            <option value="@subjectType2">@L[subjectType2.GetDescription()] </option>
+                        }
+                    }
+                </InputSelect>
+                <ValidationMessage For="()=>_thesisForAdd.ThesisSubjectType_1" />
+            </div>
+            <div class="form-group">
+                <label>@L["Thesis Subject"]</label>
+                <InputTextArea class="form-control" @bind-Value="@_thesisForAdd.Subject" />
+                <ValidationMessage For="()=>_thesisForAdd.Subject" />
+
+            </div>
+            <div class="form-group">
+                <label>@L["Tez Konusu Belirlenme Tarihi"]</label>
+                <InputDate class="form-control" @bind-Value="_thesisForAdd.SubjectDetermineDate" TValue="DateTime?" />
+                <ValidationMessage For="()=>_thesisForAdd.SubjectDetermineDate" />
+            </div>
+            @if (OnlyRead == false)
+            {
+                <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="false" Disabled="false" OnClick="SaveSubjectFunc">
+                    @if (_thesisForAdd.Subject != null)
+                    {
+                        <i class="fas fa-save"></i>
+                        @L["Save"]
+                    }
+                    else
+                    {
+                        <i class="fas fa-plus"></i>
+                        @L["Add"]
+                    }
+                </SpinnerButton>
+            }
+        </EditForm>
+    </Body>
+
+</MyModal>
+<MyModal @ref="_titleAddingModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecForTitle">
+
+            <div class="form-group">
+                <label>@L["Thesis Title"]</label>
+                <InputTextArea class="form-control" @bind-Value="@_thesisTitle" />
+                @if (!string.IsNullOrEmpty(thesisTitleValidation))
+                {
+                    <div class="validation-message">@thesisTitleValidation</div>
+                }
+            </div>
+            <div class="form-group">
+                <label>@L["Tez Başlığı Belirlenme Tarihi"]</label>
+                <InputDate class="form-control" @bind-Value="_thesisDate" TValue="DateTime?" />
+                @if (!string.IsNullOrEmpty(thesisDateValidation))
+                {
+                    <div class="validation-message">@thesisDateValidation</div>
+                }
+            </div>
+            @if (OnlyRead == false)
+            {
+                <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="false" Disabled="false" OnClick="SaveTitleFunc">
+                    @if (!string.IsNullOrEmpty(_thesisForAdd.ThesisTitle))
+                    {
+                        <i class="fas fa-save"></i>
+
+                        @L["Update"]
+                    }
+                    else
+                    {
+                        <i class="fas fa-plus"></i>
+
+                        @L["Add"]
+                    }
+                </SpinnerButton>
+            }
+        </EditForm>
+    </Body>
+
+</MyModal>
+<MyModal @ref="_ethicAddingModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecForEthic">
+            <FluentValidator TValidator="EthicCommitteeValidator" />
+            <div class="form-group">
+                <label>@L["Date"]</label>
+                <InputDate class="form-control" @bind-Value="_ethicCommitteeDecision.Date" TValue="DateTime?" />
+                <ValidationMessage For="()=>_ethicCommitteeDecision.Date" />
+            </div>
+            <div class="form-group">
+                <label>@L["Decision Number"]</label>
+                <InputText class="form-control" @bind-Value="_ethicCommitteeDecision.Number" />
+                <ValidationMessage For="()=>_ethicCommitteeDecision.Number" />
+            </div>
+            <div class="form-group">
+                <label>@L["Explanation"]</label>
+                <InputTextArea class="form-control" @bind-Value="_ethicCommitteeDecision.Description" />
+                <ValidationMessage For="()=>_ethicCommitteeDecision.Description" />
+            </div>
+            <div class="form-group">
+                <Dropzone @ref="dropzoneEthic" EntityId="@(_ethicCommitteeDecision.Id>0?_ethicCommitteeDecision.Id:0)" DocumentType="@Shared.Types.DocumentTypes.EthicCommitteeDecision" />
+                @if (!string.IsNullOrEmpty(_ethicCommitteeDecisionValidationMessage))
+                {
+                    <div class="validation-message">@L[_ethicCommitteeDecisionValidationMessage]</div>
+                }
+            </div>
+            @if (_ethicCommitteeDecision.Id > 0)
+            {
+                <FileItem Documents="_ethicCommitteeDecision.Documents" Loaded="true" IsEditing="true" />
+                @if (OnlyRead == false)
+                {
+                    <button @onclick="UpdateEthicFunc" class="form-control btn btn-primary">
+                        <i class="fas fa-save"></i>@L["Update"]
+                    </button>
+                }
+            }
+            else
+            {
+                @if (OnlyRead == false)
+                {
+                    <button @onclick="AddEthicFunc" class="form-control btn btn-primary">
+                        <i class="fas fa-plus"></i>@L["Add"]
+                    </button>
+                }
+            }
+        </EditForm>
+    </Body>
+
+</MyModal>
+<MyModal @ref="_progressAddingModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm EditContext="_ecForProgress">
+            <FluentValidator TValidator="ProgressReportValidator" />
+            <div class="form-group">
+                <label>@L["Advisor"]</label>
+                <BlazoredTypeahead SearchMethod="SearchEducators"
+                                   TItem="EducatorResponseDTO"
+                                   TValue="EducatorResponseDTO"
+                                   Value="_progressReport.Educator"
+                                   ValueExpression="() => _progressReport.Educator"
+                                   ValueChanged="OnChangeAdvisor"
+                                   EnableDropDown="true"
+                                   MinimumLength="2"
+                                   MaximumSuggestions="int.MaxValue"
+                                   Disabled="_progressReport.Id > 0"
+                                   placeholder=@L["Select"]>
+                    <SelectedTemplate Context="educator">
+                        @educator.User?.Name
+                    </SelectedTemplate>
+                    <HelpTemplate>
+                        @L["Please enter at least 1 character to search."]
+                    </HelpTemplate>
+                    <NotFoundTemplate Context="searchText">
+                        "@searchText" @L["Could not find an item named"]
+                    </NotFoundTemplate>
+                    <ResultTemplate Context="educator">
+                        @educator.User?.Name
+                    </ResultTemplate>
+                </BlazoredTypeahead>
+                <ValidationMessage For="()=>_progressReport.EducatorId" />
+
+            </div>
+            <div class="form-group">
+                <label>@L["Description"]</label>
+                <InputTextArea class="form-control" @bind-Value="@_progressReport.Description" />
+                <ValidationMessage For="()=>_progressReport.Description" />
+            </div>
+            <div class="form-group">
+                <label>@L["Rapor Dönemi"]</label>
+                <div class="row">
+                    <div class="col md-4">
+                        <InputDate class="form-control" @bind-Value="_progressReport.BeginDate" Disabled="true" TValue="DateTime?" />
+                        <ValidationMessage For="()=>_progressReport.BeginDate" />
+                    </div>
+                    <div class="col md-4">
+                        <InputDate class="form-control" @bind-Value="_progressReport.EndDate" Disabled="true" TValue="DateTime?" />
+                        <ValidationMessage For="()=>_progressReport.EndDate" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <Dropzone @ref="dropzoneProgressReport" EntityId="@(_progressReport.Id>0?_progressReport.Id:0)" DocumentType="@Shared.Types.DocumentTypes.ProgressReport" />
+                @if (!string.IsNullOrEmpty(_proggressReportValidationMessage))
+                {
+                    <div class="validation-message">@L[_proggressReportValidationMessage]</div>
+                }
+            </div>
+            @if (OnlyRead == false)
+            {
+                @if (_progressReport.Id > 0)
+                {
+                    <FileItem Documents="_progressReport.Documents" Loaded="true" IsEditing="true" />
+                    <button @onclick="UpdateProgressFunc" class="form-control btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        @L["Update"]
+                    </button>
+                }
+                else
+                {
+                    <button @onclick="AddProgressFunc" class="form-control btn btn-primary">
+                        <i class="fas fa-plus"></i>@L["Add"]
+                    </button>
+                }
+            }
+        </EditForm>
+    </Body>
+
+</MyModal>
+<MyModal @ref="_defenseAddingModal" ShowFooter="false" ShowHeader="true" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        <EditForm EditContext="_ecForDefense">
+            <FluentValidator TValidator="ThesisDefenceValidator" />
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>@L["Exam Date"]</label>
+                        <InputDate class="form-control" @bind-Value="_thesisDefence.ExamDate" TValue="DateTime?" disabled="@(_thesisDefence.IsConcluded)" />
+                        <ValidationMessage For="()=>_thesisDefence.ExamDate" />
+                    </div>
+                    <div class="col-md-6">
+                        <label>@L["Exam Place"]</label>
+                        <BlazoredTypeahead SearchMethod="SearchHospitals"
+                                           TItem="HospitalResponseDTO"
+                                           TValue="HospitalResponseDTO"
+                                           Value="_thesisDefence.Hospital"
+                                           ValueExpression="() => _thesisDefence.Hospital"
+                                           ValueChanged="OnChangeHospital"
+                                           EnableDropDown="true"
+                                           MinimumLength="2"
+                                           MaximumSuggestions="int.MaxValue"
+                                           disabled="@(_thesisDefence.Id>0)"
+                                           placeholder=@L["Select"]>
+                            <SelectedTemplate Context="hospital">
+                                @hospital.Name
+                            </SelectedTemplate>
+                            <HelpTemplate>
+                                @L["Please enter at least 1 character to search."]
+                            </HelpTemplate>
+                            <NotFoundTemplate Context="searchText">
+                                "@searchText" @L["Could not find an item named"]
+                            </NotFoundTemplate>
+                            <ResultTemplate Context="hospital">
+                                @hospital.Name
+                            </ResultTemplate>
+                        </BlazoredTypeahead>
+                        <ValidationMessage For="()=>_thesisDefence.HospitalId" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    @*  <div class="col-md-6">
+                    @if (_thesisDefence.Id != null)
+                    {
+                    <p style="color : darkorange;">*Sonuç tarihi girebilmek için tez savunmasının durumu "Savunma Tarihi Belirlendi" olmamalıdır.</p>
+                    }
+                    <label>@L["Result Date"]</label>
+                    <InputDate class="form-control" @bind-Value="_thesisDefence.ResultDate" TValue="DateTime?" disabled="@(_thesisDefence.IsConcluded || _thesisDefence.Id == null || _thesisDefence.Result == DefenceResultType.InProgress)" />
+                    <ValidationMessage For="()=>_thesisDefence.ResultDate" />
+                    </div> *@
+                    <div class="col-md-6">
+                        @if (_thesisDefence.Id == null)
+                        {
+                            <p style="color : darkorange;">*İlk eklenen tez savunması tarih belirlemek amacıyla eklenir. Daha sonra tez savunmasının sonucu değiştirebilirsiniz.</p>
+                        }
+                        <label>@L["Thesis Defence Status"]</label>
+                        <InputSelect @bind-Value="_thesisDefence.Result" class="form-control" disabled="@(_thesisDefence.IsConcluded)">
+                            <option selected>@L["Please Select"]...</option>
+                            @if (_thesisDefence.Id == null)
+                            {
+                                <option value="@DefenceResultType.InProgress">@L[DefenceResultType.InProgress.GetDescription()] </option>
+                            }
+                            else
+                            {
+                                @foreach (DefenceResultType defenceResultType in Enum.GetValues(typeof(DefenceResultType)))
+                                {
+                                    <option value="@defenceResultType">@L[defenceResultType.GetDescription()] </option>
+                                }
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="()=>_thesisDefence.Result" />
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>@L["Description"]</label>
+                        <InputTextArea class="form-control" @bind-Value="@_thesisDefence.Description" disabled="@(_thesisDefence.IsConcluded)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                @if (!_thesisDefence.IsConcluded)
+                {
+                    <Dropzone @ref="dropzoneThesisDefence" EntityId="@(_thesisDefence.Id>0?_thesisDefence.Id.Value:0)" DocumentType="@Shared.Types.DocumentTypes.ThesisDefence" />
+                }
+                @if (!string.IsNullOrEmpty(_thesisDefenceValidationMessage))
+                {
+                    <div class="validation-message">@L[_thesisDefenceValidationMessage]</div>
+                }
+                @if (_thesisDefence.Documents?.Count > 0)
+                {
+                    <FileItem Documents="_thesisDefence.Documents" Loaded="true" IsEditing="(!_thesisDefence.IsConcluded || _thesisDefence.Id == null)" />
+                }
+            </div>
+            <div class="card card-custom">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">
+                            <span class="svg-icon svg-icon-lg">
+                                <!--begin::Svg Icon | path:/keen-v2/theme/demo1/dist/assets/media/svg/icons/Communication/Group.svg-->
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <polygon points="0 0 24 0 24 24 0 24"></polygon>
+                                        <path d="M18,14 C16.3431458,14 15,12.6568542 15,11 C15,9.34314575 16.3431458,8 18,8 C19.6568542,8 21,9.34314575 21,11 C21,12.6568542 19.6568542,14 18,14 Z M9,11 C6.790861,11 5,9.209139 5,7 C5,4.790861 6.790861,3 9,3 C11.209139,3 13,4.790861 13,7 C13,9.209139 11.209139,11 9,11 Z" fill="#000000" fill-rule="nonzero" opacity="0.3"></path>
+                                        <path d="M17.6011961,15.0006174 C21.0077043,15.0378534 23.7891749,16.7601418 23.9984937,20.4 C24.0069246,20.5466056 23.9984937,21 23.4559499,21 L19.6,21 C19.6,18.7490654 18.8562935,16.6718327 17.6011961,15.0006174 Z M0.00065168429,20.1992055 C0.388258525,15.4265159 4.26191235,13 8.98334134,13 C13.7712164,13 17.7048837,15.2931929 17.9979143,20.2 C18.0095879,20.3954741 17.9979143,21 17.2466999,21 C13.541124,21 8.03472472,21 0.727502227,21 C0.476712155,21 -0.0204617505,20.45918 0.00065168429,20.1992055 Z" fill="#000000" fill-rule="nonzero"></path>
+                                    </g>
+                                </svg><!--end::Svg Icon-->
+                            </span>
+                        </span>
+                        <h3 class="card-label">Asil ve Yedek Juri Üyeleri</h3>
+                    </div>
+                    <div class="card-toolbar">
+                        <ul class="nav nav-light-success nav-bold nav-pills">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#kt_tab_pane_4_1">
+                                    <span class="nav-icon"><i class="flaticon2-chat-1"></i></span>
+                                    <span class="nav-text">@L["Core"]</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#kt_tab_pane_4_2">
+                                    <span class="nav-icon"><i class="flaticon2-drop"></i></span>
+                                    <span class="nav-text">@L["Alternate"]</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="kt_tab_pane_4_1" role="tabpanel" aria-labelledby="kt_tab_pane_4_1">
+                            <Grid Items="_thesisDefence.Juries?.Where(x=>x.JuryType==JuryType.Core).ToList()" class="table table-hover table-bordered text-center" Sort="_filterJury.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                                <GridColumn Context="jury" class="align-middle" TRowData="JuryResponseDTO" Title="Asil/Yedek">
+                                    <ChildContent>
+                                        <span class="label label-xl label-light-danger label-pill label-inline">
+
+                                            @L[jury.JuryType.GetDescription()]
+                                        </span>
+                                    </ChildContent>
+                                </GridColumn>
+                                <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Name"]">
+                                    <ChildContent>
+                                        @(jury.Educator?.User?.Name ?? jury.User.Name)
+                                    </ChildContent>
+                                </GridColumn>
+                                <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Expertise Branches"]">
+                                    <ChildContent>
+                                        @if (jury.Educator?.EducatorExpertiseBranches != null)
+                                        {
+                                            @foreach (var item in jury.Educator?.EducatorExpertiseBranches)
+                                            {
+                                                <span class="label label-info label-inline mr-2">@(item.ExpertiseBranch?.Name ?? "-")</span>
+                                            }
+                                        }
+                                    </ChildContent>
+                                </GridColumn>
+                                @if (_thesisDefence.Id == null || !_thesisDefence.IsConcluded)
+                                {
+                                    <GridColumn Context="jury" class="min-w-100px align-middle" TRowData="JuryResponseDTO" Title="@L["Transactions"]">
+                                        <SpinnerButton OnClick="() => OnRemoveJury(jury.EducatorId , jury.UserId)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                                            <i class="fas fa-minus"></i>
+                                        </SpinnerButton>
+                                    </GridColumn>
+                                }
+                            </Grid>
+
+
+                        </div>
+                        <div class="tab-pane fade" id="kt_tab_pane_4_2" role="tabpanel" aria-labelledby="kt_tab_pane_4_2">
+                            <Grid Items="_thesisDefence.Juries?.Where(x=>x.JuryType==JuryType.Alternate).ToList()" class="table table-hover table-bordered text-center" Sort="_filterJury.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                                <GridColumn Context="jury" class="align-middle" TRowData="JuryResponseDTO" Title="Asil/Yedek">
+                                    <ChildContent>
+                                        <span class="label label-xl label-light-warning label-pill label-inline">
+                                            @L[jury.JuryType.GetDescription()]
+                                        </span>
+                                    </ChildContent>
+                                </GridColumn>
+                                <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Name"]">
+                                    <ChildContent>
+                                        @(jury.Educator?.User?.Name ?? jury.User.Name)
+                                    </ChildContent>
+                                </GridColumn>
+                                <GridColumn Context="jury" TRowData="JuryResponseDTO" Title="@L["Expertise Branches"]">
+                                    <ChildContent>
+                                        @if (jury.Educator?.EducatorExpertiseBranches != null)
+                                        {
+                                            @foreach (var item in jury.Educator?.EducatorExpertiseBranches)
+                                            {
+                                                <span class="label label-info label-inline mr-2">@(item.ExpertiseBranch?.Name ?? "-")</span>
+                                            }
+                                        }
+                                    </ChildContent>
+                                </GridColumn>
+                                @if (_thesisDefence.Id == null || !_thesisDefence.IsConcluded)
+                                {
+                                    <GridColumn Context="jury" class="min-w-100px align-middle" TRowData="JuryResponseDTO" Title="@L["Transactions"]">
+                                        <SpinnerButton OnClick="() => OnRemoveJury(jury.EducatorId , jury.UserId)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                                            <i class="fas fa-minus"></i>
+                                        </SpinnerButton>
+                                    </GridColumn>
+                                }
+                            </Grid>
+
+                        </div>
+                    </div>
+                    <ValidationMessage For="()=>_thesisDefence.Juries" />
+                </div>
+                @if (OnlyRead == false && !_thesisDefence.IsConcluded)
+                {
+                    <div class="card-footer d-flex justify-content-center">
+                        <SpinnerButton Disabled="false" Spinning="false" OnClick="()=> {_selectedJuryType = JuryType.Core; StateHasChanged(); _juryAddingModal.OpenModal();}" ButtonClass="btn-outline-danger mr-2">
+                            <i class="fas fa-edit"></i>
+                            @L["Asil Üyeleri Düzenle"]
+                        </SpinnerButton>
+
+                        <SpinnerButton Disabled="_juryLoading" Spinning="_juryLoading" OnClick="async()=>{_selectedJuryType=JuryType.Alternate; StateHasChanged(); _juryAddingModal.OpenModal();}" ButtonClass="btn-outline-warning">
+                            <i class="fas fa-edit"></i>
+                            @L["Yedek Üyeleri Düzenle"]
+                        </SpinnerButton>
+
+                        <SpinnerButton ButtonClass="btn-primary ml-2" Spinning="false" Disabled="false" OnClick="() => {_selectedJuryType = JuryType.Core; CancelEducator(); _selectedNonInstructorType= NonInstructorType.ThesisDefenceJury; _forAdvisor = false;  _juryNonEducatorAddingModal.OpenModal();}">
+                            <i class="fas fa-user-plus"></i>@L["Sistem Dışı Jüri Üyesi Ekle"]
+                        </SpinnerButton>
+                    </div>
+                }
+            </div>
+            @if (OnlyRead == false)
+            {
+                @if (!_thesisDefence.IsConcluded && _thesisDefence.Id > 0)
+                {
+                    <button @onclick="UpdateThesisDefenceFunc" class="btn btn-primary form-control mt-5 ">
+                        <span class="svg-icon svg-icon-md">
+                            <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo1/dist/../src/media/svg/icons/General/Save.svg-->
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                    <path d="M17,4 L6,4 C4.79111111,4 4,4.7 4,6 L4,18 C4,19.3 4.79111111,20 6,20 L18,20 C19.2,20 20,19.3 20,18 L20,7.20710678 C20,7.07449854 19.9473216,6.94732158 19.8535534,6.85355339 L17,4 Z M17,11 L7,11 L7,4 L17,4 L17,11 Z" fill="#000000" fill-rule="nonzero" />
+                                    <rect fill="#000000" opacity="0.3" x="12" y="4" width="3" height="5" rx="0.5" />
+                                </g>
+                            </svg><!--end::Svg Icon-->
+                            @L["Update"]
+                        </span>
+                    </button>
+                }
+                else if (_thesisDefence.Id == null)
+                {
+                    <button @onclick="async ()=>await AddThesisDefenceFunc()" class="btn btn-primary form-control mt-5 ">
+                        <span class="svg-icon svg-icon-md">
+                            <!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/keen/releases/2021-04-21-040700/theme/demo1/dist/../src/media/svg/icons/General/Save.svg-->
+                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                    <polygon points="0 0 24 0 24 24 0 24" />
+                                    <path d="M17,4 L6,4 C4.79111111,4 4,4.7 4,6 L4,18 C4,19.3 4.79111111,20 6,20 L18,20 C19.2,20 20,19.3 20,18 L20,7.20710678 C20,7.07449854 19.9473216,6.94732158 19.8535534,6.85355339 L17,4 Z M17,11 L7,11 L7,4 L17,4 L17,11 Z" fill="#000000" fill-rule="nonzero" />
+                                    <rect fill="#000000" opacity="0.3" x="12" y="4" width="3" height="5" rx="0.5" />
+                                </g>
+                            </svg><!--end::Svg Icon-->
+                            @L["Save"]
+                        </span>
+                    </button>
+                }
+            }
+        </EditForm>
+    </Body>
+
+</MyModal>
+<MyModal @ref="_juryAddingModal" ShowHeader="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        <div class="card card-custom">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="fas fa-user-tie text-danger"></i>
+                    </span>
+                    <h3 class="card-label text-danger">Kordinatör Tez Danışmanı</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <Grid Items="_coordinatorEducatorListView" class="table table-danger text-center">
+                    <GridColumn Context="educator" Sort="User.IdentityNo" TRowData="EducatorResponseDTO" Title="@L["T.R. Identity Number"]">
+                        <ChildContent>
+                            @educator.User?.IdentityNo
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="AcademicTitle.Name" TRowData="EducatorResponseDTO" Title="@L["Academic Title"]">
+                        <ChildContent>
+                            @educator.AcademicTitle?.Name
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="EducatorPrograms" Context="educator" TRowData="EducatorResponseDTO" Title="@L["Place of Education"]">
+                        <ChildContent>
+                            @(educator.EducatorPrograms?.FirstOrDefault(x => x.DutyEndDate == null)?.Program?.Hospital?.Name ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="EducatorExpertiseBranches" Context="educator" TRowData="EducatorResponseDTO" Title="@L["Expertise Branches"]">
+                        <ChildContent>
+                            @foreach (var item in educator.EducatorExpertiseBranches)
+                            {
+                                if (!string.IsNullOrEmpty(item.ExpertiseBranch?.Name))
+                                {
+
+                                    <div data-trigger="hover" data-toggle="popover" data-placement="right" data-html="true"
+                                         data-content="@L["Registration Branch Name"]:&nbsp<strong>@(item.RegistrationBranchName??"-")</strong><br/><div class='separator separator-solid'></div>
+                                 @L["Registration Number"]:&nbsp<strong>@(item.RegistrationNo??"-")</strong>">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class="label label-outline-primary label-pill label-inline mr-2 mb-2 cursor-pointer h-auto">@item.ExpertiseBranch.Name</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
+                                }
+                            }
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="User.Name" TRowData="EducatorResponseDTO" Title="@L["Educator Name"]">
+                        <ChildContent>
+                            @educator.User?.Name
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="User.Phone" TRowData="EducatorResponseDTO" Title="@L["Educator Phone"]">
+                        <ChildContent>
+                            @educator.User?.Phone
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="User.Email" TRowData="EducatorResponseDTO" Title="@L["Email"]">
+                        <ChildContent>
+                            @educator.User?.Email
+                        </ChildContent>
+                    </GridColumn>
+                    @if (OnlyRead == false)
+                    {
+                        <GridColumn class="min-w-100px align-middle" Context="educator" TRowData="EducatorResponseDTO" Title="@L["Transactions"]">
+                            @if (!IsJuryChosen(educator))
+                            {
+
+                                <SpinnerButton OnClick="() => OnAddJury(educator)" ButtonClass="btn btn-light-primary btn-icon btn-sm" Title="@L["Add"]" Spinning="false" Disabled="false">
+                                    <i class="fas fa-plus"></i>
+                                </SpinnerButton>
+                            }
+                            else
+                            {
+                                @if (_selectedJuryType.HasValue && _thesisDefence.Juries?.FirstOrDefault(x => x.EducatorId == educator.Id.Value)?.JuryType == _selectedJuryType.Value)
+                                {
+
+                                    <SpinnerButton OnClick="() => OnRemoveJury(educator?.Id, null)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                                        <i class="fas fa-minus"></i>
+                                    </SpinnerButton>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-light-warning btn-sm btn-icon" disabled title=@($"Bu Eğitici {L[_selectedJuryType == JuryType.Alternate? JuryType.Core.GetDescription():_selectedJuryType == JuryType.Core ? JuryType.Alternate.GetDescription():""]} Üyedir")>
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                }
+                            }
+                        </GridColumn>
+                    }
+                </Grid>
+            </div>
+        </div>
+        <div class="card card-custom mt-10">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="fas fa-users"></i>
+                    </span>
+                    <h3 class="card-label">Eğiticiler</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <Grid Items="_juryPaginationModel.Items" class="table table-hover table-bordered text-center" Sort="_filterJury.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                    <GridColumn Context="educator" Sort="User.IdentityNo" TRowData="EducatorResponseDTO" Title="@L["T.R. Identity Number"]">
+                        <ChildContent>
+                            @educator.User?.IdentityNo
+                        </ChildContent>
+                        <FilterTemplate Context="filter">
+                            <div class="form-group mb-0">
+                                <div class="input-icon input-icon-right">
+                                    <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                    @if (IsFiltered(filter))
+                                    {
+                                        <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                            <i class="flaticon2-cross icon- text-danger"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cursor-pointer">
+                                            <i class="flaticon2-search-1 icon-md"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="AcademicTitle.Name" TRowData="EducatorResponseDTO" Title="@L["Academic Title"]">
+                        <ChildContent>
+                            @educator.AcademicTitle?.Name
+                        </ChildContent>
+                        <FilterTemplate Context="filter">
+                            <div class="form-group mb-0">
+                                <div class="input-icon input-icon-right">
+                                    <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                    @if (IsFiltered(filter))
+                                    {
+                                        <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                            <i class="flaticon2-cross icon- text-danger"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cursor-pointer">
+                                            <i class="flaticon2-search-1 icon-md"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Sort="EducatorPrograms" Context="educator" TRowData="EducatorResponseDTO" Title="@L["Place of Education"]">
+                        <ChildContent>
+                            @(educator.EducatorPrograms?.FirstOrDefault(x => x.DutyEndDate == null)?.Program?.Hospital?.Name ?? "-")
+                        </ChildContent>
+                        <FilterTemplate Context="filter">
+                            <div class="form-group mb-0">
+                                <div class="input-icon input-icon-right">
+                                    <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                    @if (IsFiltered(filter))
+                                    {
+                                        <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                            <i class="flaticon2-cross icon- text-danger"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cursor-pointer">
+                                            <i class="flaticon2-search-1 icon-md"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Sort="EducatorExpertiseBranches" Context="educator" TRowData="EducatorResponseDTO" Title="@L["Expertise Branches"]">
+                        <ChildContent>
+                            @foreach (var item in educator.EducatorExpertiseBranches)
+                            {
+                                if (!string.IsNullOrEmpty(item.ExpertiseBranch?.Name))
+                                {
+
+                                    <div data-trigger="hover" data-toggle="popover" data-placement="right" data-html="true"
+                                         data-content="@L["Registration Branch Name"]:&nbsp<strong>@(item.RegistrationBranchName??"-")</strong><br/><div class='separator separator-solid'></div>
+                                 @L["Registration Number"]:&nbsp<strong>@(item.RegistrationNo??"-")</strong>">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class="label label-outline-primary label-pill label-inline mr-2 mb-2 cursor-pointer h-auto">@item.ExpertiseBranch.Name</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                }
+                            }
+                        </ChildContent>
+                        <FilterTemplate Context="filter">
+                            <div class="form-group mb-0">
+                                <div class="input-icon input-icon-right">
+                                    <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                    @if (IsFiltered(filter))
+                                    {
+                                        <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                            <i class="flaticon2-cross icon- text-danger"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cursor-pointer">
+                                            <i class="flaticon2-search-1 icon-md"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="User.Name" TRowData="EducatorResponseDTO" Title="@L["Educator Name"]">
+                        <ChildContent>
+                            @educator.User?.Name
+                        </ChildContent>
+                        <FilterTemplate Context="filter">
+                            <div class="form-group mb-0">
+                                <div class="input-icon input-icon-right">
+                                    <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                    @if (IsFiltered(filter))
+                                    {
+                                        <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                            <i class="flaticon2-cross icon- text-danger"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cursor-pointer">
+                                            <i class="flaticon2-search-1 icon-md"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="User.Phone" TRowData="EducatorResponseDTO" Title="@L["Educator Phone"]">
+                        <ChildContent>
+                            @educator.User?.Phone
+                        </ChildContent>
+                        <FilterTemplate Context="filter">
+                            <div class="form-group mb-0">
+                                <div class="input-icon input-icon-right">
+                                    <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                    @if (IsFiltered(filter))
+                                    {
+                                        <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                            <i class="flaticon2-cross icon- text-danger"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cursor-pointer">
+                                            <i class="flaticon2-search-1 icon-md"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </FilterTemplate>
+                    </GridColumn>
+                    <GridColumn Context="educator" Sort="User.Email" TRowData="EducatorResponseDTO" Title="@L["Email"]">
+                        <ChildContent>
+                            @educator.User?.Email
+                        </ChildContent>
+                        <FilterTemplate Context="filter">
+                            <div class="form-group mb-0">
+                                <div class="input-icon input-icon-right">
+                                    <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                    @if (IsFiltered(filter))
+                                    {
+                                        <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                            <i class="flaticon2-cross icon- text-danger"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="cursor-pointer">
+                                            <i class="flaticon2-search-1 icon-md"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </FilterTemplate>
+                    </GridColumn>
+                    @if (OnlyRead == false)
+                    {
+                        <GridColumn class="min-w-100px align-middle" Context="educator" TRowData="EducatorResponseDTO" Title="@L["Transactions"]">
+                            @if (!IsJuryChosen(educator))
+                            {
+
+                                <SpinnerButton OnClick="() => OnAddJury(educator)" ButtonClass="btn btn-light-primary btn-icon btn-sm" Title="@L["Add"]" Spinning="false" Disabled="false">
+                                    <i class="fas fa-plus"></i>
+                                </SpinnerButton>
+                            }
+                            else
+                            {
+                                @if (_selectedJuryType.HasValue && _thesisDefence.Juries?.FirstOrDefault(x => x.EducatorId == educator.Id.Value)?.JuryType == _selectedJuryType.Value)
+                                {
+
+                                    <SpinnerButton OnClick="() => OnRemoveJury(educator?.Id, null)" ButtonClass="btn btn-light-danger btn-icon btn-sm" Title="@L["Remove"]" Spinning="false" Disabled="false">
+                                        <i class="fas fa-minus"></i>
+                                    </SpinnerButton>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-light-warning btn-sm btn-icon" disabled title=@($"Bu Eğitici {L[_selectedJuryType == JuryType.Alternate? JuryType.Core.GetDescription():_selectedJuryType == JuryType.Core ? JuryType.Alternate.GetDescription():""]} Üyedir")>
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                }
+                            }
+
+                        </GridColumn>
+                    }
+                </Grid>
+                <Pagination Action="PaginationHandlerJury" Count="_juryPaginationModel.TotalItemCount" Page="_juryPaginationModel.Page"
+                            DefaultPageSize="5" Loading="_juryLoading">
+                </Pagination>
+            </div>
+        </div>
+    </Body>
+</MyModal>
+
+<MyModal @ref="_juryNonEducatorAddingModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <EditForm Model="_identityNo" OnSubmit="SearchByIdentityNo">
+            <div class="form-group">
+                <label>@L["Identity Number"]</label>
+                <div class="input-group">
+                    <InputMask @ref="_inputMask" FocusOnFirstRender="true" Value="@_identityNo" ValueExpression="()=>_identityNo" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(IdentyNoChanged)" type="text" class="@GetIdentiyClass()" data-mask="99999999999" disabled="@(_searching || _user is not null)" />
+                    @if (_user is null)
+                    {
+                        <div class="input-group-append">
+                            <SpinnerButton ButtonClass="btn btn-primary btn btn-primary" Spinning="_searching" Disabled="_searching" Type="submit">
+                                @L["Search"]
+                            </SpinnerButton>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="input-group-append">
+                            <button class="btn btn-primary btn btn-secondary" @onclick="CancelEducator">
+                                @L["Cancel"]
+                            </button>
+                        </div>
+                    }
+                </div>
+                @if (!string.IsNullOrEmpty(_tcValidatorMessage))
+                {
+                    <div class="validation-message">@_tcValidatorMessage</div>
+                }
+            </div>
+        </EditForm>
+        @if (_user is not null && !_searching)
+        {
+            <EditForm EditContext="_ec">
+                <div class="form-group">
+                    <label>@L["Name Surname"]</label>
+                    <input disabled class="form-control" value="@(_user.Name??"-")" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Mobile Phone"]</label>
+
+                    <InputMask @bind-Value="_user.Phone" @bind-Value:after="GetPhoneValidatorMessage" class="form-control" data-mask="(999) 999 99 99" placeholder="(5__) ___ __ __" />
+                    @if (!string.IsNullOrEmpty(_phoneValidatorMessage))
+                    {
+                        <div class="validation-message">@_phoneValidatorMessage</div>
+                    }
+                </div>
+                <div class="form-group">
+                    <label>@L["Email"]</label>
+                    <InputText class="form-control" @bind-Value="_user.Email" @bind-Value:after="GetEmailValidatorMessage" />
+                    @if (!string.IsNullOrEmpty(_emailValidatorMessage))
+                    {
+                        <div class="validation-message">@_emailValidatorMessage</div>
+                    }
+                </div>
+            </EditForm>
+
+            <div class="form-group">
+                <label><b>@L["Core"] / @L["Alternate"]</b></label>
+                <div></div>
+                <div class="radio-inline">
+                    <InputRadioGroup @bind-Value="_selectedJuryType">
+                        <label class="radio radio-success">
+                            <InputRadio Value=JuryType.Core></InputRadio>
+                            <span></span>@L["Core"]
+                        </label>
+                        <label class="radio radio-danger">
+                            <InputRadio Value=JuryType.Alternate></InputRadio>
+                            <span></span>@L["Alternate"]
+                        </label>
+                    </InputRadioGroup>
+                </div>
+            </div>
+
+            <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="_adding" Disabled="_adding" OnClick="async()=>await AddNonEducatorForJury()">
+                <i class="fas fa-plus"></i>@L["Add"]
+            </SpinnerButton>
+        }
+    </Body>
+</MyModal>
+
+<MyModal @ref="_educatorListModal" ShowHeader="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        @if (_advisorThesis.ChangeCoordinator == true)
+        {
+            <div class="separator separator-dashed separator-border-2 separator-success"></div>
+            <p class="text-muted mt-3">Yeni Koordinatör Danışmanı Seçiniz</p>
+        }
+        <Grid Items="_educatorPaginationModel.Items" class="table table-hover table-bordered text-center" Sort="_filterEducator.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChangeEducator(sort)" RowClass='(row, index) => ""'>
+            <GridColumn Context="educator" Sort="IdentityNo" TRowData="AdvisorPaginateResponseDTO" Title="@L["T.R. Identity Number"]">
+                <ChildContent>
+                    @educator.IdentityNo
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                            @if (IsFilteredEducator(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Context="educator" Sort="AcademicTitle" TRowData="AdvisorPaginateResponseDTO" Title="@L["Academic Title"]">
+                <ChildContent>
+                    @educator.AcademicTitle
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                            @if (IsFilteredEducator(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Sort="DutyPlaceHospital" Context="educator" TRowData="AdvisorPaginateResponseDTO" Title="@L["Place of Education"]">
+                <ChildContent>
+                    <span class="@((educator.DutyPlaceHospitalId== SelectedStudent.OriginalProgram?.HospitalId)?" text-success":"")">
+                        @(educator.DutyPlaceHospital ?? "-")
+                    </span>
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                            @if (IsFilteredEducator(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Sort="ExpertiseBranchName" Context="educator" TRowData="AdvisorPaginateResponseDTO" Title="@L["Expertise Branches"]">
+                <ChildContent>
+                    @foreach (var item in educator.ExpertiseBranches)
+                    {
+                        if (!string.IsNullOrEmpty(item.ExpertiseBranch?.Name))
+                        {
+                            <div data-trigger="hover" data-toggle="popover" data-placement="right" title="@L["Registration Branch Name"]" data-html="true" data-content="<span class='label label-inline font-weight-bold label-light-primary'>@(item.ExpertiseBranch.Name??"-")</span>">
+                                <span class="label @((SelectedStudent.OriginalProgram.ExpertiseBranchId == item.ExpertiseBranchId)?" label-success":"label-outline-primary") label-pill label-inline mr-2 mb-2 cursor-pointer h-auto">@item.ExpertiseBranch.Name</span>
+                            </div>
+                        }
+                    }
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                            @if (IsFilteredEducator(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Context="educator" Sort="Name" TRowData="AdvisorPaginateResponseDTO" Title="@L["Educator Name"]">
+                <ChildContent>
+                    @educator?.Name
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                            @if (IsFilteredEducator(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn Context="educator" Sort="Phone" TRowData="AdvisorPaginateResponseDTO" Title="@L["Phone"]">
+                <ChildContent>
+                    @educator?.Phone
+                </ChildContent>
+                <FilterTemplate Context="filter">
+                    <div class="form-group mb-0">
+                        <div class="input-icon input-icon-right">
+                            <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilterEducator(args, filter)' autocomplete="false">
+                            @if (IsFilteredEducator(filter))
+                            {
+                                <span class="cursor-pointer" @onclick='() => OnResetFilterEducator(filter)'>
+                                    <i class="flaticon2-cross icon- text-danger"></i>
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="cursor-pointer">
+                                    <i class="flaticon2-search-1 icon-md"></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </FilterTemplate>
+            </GridColumn>
+            <GridColumn class="min-w-100px align-middle" Context="educator" TRowData="AdvisorPaginateResponseDTO" Title="@L["Transactions"]">
+                @if (!IsEducatorChosen(educator))
+                {
+                    @if (OnlyRead == false)
+                    {
+                        <SpinnerButton OnClick="() => OnAddAdvisorFromEducatorList(educator)" ButtonClass="btn btn-light-primary btn-icon btn-sm" Title="@L["Add"]" Spinning="false" Disabled="false">
+                            <i class="fas fa-plus"></i>
+                        </SpinnerButton>
+                    }
+                }
+                else
+                {
+                    <span class="d-inline-block" data-toggle="tooltip">
+                        <button class="btn btn-light-warning btn-sm btn-icon" style="pointer-events: none;" type="button" disabled><i class="fas fa-check-circle"></i></button>
+                    </span>
+                }
+            </GridColumn>
+        </Grid>
+
+        <Pagination Action="PaginationHandlerEducator" Count="_educatorPaginationModel.TotalItemCount" Page="_educatorPaginationModel.Page"
+                    DefaultPageSize="5" Loading="_educatorLoading">
+        </Pagination>
+
+
+        <div class="separator separator-dashed separator-border-2 separator-success"></div>
+        <p class="text-muted mt-3">*Yeşil renk ile gösterilen kısımlar, eğiticinin o alanda ilgili öğrenciyle ortak olduğunu ifade etmektedir.</p>
+    </Body>
+
+</MyModal>
+
+<MyModal @ref="_advisorThesisDetailModal" ShowFooter="false" ShowHeader="false" Size="MyModal.ModalSize.Normal">
+    <Body>
+        <EditForm EditContext="_ecForAdvisorThesis">
+            <FluentValidator TValidator="AdvisorThesisValidator" />
+            @if (_advisorThesis.ChangeCoordinator == true)
+            {
+                <div class="form-group">
+                    <label>@L["Delete Reason of Current Coordinator Advisor"]</label>
+                    <InputSelect Class="form-control" @bind-Value="@_advisorThesis.DeleteReason">
+                        <option value="" selected>@L["Select"]</option>
+                        @foreach (EducatorDeleteReasonType deleteReasonType in Enum.GetValues(typeof(EducatorDeleteReasonType)))
+                        {
+                            <option value="@deleteReasonType">@L[deleteReasonType.Description()] </option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="()=>_advisorThesis.DeleteReason" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Delete Reason Explanation"]</label>
+                    <InputText type="text" class="form-control" @bind-Value="_advisorThesis.DeleteExplanation" />
+                    <ValidationMessage For="()=>_advisorThesis.DeleteExplanation" />
+
+                </div>
+            }
+            @if (_advisorThesis.Type != AdvisorType.NotEducator)
+            {
+                <div class="form-group">
+                    <label>@L["Eğiticinin Tezde Yararlanılacak Uzmanlık Dalı"]</label>
+                    <InputSelect disabled="@(_advisorThesis.IsCoordinator == true)" @bind-Value="_advisorThesis.ExpertiseBranchId" class="form-control">
+                        <option selected>@L["Please Select"]...</option>
+                        @foreach (var expertiseBranch in _expertiseBranches)
+                        {
+                            <option value="@expertiseBranch?.Id">@expertiseBranch?.Name </option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="()=>_advisorThesis.ExpertiseBranchId" />
+                </div>
+            }
+            <div class="form-group">
+                <label>@L["Description"]</label>
+                <InputTextArea class="form-control" @bind-Value="_advisorThesis.Description" />
+            </div>
+            <div class="form-group">
+                <label>@L["Tez Danışmanı Atanma Tarihi"]</label>
+                <InputDate @ref="_advisorAssignDatePicker" class="form-control" ParsingErrorMessage="Lütfen geçerli bir tarih giriniz." @bind-Value="_advisorThesis.AdvisorAssignDate" />
+                <ValidationMessage For="@(() => _advisorThesis.AdvisorAssignDate)" />
+            </div>
+        </EditForm>
+        @if (OnlyRead == false)
+        {
+            @if (_advisorThesis.Id > 0)
+            {
+                <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="false" Disabled="false" OnClick="UpdateAdvisorFunc">
+                    <i class="fas fa-save"></i>
+                    @L["Update"]
+                </SpinnerButton>
+                @if (_advisorThesis.IsCoordinator != true && _advisorThesis.Type != AdvisorType.NotEducator && _thesisForAdd.AdvisorTheses.Any(x => x.IsCoordinator == true) == false)
+                {
+                    <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="false" Disabled="false" OnClick="()=>{_advisorThesis.MakeCoordinator = true; UpdateAdvisorFunc(); }">
+                        <i class="fas fa-save"></i>
+                        @L["Danışmanı Koordinatör Yap"]
+                    </SpinnerButton>
+                }
+            }
+            else
+            {
+                <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="_adding" Disabled="_adding" OnClick="async ()=>await AddAdvisorFromEducatorList()">
+                    <i class="fas fa-plus"></i>@L["Add"]
+                </SpinnerButton>
+            }
+        }
+    </Body>
+</MyModal>
+
+<MyModal @ref="_thesisFileAddingModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <div class="form-group">
+            <Dropzone @ref="dropzoneThesisFile" EntityId="(long)_thesisForAdd.Id" DocumentType="@Shared.Types.DocumentTypes.Thesis" />
+        </div>
+        @if (OnlyRead == false)
+        {
+            <SpinnerButton ButtonClass="btn btn-primary form-control" Spinning="false" Disabled="false" OnClick="@(async () => await AddThesisFileFunc())">
+                <i class="fas fa-plus"></i>@L["Add"]
+            </SpinnerButton>
+        }
+    </Body>
+
+</MyModal>
+
+<MyModal @ref="_fileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+        <FileItem Documents="responseDocuments" Loaded="true"></FileItem>
+    </Body>
+</MyModal>

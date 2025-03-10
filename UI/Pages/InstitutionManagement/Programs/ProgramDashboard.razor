@@ -1,0 +1,18 @@
+﻿@page "/institution-management/programs"
+@using Shared.Types
+@using UI.Pages.InstitutionManagement.Programs
+@using UI.SharedComponents.Components.TabbedCard
+<AppContent Title="" BreadCrumbLinks="_links">
+    <Toolbar></Toolbar>
+    <Content>
+        <TabControl>
+            <TabPage Text="@L["Programs You Are Authorized to See"]">
+                <Programs />
+            </TabPage>
+            <TabPage Text="@L["All Programs"]">
+                <AllPrograms />
+            </TabPage>
+        </TabControl>
+    </Content>
+</AppContent>
+

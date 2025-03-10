@@ -1,0 +1,26 @@
+﻿<div class="image-input image-input-outline" id="@_uploaderId">
+
+    <div class="image-input-wrapper" style="width:150px; height:150px; background-image: url(@(imagePath ?? "assets/media/misc/no-image-uets.png")); background-position: center; background-repeat: no-repeat; background-size: cover;"></div>
+
+    @if (EditMode)
+    {
+        <label class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="change" data-toggle="tooltip" title="" data-original-title="@L["Change Image"]">
+            <i class="fa fa-pen icon-sm text-muted"></i>
+            @*<input @ref="inputReference" @onchange="async () => await OpenFileAsync()" type="file" name="profile_avatar" accept=".png, .jpg, .jpeg" />*@
+            <InputFile OnChange="OnInputFileChange" name="profile_avatar" accept=".png, .jpg, .jpeg"/>
+            <input type="hidden" name="profile_avatar_remove"/>
+        </label>
+
+        if (!string.IsNullOrEmpty(imagePath))
+        {
+            <span @onclick="OnResetFile" class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow" data-action="remove" data-toggle="tooltip" title="Cancel avatar">
+                <i class="ki ki-bold-close icon-xs text-muted"></i>
+            </span>
+        }
+    }
+</div>
+@if (EditMode)
+{
+    <span class="form-text font-size-xs text-muted">@(L["Allowed file types:"] + " png, jpg, jpeg.")</span>
+    <span class="form-text font-size-xs text-muted">@(L["Max. 1 MB"])</span>
+}

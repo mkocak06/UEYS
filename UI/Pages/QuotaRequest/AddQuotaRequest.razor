@@ -1,0 +1,67 @@
+﻿@page "/quota-request/add-quota-request"
+@using Shared.Extensions
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+
+<AppContent  IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="QuotaRequestValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["Year"]</label>
+                                    <InputNumber class="form-control" @bind-Value="_quotaRequest.Year" />
+                                    <ValidationMessage For="() => _quotaRequest.Year"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["Period"]</label>
+                                    <InputSelect @bind-Value="_quotaRequest.Period" class="form-control">
+                                        <option value="" selected>@L["Select"]</option>
+                                        @foreach (YearPeriodType yearPeriodType in Enum.GetValues(typeof(YearPeriodType)))
+                                            {
+                                            <option value="@yearPeriodType">@L[yearPeriodType.GetDescription()] </option>
+                                            }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => _quotaRequest.Period"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["Type"]</label>
+                                    <InputSelect @bind-Value="_quotaRequest.Type" class="form-control">
+                                        <option value="" selected>@L["Select"]</option>
+                                        @foreach (PlacementExamType placementExamType in Enum.GetValues(typeof(PlacementExamType)))
+                                        {
+                                            <option value="@placementExamType">@L[placementExamType.GetDescription()] </option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => _quotaRequest.Type"></ValidationMessage>
+                                </div>
+                                <div class="form-group">
+                                    <label>@L["Deadline for Institutions to Submit Requests"]</label>
+                                    <InputDate class="form-control" @bind-Value="_quotaRequest.ApplicationEndDate" TValue="DateTime?" />
+                                    <ValidationMessage For="()=>_quotaRequest.ApplicationEndDate" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>
+
+
+

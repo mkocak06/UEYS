@@ -1,0 +1,154 @@
+﻿@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/affiliations"
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="true" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AffiliationAdd}">
+                <a href="/institution-management/affiliations/add-Affiliation" type="button" class="btn btn-outline-primary mr-3"><i class="fas fa-plus"></i>@L["add_new", L["Affiliation"]]</a>
+            </PermissionWrapper>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AffiliationExcelExport}">
+                <div type="button" class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left" : "btn btn-outline-success mr-3") @onclick="DownloadExcelFile">
+                    <i class=@(_loadingFile ? "" : "fas fa-download")></i>@L["Export"]
+                </div>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_Affiliations != null)
+                {
+                    <Grid IsFilter="false" Items="_Affiliations" class="table table-hover table-bordered " Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)" RowClass='(row, index) => ""'>
+                        <GridColumn Sort="Faculty.University.Name" TRowData="AffiliationResponseDTO" Title="@L["Affiliation Ministry / University"]">
+                            <ChildContent>
+                                @context.Faculty?.University?.Name
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Faculty.Name" TRowData="AffiliationResponseDTO" Title="@L["Affiliation Educational Institution / Faculty"]">
+                            <ChildContent>
+                                @context.Faculty?.Name
+                            </ChildContent>
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Hospital.Name" TRowData="AffiliationResponseDTO" Title="@L["Institution of Education"]">
+                            <ChildContent>
+                                @context.Hospital?.Name
+                            </ChildContent>
+
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="ProtocolNo" TRowData="AffiliationResponseDTO" Title="@L["Protocol No"]">
+                            <ChildContent>
+                                @context.ProtocolNo
+                            </ChildContent>
+
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn TRowData="AffiliationResponseDTO" Title="@L["Protocol Date"]">
+                            <ChildContent>
+                                @context.ProtocolDate?.ToString("dd.MM.yyyy")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="AffiliationResponseDTO" Title="@L["Protocol End Date"]">
+                            <ChildContent>
+                                @context.ProtocolEndDate?.ToString("dd.MM.yyyy")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn class="min-w-100px align-middle" TRowData="AffiliationResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AffiliationGetById}">
+                                <a href="/institution-management/affiliations/@context.Id" class="btn btn-light-success btn-icon btn-sm"><i class="far fa-edit"></i></a>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AffiliationDelete}">
+                                <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                            </PermissionWrapper>
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="@_paginationModel.TotalItemCount" Page="@_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

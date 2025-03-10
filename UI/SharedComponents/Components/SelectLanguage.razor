@@ -1,0 +1,75 @@
+﻿@using  System.Globalization
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _nav
+
+<div class="dropdown mr-1 @(_isOpened ? "show" : "")">
+    <!--begin::Toggle-->
+    <div class="topbar-item">
+        <div @onclick="ToggleDropDown" @onfocusout="() => { _isOpened = false; StateHasChanged(); }" class="btn btn-icon btn-clean btn-dropdown btn-lg">
+            <img class="h-20px w-20px rounded-sm" src="/assets/media/svg/flags/@(Culture.TwoLetterISOLanguageName).svg" alt="">
+        </div>
+    </div>
+    <!--end::Toggle-->
+    <!--begin::Dropdown-->
+    <div class="dropdown-menu p-0 m-0 dropdown-menu-anim-up dropdown-menu-sm dropdown-menu-right @(_isOpened ? "show" : "")">
+        <!--begin::Nav-->
+        <ul class="navi navi-hover py-4">
+            @foreach (var language in _supportedLanguages)
+            {
+                <!--begin::Item-->
+                <li class="navi-item @(Culture.TwoLetterISOLanguageName == language.TwoLetterISOLanguageName ? "active" : "")">
+                    <a @onclick="() => { SetCulture(language); }" class="navi-link cursor-pointer">
+                        <span class="symbol symbol-20 mr-3">
+                            <img src="/assets/media/svg/flags/@(language.TwoLetterISOLanguageName).svg" alt="">
+                        </span>
+                        <span class="navi-text">@(_langs.GetValueOrDefault(language.Name))</span>
+                    </a>
+                </li>
+            }
+        </ul>
+        <!--end::Nav-->
+    </div>
+    <!--end::Dropdown-->
+</div>
+
+@code {
+
+    private bool _isOpened;
+    
+    CultureInfo[] _supportedLanguages = new[]
+    {
+        new CultureInfo("en-US",false),
+        new CultureInfo("tr-TR", false)
+    };
+    Dictionary<string, string> _langs = new()
+    {
+        { "en-US", "English" },
+        { "tr-TR", "Turkish" }
+    };
+
+    CultureInfo Culture
+    {
+        get => CultureInfo.CurrentCulture;
+        set
+        {
+            if (CultureInfo.CurrentCulture.Name != value.Name)
+            {
+                var js = (IJSInProcessRuntime)_jsRuntime;
+                js.InvokeVoid("appCulture.set", value.Name);
+
+                _nav.NavigateTo(_nav.Uri, forceLoad: true);
+            }
+        }
+    }
+
+    private void SetCulture(CultureInfo cultureInfo)
+    {
+        Culture = cultureInfo;
+    }
+
+    private void ToggleDropDown()
+    {
+        _isOpened = !_isOpened;
+        StateHasChanged();
+    }
+}

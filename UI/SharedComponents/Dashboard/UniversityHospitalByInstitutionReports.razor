@@ -1,0 +1,133 @@
+﻿@using Shared.FilterModels.Base;
+@using Shared.ResponseModels.StatisticModels;
+@using Shared.ResponseModels;
+
+@if (!_reportLoading)
+{
+
+    <div class="card card-custom card-stretch gutter-b bg-diagonal">
+        <div class="card-header zindex-5">
+            <div class="card-title">
+                @L["Üst Kuruma Bağlı Üniversite/Eğitim Verilen Yer Sayıları"]
+            </div>
+        </div>
+        <div class="card-body">
+            <Grid Items="_reports" class="table table-hover table-bordered"  RowClass='(row, index) => row.ParentInstitutionName=="Grand Totals"?"font-weight-bolder":""'>
+                <GridColumn TRowData="CountsByParentInstitutionModel" Expression="c => L[c.ParentInstitutionName]" Title="@L["Parent Institution"]">
+                </GridColumn>
+                <GridColumn TRowData="CountsByParentInstitutionModel" Expression="c => c.UniversityCount" Title="@L["{0} Count", L["Ministry / University"]]">
+                </GridColumn>
+                <GridColumn TRowData="CountsByParentInstitutionModel" Expression="c => c.HospitalCount" Title="@L["{0} Count", L["Place of Education"]]">
+                </GridColumn>
+            </Grid>
+        </div>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}
+
+
+@* <MyModal @ref=_universityModal ShowFooter=false ShowHeader=false Size="MyModal.ModalSize.Normal">
+    <Body>
+        @if (_universities != null)
+        {
+            <Grid IsFilter="false" Items="_universities" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                <GridColumn Sort="Name" TRowData="UniversityResponseDTO" Expression="c => c.Name" Title="@L["_name", L["Ministry / University"]]">
+                </GridColumn>
+            </Grid>
+            <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                        DefaultPageSize="10" Loading="_loading">
+            </Pagination>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    </Body>
+</MyModal> *@
+@code {
+    [Inject] IInstitutionService InstitutionService { get; set; }
+    [Inject] ISweetAlert SweetAlert { get; set; }
+    private List<CountsByParentInstitutionModel> _reports;
+    private PaginationModel<UniversityResponseDTO> _paginationModel;
+    private List<UniversityResponseDTO> _universities;
+    private MyModal _universityModal;
+    private FilterDTO _filter;
+    private bool _loading = false;
+    private bool _reportLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        GetUniversityReports();
+    }
+
+    private async void GetUniversityReports()
+    {
+        _reportLoading = true;
+        StateHasChanged();
+        try
+        {
+            var response = await InstitutionService.GetUniversityHospitalCountsByParentInstitution();
+            if (response.Result && response.Item != null)
+            {
+                _reports = response.Item;
+                _reports.Add(new CountsByParentInstitutionModel() { ParentInstitutionName = "Grand Totals", HospitalCount = _reports.Select(x => x.HospitalCount).Sum(), UniversityCount = _reports.Select(x => x.UniversityCount).Sum() });
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            SweetAlert.ErrorAlert();
+        }
+        _reportLoading = false;
+        StateHasChanged();
+    }
+    // private async void OnRowClicked(CountsByParentInstitutionModel report)
+    // {
+    //     _filter = FilterHelper.CreateFilter(1, 10).Filter("IsDeleted", "eq", false, "and").Filter("InstitutionId", "eq", report.ParentInstitutionId,"and").Sort("Name", Shared.Types.SortType.ASC);
+
+    //     if (report.Key.Contains("YÖK/"))
+    //     {
+    //         _filter.Filter("IsPrivate", "eq", report.IsPrivate, "and");
+    //     }
+    //     await GetUniversities();
+    // }
+
+    // private async Task GetUniversities()
+    // {
+    //     _loading = true;
+    //     StateHasChanged();
+    //     try
+    //     {
+    //         _paginationModel = await UniversityService.GetPaginateList(_filter);
+    //         if (_paginationModel.Items != null)
+    //         {
+    //             _universities = _paginationModel.Items;
+    //             StateHasChanged();
+    //             _universityModal.OpenModal();
+    //         }
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Console.WriteLine(e.ToString);
+    //     }
+    //     finally
+    //     {
+    //         _loading = false;
+    //         StateHasChanged();
+    //     }
+    // }
+    // private async Task PaginationHandler(PaginationInfo val)
+    // {
+    //     var (item1, item2) = (val.Page, val.PageSize);
+
+    //     _filter.page = item1;
+    //     _filter.pageSize = item2;
+
+    //     await GetUniversities();
+    // }
+}

@@ -1,0 +1,131 @@
+﻿@using Shared.FilterModels.Base;
+@using Shared.ResponseModels.StatisticModels;
+@using Shared.ResponseModels;
+@using Shared.Types;
+@using Radzen;
+@using Radzen.Blazor;
+
+@if (!_loading)
+{
+    <div class="card card-custom card-stretch gutter-b bg-diagonal">
+        <div class="card-header zindex-5">
+            <div class="card-title">
+                @L["_Information", L["Affiliation"]]
+            </div>
+        </div>
+        <div class="card-body">
+            <Grid Items="_total" class="table table-hover table-bordered">
+                <GridColumn TRowData="TotalResponseDTO" Expression="c => c.TotalUniversityCount" Title="@L["Total University/Ministry Count"]">
+                </GridColumn>
+                <GridColumn TRowData="TotalResponseDTO" Expression="c => c.TotalHospitalCount" Title="@L["Total Number of Education Places"]">
+                </GridColumn>
+            </Grid>
+            <RadzenDataGrid @ref="grid" EmptyText="@L["There is no record belong to this field"]" AllowColumnResize="true" TItem="UniversityResponseDTO" ColumnWidth="100px" AllowPaging="true" PageSize="4" Data="_paginationModel.Items" ExpandMode="DataGridExpandMode.Single" AllowSorting="true">
+                <Columns>
+                    <RadzenDataGridColumn TItem="UniversityResponseDTO" Property="Name" Title="@L["Affiliated Universities"]"></RadzenDataGridColumn>
+                    <RadzenDataGridColumn TextAlign="TextAlign.Center" TItem="UniversityResponseDTO" Title="@L["Eğiitm Verilen Yer Sayısı"]">
+                        <Template Context="uni">
+                            @uni.Faculties.SelectMany(x => x.Affiliations).Select(x => x.Hospital).Count()
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                </Columns>
+                <Template Context="universityContext">
+                    <RadzenTabs>
+                        <Tabs>
+                            <RadzenTabsItem Text="@L["Affiliated Faculties"]">
+                                <RadzenDataGrid @ref="gridAffiliation" EmptyText="@L["There is no record belong to this field"]" Data="@universityContext.Faculties.ToList()" TItem="FacultyResponseDTO">
+                                    <Columns>
+                                        <RadzenDataGridColumn TItem="FacultyResponseDTO" Property="Name" Title="@L["_name", L["Faculty"]]"></RadzenDataGridColumn>
+                                    </Columns>
+                                    <Template Context="facultyContext">
+                                        <RadzenTabs>
+                                            <Tabs>
+                                                <RadzenTabsItem Text="@L["Affiliated Place of Educations"]">
+                                                    <RadzenDataGrid @ref="gridHospital" EmptyText="@L["There is no record belong to this field"]" Data="@facultyContext.Affiliations.Select(x=>x.Hospital).ToList()" TItem="HospitalResponseDTO">
+                                                        <Columns>
+                                                            <RadzenDataGridColumn TItem="HospitalResponseDTO" Property="Name" Title="@L["Place of Education"]"></RadzenDataGridColumn>
+                                                        </Columns>
+                                                    </RadzenDataGrid>
+                                                </RadzenTabsItem>
+                                            </Tabs>
+                                        </RadzenTabs>
+                                    </Template>
+                                </RadzenDataGrid>
+                            </RadzenTabsItem>
+                        </Tabs>
+                    </RadzenTabs>
+                </Template>
+
+            </RadzenDataGrid>
+            @*  <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+        DefaultPageSize="999" Loading="_loading">
+        </Pagination> *@
+        </div>
+    </div>
+}
+else
+{
+    <ChartLoading />
+}
+
+@code {
+    [Parameter] public List<FilterDTO> Filters { get; set; }
+    [Inject] IUniversityService UniversityService { get; set; }
+    private List<ReportResponseDTO> _reports;
+    private List<TotalResponseDTO> _total;
+    private PaginationModel<UniversityResponseDTO> _paginationModel;
+    private FilterDTO _filter;
+    private bool _loading = false;
+    RadzenDataGrid<UniversityResponseDTO> grid = new();
+    RadzenDataGrid<FacultyResponseDTO> gridAffiliation = new();
+    RadzenDataGrid<HospitalResponseDTO> gridHospital = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _filter = FilterHelper.CreateFilter(1, 999).Filter("IsDeleted", "eq", false, "and").Sort("Name", Shared.Types.SortType.ASC);
+        await GetAffiliations();
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task OnSortChange(Sort sort)
+    {
+        _filter.Sort = new[] { sort };
+        await GetAffiliations();
+    }
+
+    private async Task GetAffiliations()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            _paginationModel = await UniversityService.GetAffiliationPaginateList(_filter);
+            _total = new List<TotalResponseDTO>() { new() { TotalHospitalCount = _paginationModel.Items.SelectMany(x => x.Faculties.SelectMany(x => x.Affiliations)).Count(), TotalUniversityCount = (int)_paginationModel.TotalItemCount } };
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private class TotalResponseDTO
+    {
+        public int TotalUniversityCount { get; set; }
+        public int TotalHospitalCount { get; set; }
+    }
+
+    // private async Task PaginationHandler(PaginationInfo val)
+    // {
+    //     var (item1, item2) = (val.Page, val.PageSize);
+
+    //     _filter.page = item1;
+    //     _filter.pageSize = item2;
+
+    //     await GetAffiliations();
+    // }
+}

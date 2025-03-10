@@ -1,0 +1,31 @@
+﻿@inject IJSRuntime JSRuntime
+@code {
+    [Parameter]
+    public Func<ElementReference> ElementReferenceFunc { get; set; }
+    [Parameter]
+    public Func<InputText> InputTextFunc { get; set; }
+    [Parameter]
+    public Func<InputMask> InputMaskFunc { get; set; }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (ElementReferenceFunc is not null)
+            {
+                var inputElement = ElementReferenceFunc();
+                await inputElement.FocusAsync();
+            }
+            else if (InputTextFunc is not null)
+            {
+                var inputTextElement = InputTextFunc();
+                if (inputTextElement is not null && inputTextElement.Element.HasValue)
+                    await inputTextElement.Element.Value.FocusAsync();
+            }else if (InputMaskFunc is not null)
+            {
+                var inputTextElement = InputMaskFunc();
+                await inputTextElement.Focus();
+            }
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

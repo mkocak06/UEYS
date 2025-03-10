@@ -1,0 +1,92 @@
+﻿@using Shared.ResponseModels
+<MyModal @ref="_programViewerModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        <div>
+            <ul class="nav nav-pills" id="myTab1" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab-1" data-toggle="tab" href="#home-1">
+                        <span class="nav-icon">
+                            <i class="flaticon2-chat-1"></i>
+                        </span>
+                        <span @onclick="()=>GoToPage()" class=" nav-text">@L["Program Info"]</span>
+                    </a>
+                </li>
+            </ul>
+            @if (Program is not null)
+            {
+                <div class="tab-content mt-5" id="myTabContent1">
+                    <div class="tab-pane fade show active" id="home-1" role="tabpanel" aria-labelledby="home-tab-1">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="p-0 w-250px"></th>
+                                    <th class="p-0"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Province"]</td>
+                                    <td>@(Program.Hospital?.Province?.Name ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Educational Institution / Faculty"]</td>
+                                    <td>@(Program.Faculty?.University?.Name ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Education Field"]</td>
+                                    <td>@(Program.ExpertiseBranch?.Profession?.Name ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Institution of Education"]</td>
+                                    <td>@(Program.Hospital?.Name ?? "-")</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-bolder">@L["Specialization Training Program"]</td>
+                                    <td>@(Program.ExpertiseBranch?.Name ?? "-")</td>
+                                </tr>
+                                @* <tr>
+                            <td class="font-weight-bolder">@L["Authorization End Date"]</td>
+                            <td>@(Program.AuthorizationDetails?.FirstOrDefault()?.AuthorizationEndDate?.ToString("dd.MM.yyyy")??"-")</td>
+                            </tr>
+                            <tr>
+                            <td class="font-weight-bolder">@L["Current Authorization Category"]</td>
+                            <td>@(Program.AuthorizationDetails?.FirstOrDefault()?.AuthorizationCategory?.Name??"-")</td>
+                            </tr>*@
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                @L["No data to display"]
+            }
+        </div>
+    </Body>
+</MyModal>
+
+@code {
+    [Inject]
+    NavigationManager NavigationManager { get; set; }
+
+    [Parameter]
+    public ProgramResponseDTO Program { get; set; }
+
+    private MyModal _programViewerModal;
+
+
+    public void OpenModal()
+    {
+        _programViewerModal.OpenModal();
+    }
+
+    public void CloseModal()
+    {
+        _programViewerModal.CloseModal();
+    }
+    public void GoToPage()
+    {
+        CloseModal();
+        NavigationManager.NavigateTo($"/institution-management/programs/{Program.Id}");
+    }
+}

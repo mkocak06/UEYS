@@ -1,0 +1,63 @@
+﻿@page "/quota-request/active-requests"
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@using Shared.Extensions
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.QuotaRequestAdd}">
+                <a href="/quota-request/add-quota-request" type="button" class="btn btn-outline-primary mr-3"><i class="fas fa-plus"></i>@L["add_new", L["Quota Request"]]</a>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                @if (_quotaRequests != null)
+                {
+                    <Grid IsFilter="false" Items="_quotaRequests" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="sort => OnSortChange(sort)"
+                          class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+                        <GridColumn Sort="Type" TRowData="QuotaRequestResponseDTO" Expression="c => c.Type" Title="@L["Type"]">
+                            <ChildContent>
+                                @L[context.Type?.GetDescription()]
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="Year" TRowData="QuotaRequestResponseDTO" Expression="c => c.Year" Title="@L["Year"]">
+                            <ChildContent>
+                                @context.Year
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="Period" TRowData="QuotaRequestResponseDTO" Title="@L["Period"]">
+                            <ChildContent>
+                                @(L[context.Period?.GetDescription()])
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="Period" TRowData="QuotaRequestResponseDTO" Title="@L["Deadline for Institutions to Submit Requests"]">
+                            <ChildContent>
+                                @context.ApplicationEndDate?.ToShortDateString()
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn class="max-w-50px align-middle" TRowData="QuotaRequestResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.QuotaRequestGetById}">
+                                <a href="/quota-request/active-request/@context.Id" class="btn btn-light-success btn-icon btn-sm"><i class="far fa-edit"></i></a>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.QuotaRequestDelete}">
+                                <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                            </PermissionWrapper>
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>

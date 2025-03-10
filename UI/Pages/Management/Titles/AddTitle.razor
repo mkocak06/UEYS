@@ -1,0 +1,46 @@
+﻿@page "/management/title/add-title"
+@using Shared.Types
+@using Shared.Extensions;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent  IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="TitleValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["_name", L["Title"]]</label>
+                                     <InputText class="form-control" @bind-Value="_title.Name" />
+                                    <ValidationMessage For="() => _title.Name"></ValidationMessage>
+
+                                    <label>@L["Title Type"]</label>
+                                    <InputSelect @bind-Value="_title.TitleType" class="form-control">
+                                        @foreach (TitleType titleType in Enum.GetValues(typeof(TitleType)))
+                                        {
+                                            <option value="@titleType">@L[titleType.GetDescription()] </option>
+                                        }
+                                    </InputSelect>
+                                    <AutoFocus InputTextFunc="()=>_focusTarget" />
+                                    <ValidationMessage For="() => _title.TitleType"></ValidationMessage>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>

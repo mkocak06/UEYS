@@ -1,0 +1,103 @@
+﻿@inject IJSRuntime _jsRuntime
+
+<div class="input-group" id="@Id">
+	<div class="input-group-prepend">
+		<span class="input-group-text">
+			<i class="la la-calendar-check-o"></i>
+		</span>
+	</div>
+    <input value="@GetFormattedValues()" type="text" class="form-control" readonly="readonly">
+    @if (ShowClear)
+    {
+        <div class="input-group-append">
+            <button @onclick="Clear" class="btn btn-light-danger btn-icon" type="button"><i class="far fa-trash-alt"></i></button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public DateTime? StartDate
+    {
+        get => _value1;
+        set
+        {
+            if (_value1 == value) return;
+            _value1 = value;
+            StartDateChanged.InvokeAsync(StartDate);
+            //DateChanged?.Invoke();
+        }
+    }
+    [Parameter]
+    public DateTime? EndDate
+    {
+        get => _value2;
+        set
+        {   
+            if (_value2 == value) return;
+            _value2 = value;
+            EndDateChanged.InvokeAsync(EndDate);
+            DateChanged.InvokeAsync();
+        }
+    }
+    [Parameter] public string Format { get; set; }
+    [Parameter] public EventCallback<DateTime?> StartDateChanged { get; set; }
+    [Parameter] public EventCallback<DateTime?> EndDateChanged { get; set; }
+    [Parameter] public EventCallback DateChanged { get; set; }
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool ShowClear { get; set; }
+    private DateTime? _value1; 
+    private DateTime? _value2; 
+    ElementReference CurrentElement { get; set; }
+    private DotNetObjectReference<DateRangePicker> _objectRef;
+
+    protected override void OnInitialized()
+    {
+        Id = Guid.NewGuid();
+        Format = string.IsNullOrEmpty(Format) ? "dd/MM/yyyy" : Format;
+    }
+    public void SetDate(DateTime date)
+    {
+        StartDate = date;
+        _jsRuntime.InvokeVoidAsync("dateRangePickerFunctions.setDate", CurrentElement, date);
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _objectRef = DotNetObjectReference.Create(this);
+            await RenderDatePicker();
+        }
+    }
+    private async Task RenderDatePicker()
+    {
+        await _jsRuntime.InvokeVoidAsync("dateRangePickerFunctions.initDateRangePicker",
+                        "#"+Id, StartDate?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss"), EndDate?.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss"), Format, _objectRef);
+    }
+
+    private string GetFormattedValues()
+    {
+        return StartDate?.ToLocalTime().ToString("yyyy-MM-dd") + " / " + EndDate?.ToLocalTime().ToString("yyyy-MM-dd");
+    }
+
+    private async Task Clear()
+    {
+        StartDate = null;
+        EndDate = null;
+        await RenderDatePicker();
+    }
+
+    [JSInvokable]
+    public void OnChangeDate(string[] dateArray)
+    {
+        if (dateArray[0] != null && DateTime.TryParse(dateArray[0], out var dateTime))
+        {
+            StartDate = dateTime.AddHours(12);
+        }
+        if (dateArray[1] != null && DateTime.TryParse(dateArray[1], out var dateTime2))
+        {
+            EndDate = dateTime2.AddHours(-12);
+        }
+    }
+}

@@ -1,0 +1,166 @@
+﻿@using Shared.FilterModels.Base;
+@using Shared.ResponseModels.StatisticModels;
+@using Shared.ResponseModels;
+@using Shared.ResponseModels.Student;
+@using Shared.Types;
+@using Radzen;
+@using Radzen.Blazor;
+@using UI.SharedComponents.Store;
+
+@if (!_loading)
+{
+    <RadzenDataGrid @ref="grid" EmptyText="@L["There is no record belong to this field"]" AllowColumnResize="true" TItem="StudentQuotaChartModel" Data="@studentsCountModelList" ExpandMode="DataGridExpandMode.Single" AllowSorting="true">
+        <Columns>
+            <RadzenDataGridColumn TextAlign="TextAlign.Left" TItem="StudentQuotaChartModel" Title="@L["Quota Type"]">
+                <Template Context="std">
+
+                    @(L[std.SeriesName.Description()])
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TextAlign="TextAlign.Left" TItem="StudentQuotaChartModel" Title="@L["Student Count"]">
+                <Template Context="std">
+
+                    @(std.Count)
+                </Template>
+            </RadzenDataGridColumn>
+
+        </Columns>
+    </RadzenDataGrid>
+}
+else
+{
+    <ChartLoading />
+}
+
+@code {
+    [Inject] IState<AppState> AppState { get; set; }
+
+    private FilterDTO Filter => AppState.Value.DashboardFilter;
+    [Inject] IStudentService StudentService { get; set; }
+
+    private List<StudentQuotaChartModel> studentsCountModelList = new List<StudentQuotaChartModel>();
+    private FilterDTO _filter;
+    private bool _loading = false;
+    RadzenDataGrid<StudentQuotaChartModel> grid = new();
+    RadzenDataGrid<Q2Model> gridQ2 = new();
+    RadzenDataGrid<HospitalResponseDTO> gridHospital = new();
+    protected override async Task OnInitializedAsync()
+    {
+        _filter = new FilterDTO()
+            {
+                Filter = new()
+                {
+                    Filters = new()
+                {
+
+                    new Filter()
+                    {
+                        Field="IsDeleted",
+                        Operator="eq",
+                        Value=false
+                    }
+
+                },
+                    Logic = "and"
+
+                },
+                Sort = new[]{new Sort()
+            {
+                Field = "QuotaType",
+                Dir = SortType.ASC
+            }}
+            };
+        await GetFieldNames();
+
+        await base.OnInitializedAsync();
+    }
+
+    // private List<Q2Model> Q2Datas(StudentQuotaChartModel chartModel)
+    // {
+
+    //     switch (chartModel.SeriesName)
+    //     {
+    //         case QuotaType_1.MinistryOfHealth:
+    //             return new List<Q2Model>()
+    //             {
+    //                 new Q2Model(){FieldName = QuotaType_2.EAH, Count = chartModel.EAHCount},
+    //                 new Q2Model(){FieldName = QuotaType_2.SBA, Count = chartModel.SBACount}
+    //             };
+    //         case QuotaType_1.Uni:
+    //             return new List<Q2Model>()
+    //             {
+    //                 new Q2Model(){FieldName = QuotaType_2.University_State, Count = chartModel.University_StateCount},
+    //                 new Q2Model(){FieldName = QuotaType_2.University_Private, Count = chartModel.University_PrivateCount}
+    //             };
+    //         case QuotaType_1.KKTC:
+    //             return new List<Q2Model>()
+    //             {
+    //                 new Q2Model(){FieldName = QuotaType_2.KKTCFullTime, Count = chartModel.KKTCFullTimeCount},
+    //                 new Q2Model(){FieldName = QuotaType_2.KKTCHalfTime, Count = chartModel.KKTCHalfTimeCount}
+    //             };
+    //         case QuotaType_1.MinistryOfInterior:
+    //             return new List<Q2Model>()
+    //             {
+    //                 new Q2Model(){FieldName = QuotaType_2.JGK, Count = chartModel.JGKCount},
+    //             };
+    //         case QuotaType_1.MSB:
+    //             return new List<Q2Model>()
+    //             {
+    //                 new Q2Model(){FieldName = QuotaType_2.HKK, Count = chartModel.HKKCount},
+    //                 new Q2Model(){FieldName = QuotaType_2.KKK, Count = chartModel.KKKCount},
+    //                 new Q2Model(){FieldName = QuotaType_2.DKK, Count = chartModel.DKKCount},
+    //             };
+    //         case QuotaType_1.TDMM:
+    //             return new List<Q2Model>()
+    //             {
+    //                 new Q2Model(){FieldName = QuotaType_2.Vet, Count = chartModel.VetCount},
+    //                 new Q2Model(){FieldName = QuotaType_2.Chemist, Count = chartModel.ChemistCount},
+    //                 new Q2Model(){FieldName = QuotaType_2.Pharmacist, Count = chartModel.PharmacistCount},
+    //             };
+    //         default:
+    //             return new();
+    //     }
+
+    // }
+    private async Task OnSortChange(Sort sort)
+    {
+        _filter.Sort = new[] { sort };
+        await GetFieldNames();
+    }
+
+    private async Task GetFieldNames()
+    {
+        _loading = true;
+        StateHasChanged();
+        try
+        {
+            var response = await StudentService.CountByQuotas(Filter);
+            if (response.Result)
+            {
+                studentsCountModelList = response.Item;
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private async Task PaginationHandler(PaginationInfo val)
+    {
+        var (item1, item2) = (val.Page, val.PageSize);
+
+        _filter.page = item1;
+        _filter.pageSize = item2;
+
+        await GetFieldNames();
+    }
+
+    private class Q2Model
+    {
+        public int Count { get; set; }
+        public QuotaType_2 FieldName { get; set; }
+    }
+}

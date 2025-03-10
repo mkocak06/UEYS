@@ -1,0 +1,242 @@
+﻿@using Shared.ResponseModels
+@using Shared.Types
+@inherits FluxorComponent
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CurriculumUpdate}">
+        <SpinnerButton ButtonClass="btn-primary font-weight-bold" Spinning="_loading" Disabled="_loading" OnClick="() => Save()">
+            <i class=@(IsEditing==true?"fas fa-save":"flaticon2-fast-next")></i>@(IsEditing == true ? L["Update"] : L["Save and Next"])
+        </SpinnerButton>
+        @if (IsEditing)
+        {
+            <SpinnerButton ButtonClass="btn-primary font-weight-bold ml-2" Spinning="_loading" Disabled="_loading" OnClick="() => CreateCopy()">
+                <i class="fas fa-copy"></i>@(L["Create Copy"])
+            </SpinnerButton>
+        }
+        </PermissionWrapper>
+    </div>
+</div>
+<div class="card card-custom gutter-b shadow-xs border border-2">
+    <div class="card-header">
+        <div class="card-title">
+            <span class="card-icon">
+                <i class="flaticon2-pin text-primary"></i>
+            </span>
+            <h3 class="card-label">@L["_Information", L["Curriculum"]]</h3>
+        </div>
+    </div>
+    @if (IsEditing)
+    {
+        @if (Curriculum != null)
+        {
+            <EditForm EditContext="_ecUpdate">
+                <FluentValidator TValidator="CurriculumValidator"></FluentValidator>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["Education Field"]</label>
+                                <BlazoredTypeahead SearchMethod="SearchEducationFields"
+                                           TItem="ProfessionResponseDTO"
+                                           TValue="ProfessionResponseDTO"
+                                           Value="_profession"
+                                           ValueExpression="() => _profession"
+                                           ValueChanged="OnChangeEducationField"
+                                           EnableDropDown="true"
+                                           MinimumLength="1">
+                                    <SelectedTemplate Context="field">
+                                        @field?.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="field">
+                                        @field?.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["_name", L["Expertise Branch"]]</label>
+                                <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                           TItem="ExpertiseBranchResponseDTO"
+                                           TValue="ExpertiseBranchResponseDTO"
+                                           Value="Curriculum.ExpertiseBranch"
+                                           ValueExpression="() => Curriculum.ExpertiseBranch"
+                                           ValueChanged="OnChangeExpertiseBranch"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions="int.MaxValue"
+                                           Disabled=@(_profession == null)>
+                                    <SelectedTemplate Context="branch">
+                                        @branch?.Name
+                                    </SelectedTemplate>
+                                    <HelpTemplate>
+                                        @L["Please enter at least 1 character to search."]
+                                    </HelpTemplate>
+                                    <NotFoundTemplate Context="searchText">
+                                        @_profession?.Name alanında "@searchText" @L["Could not find an item named"]
+                                    </NotFoundTemplate>
+                                    <ResultTemplate Context="branch">
+                                        @branch?.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                                <ValidationMessage For="() => Curriculum.ExpertiseBranchId" />
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Effective Date"]</label>
+                                <InputDate class="form-control" @bind-Value="Curriculum.EffectiveDate" TValue="DateTime?" />
+                                <ValidationMessage For="() => Curriculum.EffectiveDate"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Decision No"]</label>
+                                <InputText class="form-control" @bind-Value="Curriculum.DecisionNo" />
+                                <ValidationMessage For="() => Curriculum.DecisionNo"></ValidationMessage>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label>@L["Duration (Year)"]</label>
+                                <input type="number" value="@Curriculum.Duration" class="form-control" @onchange="(value) => OnChangeDuration(value)" />
+                                <ValidationMessage For="() => Curriculum.Duration"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label>@L["Version"]</label>
+                                <InputText class="form-control" @bind-Value="Curriculum.Version" />
+                                <ValidationMessage For="() => Curriculum.Version"></ValidationMessage>
+                            </div>
+                            <div class="form-group">
+                                <label><b>@L["Active"]/@L["Passive"]</b></label>
+                                <div></div>
+                                <div class="radio-inline">
+                                    <label class="radio radio-lg">
+                                        <input type="radio" checked="@(Curriculum.IsActive == true)" @onchange="OnChangeIsActiveUpdate" name="radios3_1" />
+                                        <span></span>
+                                        @L["Active"]
+                                    </label>
+                                    <label class="radio radio-lg">
+                                        <input type="radio" checked="@(Curriculum.IsActive == false)" @onchange="OnChangeIsActiveUpdate" name="radios3_1" />
+                                        <span></span>
+                                        @L["Passive"]
+                                    </label>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </EditForm>
+        }
+        else
+        {
+            <Spinner></Spinner>
+        }
+    }
+    else
+    {
+        <EditForm EditContext="_ecAdd">
+            <FluentValidator TValidator="CurriculumValidator"></FluentValidator>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label>@L["Education Field"]</label>
+                            <BlazoredTypeahead SearchMethod="SearchEducationFields"
+                                           TItem="ProfessionResponseDTO"
+                                           TValue="ProfessionResponseDTO"
+                                           Value="_profession"
+                                           ValueExpression="() => _profession"
+                                           ValueChanged="OnChangeEducationField"
+                                           EnableDropDown="true"
+                                           MinimumLength="1">
+                                <SelectedTemplate Context="field">
+                                    @field?.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="field">
+                                    @field?.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["_name", L["Expertise Branch"]]</label>
+                            <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                           TItem="ExpertiseBranchResponseDTO"
+                                           TValue="ExpertiseBranchResponseDTO"
+                                           Value="CurriculumAdd.ExpertiseBranch"
+                                           ValueExpression="() => CurriculumAdd.ExpertiseBranch"
+                                           ValueChanged="OnChangeExpertiseBranch"
+                                           EnableDropDown="true"
+                                           MinimumLength="1"
+                                           MaximumSuggestions="int.MaxValue"
+                                           Disabled=@(_profession == null)>
+                                <SelectedTemplate Context="branch">
+                                    @branch?.Name
+                                </SelectedTemplate>
+                                <HelpTemplate>
+                                    @L["Please enter at least 1 character to search."]
+                                </HelpTemplate>
+                                <NotFoundTemplate Context="searchText">
+                                    @_profession?.Name alanında "@searchText" @L["Could not find an item named"]
+                                </NotFoundTemplate>
+                                <ResultTemplate Context="branch">
+                                    @branch?.Name
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                            <ValidationMessage For="() => CurriculumAdd.ExpertiseBranchId" />
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Yürürlük Tarihi"]</label>
+                            <InputDate class="form-control" @bind-Value="CurriculumAdd.EffectiveDate" TValue="DateTime?" />
+                            <ValidationMessage For="() => CurriculumAdd.EffectiveDate"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Karar Numarası"]</label>
+                            <InputText class="form-control" @bind-Value="CurriculumAdd.DecisionNo" />
+                            <ValidationMessage For="() => CurriculumAdd.DecisionNo"></ValidationMessage>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label>@L["Duration (Year)"]</label>
+                            <InputNumber class="form-control" @bind-Value="CurriculumAdd.Duration" />
+                            <ValidationMessage For="() => CurriculumAdd.Duration"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Version"]</label>
+                            <InputText class="form-control" @bind-Value="CurriculumAdd.Version" />
+                            <ValidationMessage For="() => CurriculumAdd.Version"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label><b>@L["Active"]/@L["Passive"]</b></label>
+                            <div></div>
+                            <div class="radio-inline">
+                                <label class="radio radio-lg">
+                                    <input type="radio" @onchange="OnChangeIsActive2" name="radios3_1" />
+                                    <span></span>
+                                    @L["Active"]
+                                </label>
+                                <label class="radio radio-lg">
+                                    <input type="radio" @onchange="OnChangeIsActive1" name="radios3_1" />
+                                    <span></span>
+                                    @L["Passive"]
+                                </label>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+
+    }
+</div>

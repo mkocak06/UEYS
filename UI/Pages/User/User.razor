@@ -1,0 +1,795 @@
+﻿@page "/User/users"
+@using Shared.Constants;
+@using Shared.Types;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent IsFluid="true" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CreateUserAccount}">
+                <a @onclick="OnUserAddList" type="button" class="btn btn-outline-primary mr-3"><i class="fas fa-plus"></i>@L["add_new", L["User"]]</a>
+            </PermissionWrapper>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UserExcelExport}">
+                <div type="button" class=@(_loadingFile ? "btn btn-outline-success spinner spinner-darker-success spinner-left" : "btn btn-outline-success mr-3") @onclick="DownloadExcelFile">
+                    <i class=@(_loadingFile ? "" : "fas fa-download")></i>@L["Export"]
+                </div>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body user-list-height">
+                @if (_users != null)
+                {
+                    <Grid Items="_users" Sort="_filter.Sort.FirstOrDefault()" OnSortChanged="async sort => await OnSortChange(sort)"
+                          class="table table-hover table-bordered" RowClass='(row, index) => ""'>
+                        <GridColumn Sort="IdentityNo" TRowData="UserPaginateResponseDTO" Expression="c => c.IdentityNo" Title="@L["T.R. Identity Number"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Name" TRowData="UserPaginateResponseDTO" Width="400px" Expression="c => c.Name" Title="@L["Name Surname"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Email" TRowData="UserPaginateResponseDTO" Expression="c => c.Email" Title="@L["Email"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn Sort="Phone" TRowData="UserPaginateResponseDTO" Expression="c => c.Phone" Title="@L["Phone"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, filter)' autocomplete="false">
+                                        @if (IsFiltered(filter))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter(filter)'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                        </GridColumn>
+                        <GridColumn TRowData="UserPaginateResponseDTO" Title="@L["Roles"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <select class="selectpicker" data-actions-box="true" data-selected-text-format="count" multiple name="@filter" title="Lütfen seçiniz..." @onchange='(args) => OnChangeSelectFilter(args, "Role")'>
+                                        @foreach (var role in _roles)
+                                        {
+                                            <option value="@role">@role</option>
+                                        }
+
+                                    </select>
+                                </div>
+                            </FilterTemplate>
+                            <ChildContent>
+                                @if (context.Roles?.Count > 0 && context.Roles != null)
+                                {
+                                    @foreach (var item in context.Roles)
+                                    {
+                                        <span class="badge badge-warning mb-1 mr-1">
+                                            @(item)
+                                        </span>
+                                    }
+                                }
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="UserPaginateResponseDTO" Title="@L["Institutions / Provinces / Programs"]">
+                            <FilterTemplate Context="filter">
+                                <div class="form-group mb-0">
+                                    <div class="input-icon input-icon-right">
+                                        <input type="text" class="form-control" name="@filter" @onchange='(args) => OnChangeFilter(args, "WorkingPlace")' autocomplete="false">
+                                        @if (IsFiltered("WorkingPlace"))
+                                        {
+                                            <span class="cursor-pointer" @onclick='() => OnResetFilter("WorkingPlace")'>
+                                                <i class="flaticon2-cross icon- text-danger"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="cursor-pointer">
+                                                <i class="flaticon2-search-1 icon-md"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                </div>
+                            </FilterTemplate>
+                            <ChildContent>
+                                @{
+                                    List<string> concatZones = new();
+                                    if (context.HospitalZones != null)
+                                        concatZones.AddRange(context.HospitalZones);
+                                    if (context.FacultyZones != null)
+                                        concatZones.AddRange(context.FacultyZones);
+                                    if (context.UniversityZones != null)
+                                        concatZones.AddRange(context.UniversityZones);
+                                    if (context.ProgramZones != null)
+                                        concatZones.AddRange(context.ProgramZones);
+                                    if (context.ProvinceZones != null)
+                                        concatZones.AddRange(context.ProvinceZones);
+                                    if (concatZones.Count == 0 && !string.IsNullOrWhiteSpace(context.EducatorZone))
+                                        concatZones.Add(context.EducatorZone);
+                                    if (!string.IsNullOrWhiteSpace(context.StudentZone))
+                                        concatZones.Add(context.StudentZone);
+                                    if (concatZones?.Count > 0)
+                                    {
+                                        foreach (var item in concatZones)
+                                        {
+                                            <span class="badge badge-info mb-1 mr-1">
+                                                @(item)
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                }
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn class="min-w-100px align-middle" TRowData="UserPaginateResponseDTO" Title="@L["Transactions"]">
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UserGetById}">
+                                <button @onclick="async () =>await OnUserDetail(context)" class="btn btn-light-success btn-icon btn-sm"><i class="far fa-edit"></i></button>
+                            </PermissionWrapper>
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.DeleteUser}">
+                                <a @onclick="() => OnDeleteHandler(context)" class="btn btn-light-danger btn-icon btn-sm"><i class="fas fa-trash-alt"></i></a>
+                            </PermissionWrapper>
+                        </GridColumn>
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                }
+                else
+                {
+                    <Spinner></Spinner>
+                }
+            </div>
+        </div>
+    </Content>
+</AppContent>
+<MyModal @ref="_userAddModal" ShowFooter="false" ShowHeader="true" Backdrop="false">
+    <Body>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <EditForm Model="_identityNo" OnSubmit="SearchByIdentityNo">
+                    <div class="form-group">
+                        <label>@L["T.R. Identity Number"]</label>
+                        <div class="input-group">
+                            <InputMask Value="@_identityNo" ValueExpression="()=>_identityNo" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(IdentyNoChanged)" type="text" class="@GetIdentiyClass()" data-mask="99999999999" disabled="@(_searchingIdentity || _userforAdd?.IdentityNo is not null)" />
+                            <div class="input-group-append">
+                                @if (_userforAdd?.IdentityNo is null)
+                                {
+                                    <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CreateUserAccount}">
+                                        <SpinnerButton Type="submit" Spinning="_searchingIdentity" Disabled="_searchingIdentity">
+                                            @L["Fetch"]
+                                        </SpinnerButton>
+                                    </PermissionWrapper>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-danger" type="button" @onclick="CancelUser"><i class="fa fa-window-close "></i></button>
+                                }
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(_tcValidatorMessage))
+                        {
+                            <div class="validation-message">@_tcValidatorMessage</div>
+                        }
+                    </div>
+                </EditForm>
+                @if (isDomainAllowed && _showCaptcha)
+                {
+                    @if (captcha != null)
+                    {
+                        <div class="form-group">
+                            <label class="col-form-label text-right">@L["Güvenlik Kodu"]</label>
+                            <div class="card card-custom overlay mb-3">
+                                <div class="card-body p-0">
+                                    <div class="overlay-wrapper">
+                                        <img src="data:image/png;base64, @captcha.Captcha" alt="" class="w-100 rounded" />
+                                    </div>
+                                    <div class="overlay-layer align-items-start justify-content-end pt-5 pr-5">
+                                        <a @onclick="ReloadCaptcha" class="btn btn-clean btn-icon mr-2">
+                                            <i class="flaticon2-reload icon-lg text-primary"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <InputText @bind-Value="inputCaptcha" class="form-control rounded-lg" />
+                            @if (!string.IsNullOrEmpty(_captchaValidatorMessage))
+                            {
+                                <div class="validation-message">@_captchaValidatorMessage</div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="spinner spinner-dark spinner-primary spinner-lg my-5"></div>
+                        </div>
+                    }
+                }
+                <div class="form-group">
+                    <label>@L["Name Surname"]</label>
+                    <input disabled type="text" class="form-control" value="@(_userforAdd?.Name)" />
+                </div>
+                <div class="form-group">
+                    <label>@L["Birthplace"]</label>
+                    <input disabled type="text" class="form-control" value="@_userforAdd?.BirthPlace" />
+                </div>
+                <div class="form-group">
+                    <label>@L["BirthDate"]</label>
+                    <input disabled type="text" class="form-control" value="@_userforAdd?.BirthDate?.ToString("dd.MM.yyyy")" />
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="AddUserValidator"></FluentValidator>
+                    <div class="form-group">
+                        <label>@L["Email"]</label>
+                        @if (_userforAdd?.IdentityNo != null)
+                        {
+                            <InputText class="form-control" @bind-Value="_userforAdd.Email" />
+                            <AutoFocus InputTextFunc="()=>_focusTarget" />
+                            <ValidationMessage For="() => _userforAdd.Email"></ValidationMessage>
+                        }
+                        else
+                        {
+                            <input type="email" class="form-control" value="" disabled />
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Phone"]</label>
+                        @if (_userforAdd?.IdentityNo != null)
+                        {
+                            <InputMask @ref="_inputMask" FocusOnFirstRender="true" Value="@_userforAdd?.Phone" ValueExpression="()=>_userforAdd.Phone" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(PhoneNoUpdatedForAdd)" class="form-control" type="text" data-mask="(999) 999-9999" />
+                            <AutoFocus InputTextFunc="()=>_focusTarget" />
+                            <ValidationMessage For="() => _userforAdd.Phone"></ValidationMessage>
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control" value="" disabled />
+                        }
+                    </div>
+                    <div class="form-group">
+                        <label>@L["Roles"]</label><br />
+                        @if (_userforAdd.UserRoles?.Count > 0)
+                        {
+                            @foreach (var item in _userforAdd.UserRoles)
+                            {
+                                <span class="badge badge-warning mb-1 mr-1">
+                                    @(item.Role.RoleName ?? "-")
+                                </span>
+                            }
+                        }
+                        else
+                        {
+                            <label class="label-info">
+                                <ValidationMessage For="() => _userforAdd.UserRoles"></ValidationMessage>
+                            </label>
+                        }
+                        <button @onclick="()=>{OnOpenRoleModal(_userforAdd);}" class="form-control btn btn-success mt-2" disabled="@(_userforAdd?.IdentityNo == null)">Rolleri Ekle/Düzenle</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        @if (_userforAdd != null && _userforAdd.UserRoles?.Count > 0 && _userforAdd.UserRoles.Any(x => x.Role?.Code == "KES"))
+        {
+            <div class="col-12 col-md-12">
+                <label><b>@L["EPK Institutional Education Officer Appointment Decision"]</b></label>
+                <Dropzone @ref="@dropzone" EntityId="@(0)" DocumentType="DocumentTypes.EPKInstitutionalEducationOfficerAppointmentDecision"></Dropzone>
+                @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                {
+                    <div class="validation-message">@_documentValidatorMessage</div>
+                }
+            </div>
+        }
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.CreateUserAccount}">
+            <button @onclick="AddUser" class="btn btn-clean btn-primary"> @L["Save"]</button>
+        </PermissionWrapper>
+    </Body>
+</MyModal>
+<MyModal @ref="_userDetailModal" ShowFooter="false" ShowHeader="true" Backdrop="false">
+    <Body>
+        <EditForm EditContext="_ecupdate">
+            @if (_loaded)
+            {
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <FluentValidator TValidator="UpdateUserValidator"></FluentValidator>
+                        <div class="form-group">
+                            <label>@L["T.R. Identity Number"]</label>
+                            <InputText class="form-control" @bind-Value="_userforUpdate.IdentityNo" disabled />
+                            <AutoFocus InputTextFunc="()=>_focusTarget" />
+                            <ValidationMessage For="() => _userforUpdate.IdentityNo"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Name Surname"]</label>
+                            <InputText class="form-control" @bind-Value="_userforUpdate.Name" disabled />
+                            <AutoFocus InputTextFunc="()=>_focusTarget" />
+                            <ValidationMessage For="() => _userforUpdate.Name"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Birthplace"]</label>
+                            <InputText class="form-control" @bind-Value="_userforUpdate.BirthPlace" disabled />
+                            <AutoFocus InputTextFunc="()=>_focusTarget" />
+                            <ValidationMessage For="() => _userforUpdate.BirthPlace"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["BirthDate"]</label>
+                            <InputDate class="form-control" @bind-Value="_userforUpdate.BirthDate" TValue="DateTime?" disabled />
+                            <ValidationMessage For="() => _userforUpdate.BirthDate"></ValidationMessage>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["Phone"]</label>
+                            <InputMask @ref="_inputMask" FocusOnFirstRender="true" Value="@_userforUpdate.Phone" ValueExpression="()=>_userforUpdate.Phone" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(PhoneNoUpdated)" class="form-control" type="text" data-mask="(999) 999-9999" />
+                            <AutoFocus InputTextFunc="()=>_focusTarget" />
+                            <ValidationMessage For="() => _userforUpdate.Phone"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Email"]</label>
+                            <InputText class="form-control" @bind-Value="_userforUpdate.Email" />
+                            <AutoFocus InputTextFunc="()=>_focusTarget" />
+                            <ValidationMessage For="() => _userforUpdate.Email"></ValidationMessage>
+                        </div>
+                        <div class="form-group">
+                            <label>@L["Roles"]</label><br />
+                            @if (_userforUpdate.UserRoles?.Count >= 0)
+                            {
+                                @foreach (var item in _userforUpdate.UserRoles)
+                                {
+                                    <span class="badge badge-warning mb-1 mr-1">
+                                        @(item.Role?.RoleName ?? "-")
+                                    </span>
+                                }
+                            }
+                            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UserGetById}">
+                                <button @onclick="()=>{OnOpenRoleModal(_userforUpdate);}" class="form-control btn btn-success mt-2">@L["Edit Roles"]</button>
+                            </PermissionWrapper>
+                        </div>
+
+                        <div class="form-group">
+                            <label>@L["Last Login Date"]</label>
+                            <InputDate class="form-control" @bind-Value="_userforUpdate.LastLoginDate" TValue="DateTime" disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <label><b>@L["Active"]/@L["Passive"]</b></label>
+                            <div></div>
+                            <div class="radio-inline">
+                                <label class="radio radio-lg">
+                                    <input type="radio" checked="@(_userforUpdate.IsPassive == false)" @onchange="OnChangeIsPassive" name="radios3_1" />
+                                    <span></span>
+                                    @L["Active"]
+                                </label>
+                                <label class="radio radio-lg">
+                                    <input type="radio" checked="@(_userforUpdate.IsPassive == true)" @onchange="OnChangeIsPassive" name="radios3_1" />
+                                    <span></span>
+                                    @L["Passive"]
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-12">
+                        @if (_userforUpdate.UserRoles.Any(x => x.Role?.Code == "KES"))
+                        {
+                            if (_userforUpdate?.Documents == null || _userforUpdate?.Documents?.Count == 0)
+                            {
+                                <div class="form-group">
+                                    <label><b>@L["EPK Institutional Education Officer Appointment Decision"]</b></label>
+                                    <Dropzone @ref="@dropzone" EntityId="@_userforUpdate.Id" DocumentType="DocumentTypes.EPKInstitutionalEducationOfficerAppointmentDecision"></Dropzone>
+                                    @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                                    {
+                                        <div class="validation-message">@_documentValidatorMessage</div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <FileItem Documents="_userforUpdate.Documents" Loaded="true" IsEditing="true"></FileItem>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <Spinner></Spinner>
+            }
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UpdateUserAccount}">
+                <button @onclick="UpdateUser" class="btn btn-clean btn-primary"> @L["Save"]</button>
+            </PermissionWrapper>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UpdateUserAccount}">
+
+                <button @onclick="()=> {_userForIdentityChange = new(); _identityNo = string.Empty; _userDetailModal.CloseModal(); _changeIdentityNoModal.OpenModal();}" class="btn btn-clean btn-primary"> @L["Kimlik numarası ve isim değiştir"]</button>
+            </PermissionWrapper>
+        </EditForm>
+    </Body>
+</MyModal>
+<MyModal @ref="_changeIdentityNoModal" ShowFooter="false" ShowHeader="true" Backdrop="false">
+    <Body>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label>@L["New T.R. Identity Number"]</label>
+                    <div class="input-group">
+                        <InputMask Value="@_identityNo" ValueExpression="()=>_identityNo" ValueChanged="EventUtil.AsNonRenderingEventHandler<string>(IdentyNoChanged)" type="text" class="@GetIdentiyClass()" data-mask="99999999999" disabled="@(_searchingIdentity || _userforAdd?.IdentityNo is not null)" />
+                        <div class="input-group-append">
+                            @if (_userForIdentityChange?.IdentityNo is null)
+                            {
+                                <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UpdateUserAccount}">
+                                    <SpinnerButton OnClick="() => SearchForIdentityChange()" Spinning="_searchingIdentity" Disabled="_searchingIdentity">
+                                        @L["Fetch"]
+                                    </SpinnerButton>
+                                </PermissionWrapper>
+                            }
+                            else
+                            {
+                                <button class="btn btn-danger" type="button" @onclick="CancelUser"><i class="fa fa-window-close "></i></button>
+                            }
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(_tcValidatorMessage))
+                    {
+                        <div class="validation-message">@_tcValidatorMessage</div>
+                    }
+                </div>
+                <div class="form-group">
+                    <label>@L["Old T.R. Identity Number"]</label>
+                    <InputText class="form-control" Value="@_userforUpdate.IdentityNo" ValueExpression="()=>_userforUpdate.IdentityNo" disabled />
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <label>@L["New Name Surname"]</label>
+                    <InputText class="form-control" Value="@_userForIdentityChange?.Name" ValueExpression="()=>_userForIdentityChange.Name" disabled />
+                </div>
+                <div class="form-group">
+                    <label>@L["Old Name Surname"]</label>
+                    <InputText class="form-control" Value="@_userforUpdate?.Name" ValueExpression="()=>_userforUpdate.Name" disabled />
+                </div>
+            </div>
+        </div>
+        <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.UpdateUserAccount}">
+            <button @onclick="ChangeIdentityNoAndName" disabled="@string.IsNullOrWhiteSpace(_userForIdentityChange.IdentityNo)" class="btn btn-clean btn-primary"> @L["Kimlik numarası ve isim değiştir"]</button>
+        </PermissionWrapper>
+    </Body>
+</MyModal>
+<MyModal @ref="_roleModal" ActionName="@L["Save"]" ActionMethod="@SaveUserRole" Backdrop="false" Scrollable="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="flaticon2-list text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@L["_Information", L["Role"]]</h3>
+                </div>
+                <div class="card-toolbar">
+                    <a class="btn btn-outline-primary" @onclick="()=>AddNewRole()">
+                        <i class="fas fa-plus"></i> @L["add_new", L["Role"]]
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <EditForm EditContext="_ecUserRole">
+                    <FluentValidator TValidator="UserRoleValidator" />
+                    @if (_userRoleModel.UserRoleList != null && _userRoleModel.UserRoleList.Count > 0)
+                    {
+                        <div class="form-group row">
+                            <div class="col-lg-4">
+                                <h4>@L["Role"]</h4>
+                            </div>
+                            <div class="col-lg-4">
+                                <h4>@L["Zone"]</h4>
+                            </div>
+                            <div class="col-lg-4">
+                                <h5>@L["Transactions"]</h5>
+                            </div>
+                        </div>
+
+                        @foreach (var userRoleItem in _userRoleModel.UserRoleList)
+                        {
+                            <div class="form-group row">
+                                <div class="col-lg-4">
+
+                                    <BlazoredTypeahead SearchMethod="SearchRoles"
+                                                       @bind-Value="userRoleItem.Role"
+                                                       EnableDropDown="true"
+                                                       MaximumSuggestions="100"
+                                                       MinimumLength="2"
+                                                       Disabled="@(userRoleItem?.Role?.IsAutomated == true)"
+                                                       placeholder="@L["Search by {0}",L["Role"]]">
+                                        <SelectedTemplate Context="role">
+                                            @role.RoleName
+                                        </SelectedTemplate>
+                                        <HelpTemplate>
+                                            @L["Please enter at least 2 character to search."]
+                                        </HelpTemplate>
+                                        <NotFoundTemplate Context="searchText">
+                                            "@searchText" @L["Could not find an item named"]
+                                        </NotFoundTemplate>
+                                        <ResultTemplate Context="role">
+                                            @role.RoleName
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                    <ValidationMessage For="()=> userRoleItem.Role" />
+                                </div>
+                                <div class="col-lg-4">
+
+                                    @if (userRoleItem.Role != null && userRoleItem.Role?.Id > 0)
+                                    {
+                                        @if (userRoleItem.Role?.CategoryId != null)
+                                        {
+
+                                            @if ((RoleCategoryType)userRoleItem.Role?.CategoryId != RoleCategoryType.Admin)
+                                            {
+
+                                                <div class="form-group">
+
+                                                    @switch ((RoleCategoryType)userRoleItem.Role.CategoryId)
+                                                    {
+                                                        case RoleCategoryType.University:
+                                                            <BlazoredTypeahead SearchMethod="(string searchQuery)=>SearchUniversitiesByUserRole(searchQuery, userRoleItem)"
+                                                                               TValue="UserRoleUniversityResponseDTO"
+                                                                               TItem="UserRoleUniversityResponseDTO"
+                                                                               @bind-Values="userRoleItem.UserRoleUniversities"
+                                                                               EnableDropDown="true"
+                                                                               MinimumLength="2"
+                                                                               Disabled="@(userRoleItem?.Role?.IsAutomated == true)"
+                                                                               placeholder="@L["Search by {0}",L["University"]]">
+                                                                <SelectedTemplate Context="uni">
+                                                                    @uni.University.Name
+                                                                </SelectedTemplate>
+                                                                <HelpTemplate>
+                                                                    @L["Please enter at least 2 character to search."]
+                                                                </HelpTemplate>
+                                                                <NotFoundTemplate Context="searchText">
+                                                                    "@searchText" @L["Could not find an item named"]
+                                                                </NotFoundTemplate>
+                                                                <ResultTemplate Context="uni">
+                                                                    @uni.University.Name
+                                                                </ResultTemplate>
+                                                            </BlazoredTypeahead>
+                                                            <ValidationMessage For="()=> userRoleItem.UserRoleUniversities" />
+                                                            break;
+                                                        case RoleCategoryType.Faculty:
+                                                            <BlazoredTypeahead SearchMethod="(string searchQuery)=>SearchFacultiesByUserRole(searchQuery, userRoleItem)"
+                                                                               @bind-Values="userRoleItem.UserRoleFaculties"
+                                                                               EnableDropDown="true"
+                                                                               MinimumLength="2"
+                                                                               Disabled="@(userRoleItem?.Role?.IsAutomated == true)"
+                                                                               placeholder="@L["Search by {0}",L["Faculty"]]">
+                                                                <SelectedTemplate Context="item">
+                                                                    @item.Faculty.Name
+                                                                </SelectedTemplate>
+                                                                <HelpTemplate>
+                                                                    @L["Please enter at least 2 character to search."]
+                                                                </HelpTemplate>
+                                                                <NotFoundTemplate Context="searchText">
+                                                                    "@searchText" @L["Could not find an item named"]
+                                                                </NotFoundTemplate>
+                                                                <ResultTemplate Context="item">
+                                                                    @item.Faculty.Name
+                                                                </ResultTemplate>
+
+                                                            </BlazoredTypeahead>
+                                                            <ValidationMessage For="()=> userRoleItem.UserRoleFaculties" />
+
+                                                            @if (userRoleItem.Role?.Code == RoleCodeConstants.ANA_BILIM_DALI_BASKANI)
+                                                            {
+                                                                <div class="mt-2">
+                                                                    <BlazoredTypeahead SearchMethod="SearchExpertiseBranches"
+                                                                                       TItem="ExpertiseBranchResponseDTO"
+                                                                                       TValue="ExpertiseBranchResponseDTO"
+                                                                                       Value="_expertiseBranch"
+                                                                                       ValueExpression="() => _expertiseBranch"
+                                                                                       ValueChanged="(ExpertiseBranchResponseDTO expertiseBranch)=>OnChangeExpertiseBranch(expertiseBranch, userRoleItem.UserRoleFaculties)"
+                                                                                       EnableDropDown="true"
+                                                                                       Disabled="@(userRoleItem?.Role?.IsAutomated == true)"
+                                                                                       MinimumLength="2"
+                                                                                       MaximumSuggestions="int.MaxValue"
+                                                                                       placeholder="@L["Search by {0}",L["Expertise Branch"]]" class="mt-2">
+                                                                        <SelectedTemplate Context="expBrc">
+                                                                            @expBrc?.Name
+                                                                        </SelectedTemplate>
+                                                                        <HelpTemplate>
+                                                                            @L["Please enter at least 1 character to search."]
+                                                                        </HelpTemplate>
+                                                                        <NotFoundTemplate Context="searchText">
+                                                                            "@searchText" @L["Could not find an item named"]
+                                                                        </NotFoundTemplate>
+                                                                        <ResultTemplate Context="expBrc">
+                                                                            @expBrc?.Name
+                                                                        </ResultTemplate>
+                                                                    </BlazoredTypeahead>
+                                                                </div>
+                                                            }
+
+
+                                                            break;
+
+                                                        case RoleCategoryType.Province:
+                                                            <BlazoredTypeahead SearchMethod="(string searchQuery)=>SearchProvincesByUserRole(searchQuery, userRoleItem)"
+                                                                               @bind-Values="userRoleItem.UserRoleProvinces"
+                                                                               EnableDropDown="true"
+                                                                               Disabled="@(userRoleItem?.Role?.IsAutomated == true)"
+                                                                               MinimumLength="2"
+                                                                               placeholder="@L["Search by {0}",L["Province"]]">
+                                                                <SelectedTemplate Context="item">
+                                                                    @item.Province.Name
+                                                                </SelectedTemplate>
+                                                                <HelpTemplate>
+                                                                    @L["Please enter at least 2 character to search."]
+                                                                </HelpTemplate>
+                                                                <NotFoundTemplate Context="searchText">
+                                                                    "@searchText" @L["Could not find an item named"]
+                                                                </NotFoundTemplate>
+                                                                <ResultTemplate Context="item">
+                                                                    @item.Province.Name
+                                                                </ResultTemplate>
+                                                            </BlazoredTypeahead>
+                                                            <ValidationMessage For="()=> userRoleItem.UserRoleProvinces" />
+                                                            break;
+                                                        case RoleCategoryType.Program:
+                                                            <BlazoredTypeahead SearchMethod="(string searchQuery)=>SearchProgramsByUserRole(searchQuery, userRoleItem)"
+                                                                               @bind-Values="userRoleItem.UserRolePrograms"
+                                                                               EnableDropDown="true"
+                                                                               Disabled="@(userRoleItem?.Role?.IsAutomated == true)"
+                                                                               MinimumLength="2"
+                                                                               placeholder="@L["Search by {0}",L["Program"]]">
+                                                                <SelectedTemplate Context="item">
+                                                                    @item.Program.Name
+                                                                </SelectedTemplate>
+                                                                <HelpTemplate>
+                                                                    @L["Please enter at least 2 character to search."]
+                                                                </HelpTemplate>
+                                                                <NotFoundTemplate Context="searchText">
+                                                                    "@searchText" @L["Could not find an item named"]
+                                                                </NotFoundTemplate>
+                                                                <ResultTemplate Context="item">
+                                                                    @item.Program.Name
+                                                                </ResultTemplate>
+                                                            </BlazoredTypeahead>
+                                                            <ValidationMessage For="()=> userRoleItem.UserRolePrograms" />
+                                                            break;
+                                                        case RoleCategoryType.Hospital:
+                                                            <BlazoredTypeahead SearchMethod="(string searchQuery)=>SearchHospitalsByUserRole(searchQuery, userRoleItem)"
+                                                                               @bind-Values="userRoleItem.UserRoleHospitals"
+                                                                               EnableDropDown="true"
+                                                                               Disabled="@(userRoleItem?.Role?.IsAutomated == true)"
+                                                                               MinimumLength="2"
+                                                                               placeholder="@L["Search by {0}",L["Hospital"]]">
+                                                                <SelectedTemplate Context="item">
+                                                                    @item.Hospital.Name
+                                                                </SelectedTemplate>
+                                                                <HelpTemplate>
+                                                                    @L["Please enter at least 2 character to search."]
+                                                                </HelpTemplate>
+                                                                <NotFoundTemplate Context="searchText">
+                                                                    "@searchText" @L["Could not find an item named"]
+                                                                </NotFoundTemplate>
+                                                                <ResultTemplate Context="item">
+                                                                    @item.Hospital.Name
+                                                                </ResultTemplate>
+                                                            </BlazoredTypeahead>
+                                                            <ValidationMessage For="()=> userRoleItem.UserRoleHospitals" />
+                                                            break;
+                                                    }
+
+
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                <label>Tüm Bölgeler</label>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var user = _users.FirstOrDefault(x => x.Id == userRoleItem.UserId);
+                                            if (user != null && user.EducatorZone != null)
+                                            {
+                                                <label>@_users.FirstOrDefault(x => x.Id == userRoleItem.UserId).EducatorZone</label>
+                                            }
+                                            else if (user != null && user.StudentZone != null)
+                                            {
+                                                <label>@_users.FirstOrDefault(x => x.Id == userRoleItem.UserId).StudentZone</label>
+                                            }
+                                            else
+                                            {
+                                                <label>-</label>
+                                            }
+                                        }
+                                    }
+                                </div>
+                                <div class="col-lg-4">
+                                    @if (userRoleItem?.Role?.IsAutomated != true)
+                                    {
+                                        <a title="@L["Remove"]" @onclick="()=>{_userRoleModel.UserRoleList.Remove(userRoleItem); StateHasChanged();}" class="btn btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i> Kaldır
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label class="label-info">
+                                Hiçbir kayıt bulunamadı.
+                            </label>
+                        </div>
+                    }
+                    <ValidationMessage For="()=> _userRoleModel.UserRoleList" />
+                </EditForm>
+            </div>
+        </div>
+    </Body>
+</MyModal>

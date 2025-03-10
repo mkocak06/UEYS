@@ -1,0 +1,57 @@
+﻿<InputSelect class="form-control btn btn-xl font-weight-bold" style=@("background-color:"+(Value.HasValue?GetStyle(Value.Value):"")) @bind-Value="@Value">
+    <option value="" selected>@L["Select perfection"]</option>
+    @for (int i = 1; i < 5; i++)
+    {
+          string[] point = { "Bilir", "Nasıl Yapıldığını Bilir", "Gösterir", "Yapar" };
+        <option style="background-color:@(GetStyle(i))" class="btn btn-xl font-weight-bold" value="@i">@i (@point[i-1])</option>
+        
+        
+
+    }
+</InputSelect>
+
+@code {
+    [Parameter]
+    public int? Value
+    {
+        get => _value;
+
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(Value);
+
+        }
+    }
+    [Parameter] public EventCallback<int?> ValueChanged { get; set; }
+    [Parameter] public int Count { get; set; }
+    private int? _value;
+
+    private string GetStyle(int i)
+    {
+            if (i == 1)
+            {
+            return "#00FF00";
+            }
+            else if (i == 2)
+            {
+            return "#00CC00";
+
+            }
+            else if (i == 3)
+            {
+            return "#009900";
+
+            }
+            else if (i > 3)
+
+            {
+            return "#006600";
+
+            }
+            else
+                return "";
+    }
+
+}

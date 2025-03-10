@@ -1,0 +1,228 @@
+﻿@using Shared.Extensions;
+@using Shared.Types;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        @if (_isAdding)
+        {
+            <button @onclick="async ()=> await studentOpinionFormForAdd.Save()" class="btn btn-outline-primary mr-2">@L["Save"]</button>
+            <button class="btn btn-outline-success mr-2" @onclick="() => { studentOpinionFormForAdd.dropzoneForAdd.ResetStatus(); studentOpinionFormForAdd.UploaderModalForAdd.OpenModal(); }">
+                <i class="fas fa-upload"></i>@L["File Upload"]
+            </button>
+            <a href="/files/Örnek Kanaat Formu.xlsx" target="_blank" class="btn btn-light-success">
+                <i class="fas fa-download"></i>@L["Download Form Sample"]
+            </a>
+
+            <button @onclick="@(()=>{_isAdding=false;})" class="btn btn-outline-primary ml-2">@L["Cancel"]</button>
+        }
+        else
+        {
+            @if (_isEditing)
+            {
+                
+
+            }
+            else if (_student.Status != StudentStatus.TransferDueToNegativeOpinion && _student.Status != StudentStatus.EndOfEducationDueToNegativeOpinion)
+            {
+              
+            }
+
+        }
+
+    </div>
+</div>
+
+@if (_isAdding)
+{
+
+    <StudentOpinionForm @ref="studentOpinionFormForAdd" OnSaveHandler="OnSaveOpinionForm" IsExplanationRequired="_isLastOneDeleted" IsEditing="false" OpinionForms="_opinionForms"></StudentOpinionForm>
+}
+else
+{
+
+    @if (_opinionForms != null)
+    {
+        if (_isEditing)
+        {
+            <StudentOpinionForm @ref="studentOpinionFormForUpdate" OnUpdateHandler="OnUpdateOpinionForm" IsEditing="true" OpinionForm="OpinionForm" OpinionForms="_opinionForms"></StudentOpinionForm>
+
+        }
+        else
+        {
+            <div class="card card-custom">
+                <div class="card-body">
+                    <div class="card-title">
+                        <h3 class="card-label">@L["_Information", L["Opinion"]]</h3>
+                    </div>
+                    <Grid IsFilter="false" Items="_opinionForms.OrderByDescending(x=>x.StartDate).ToList()" OnSortChanged="async sort => await OnSortChange(sort)"
+                          Sort="_filter.Sort.FirstOrDefault()" class="table table-hover table-bordered " RowClass='(row, index) => GetAverageClass(row.Result)'>
+                        <GridColumn Sort="Period" TRowData="OpinionFormResponseDTO" Title="@L["Period"]">
+                            <ChildContent>
+                                @(context.Period?.GetDescription() ?? "-")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="Program.Name" TRowData="OpinionFormResponseDTO" Title="@L["Program"]">
+                            <ChildContent>
+                                @(context.Program?.Name ?? "-")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="Educator.User.Name" TRowData="OpinionFormResponseDTO" Title="@L["Evaluator"]">
+                            <ChildContent>
+                                @(context.Educator?.StaffTitle?.Name) @(context.Educator?.User?.Name ?? "-")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="ProgramManager.User.Name" TRowData="OpinionFormResponseDTO" Title="@L["Education Officer"]">
+                            <ChildContent>
+                                @(context.ProgramManager?.StaffTitle?.Name) @(context.ProgramManager?.User?.Name ?? "-")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["Overall Average"]">
+                            <ChildContent>
+                                @(context.OverallAverage == "" ? "-" : context.OverallAverage)
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["Start Date"]">
+                            <ChildContent>
+                                @(context.StartDate?.ToString("dd.MM.yyyy") ?? "-")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["End Date"]">
+                            <ChildContent>
+                                @(context.EndDate?.ToString("dd.MM.yyyy") ?? "-")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["Result"]">
+                            <ChildContent>
+                                @(context.Result == RatingResultType.Positive ? @L["Positive"] : context.Result == RatingResultType.Negative ? @L["Negative"] : "-")
+                            </ChildContent>
+                        </GridColumn>
+                        <GridColumn Sort="Secretary.Name" TRowData="OpinionFormResponseDTO" Title="@L["The Person Entering The Evaluation Data"]">
+                            <ChildContent>
+                                @(context.Secretary?.Name ?? "-")
+                            </ChildContent>
+                        </GridColumn>
+                       
+                    </Grid>
+                    <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                                DefaultPageSize="10" Loading="_loading">
+                    </Pagination>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <Spinner></Spinner>
+    }
+    @if (_canceledOpinionForms != null)
+    {
+        <div class="card card-custom">
+            <div class="card-body">
+                <div class="card-title">
+                    <h3 class="card-label">@L["Canceled Opinion Forms"]</h3>
+                </div>
+
+                <Grid IsFilter="false" Items="_canceledOpinionForms.OrderByDescending(x=>x.StartDate).ToList()" OnSortChanged="async sort => await OnSortChange(sort)"
+                      Sort="_filter.Sort.FirstOrDefault()" class="table table-hover table-bordered " RowClass='(row, index) => GetAverageClass(row.Result)'>
+                    <GridColumn Sort="Period" TRowData="OpinionFormResponseDTO" Title="@L["Period"]">
+                        <ChildContent>
+                            @(context.Period?.GetDescription() ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="Program.Name" TRowData="OpinionFormResponseDTO" Title="@L["Program"]">
+                        <ChildContent>
+                            @(context.Program?.Name ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="Educator.User.Name" TRowData="OpinionFormResponseDTO" Title="@L["Evaluator"]">
+                        <ChildContent>
+                            @(context.Educator?.StaffTitle?.Name) @(context.Educator?.User?.Name ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="ProgramManager.User.Name" TRowData="OpinionFormResponseDTO" Title="@L["Education Officer"]">
+                        <ChildContent>
+                            @(context.ProgramManager?.StaffTitle?.Name) @(context.ProgramManager?.User?.Name ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["Overall Average"]">
+                        <ChildContent>
+                            @(context.OverallAverage == "" ? "-" : context.OverallAverage)
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["Start Date"]">
+                        <ChildContent>
+                            @(context.StartDate?.ToString("dd.MM.yyyy") ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["End Date"]">
+                        <ChildContent>
+                            @(context.EndDate?.ToString("dd.MM.yyyy") ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn TRowData="OpinionFormResponseDTO" Title="@L["Result"]">
+                        <ChildContent>
+                            @(context.Result == RatingResultType.Positive ? @L["Positive"] : context.Result == RatingResultType.Negative ? @L["Negative"] : "-")
+                        </ChildContent>
+                    </GridColumn>
+                    <GridColumn Sort="Secretary.Name" TRowData="OpinionFormResponseDTO" Title="@L["The Person Entering The Evaluation Data"]">
+                        <ChildContent>
+                            @(context.Secretary?.Name ?? "-")
+                        </ChildContent>
+                    </GridColumn>
+                </Grid>
+                <Pagination Action="PaginationHandler" Count="_paginationModel.TotalItemCount" Page="_paginationModel.Page"
+                            DefaultPageSize="10" Loading="_loading">
+                </Pagination>
+            </div>
+        </div>
+    }
+    else
+    {
+        <Spinner></Spinner>
+    }
+}
+
+<MyModal @ref="_fileModal" ShowFooter="true" ShowHeader="true">
+    <Title>Dosya Görüntüleme Ekranı</Title>
+    <Body>
+
+        <FileItem Documents="Documents" Loaded="true"></FileItem>
+
+    </Body>
+</MyModal>
+<MyModal @ref="_pastOpinionFormModal" ShowFooter="false" ShowHeader="false">
+    <Body>
+        @if (_pastOpinionForm != null)
+        {
+            <EditForm EditContext="@_ecPastOpinionForm">
+                <FluentValidator TValidator="PastOpinionFormValidator"></FluentValidator>
+                <div class="form-group">
+                    <label>@L["Start Date"]</label>
+                    <div class="form-group">
+                        <InputDate class="form-control" ParsingErrorMessage="Lütfen geçerli bir tarih giriniz." Value="_pastOpinionForm.StartDate" Disabled="true" TValue="DateTime?" ValueExpression="()=>_pastOpinionForm.StartDate" ValueChanged="(DateTime? dt)=>OnChangeStartDate(dt)" />
+                        <ValidationMessage For="() =>_pastOpinionForm.StartDate"></ValidationMessage>
+                    </div>
+                    <label>@L["End Date"]</label>
+                    <div class="form-group">
+                        <InputDate class="form-control" ParsingErrorMessage="Lütfen geçerli bir tarih giriniz." @bind-Value="_pastOpinionForm.EndDate" Disabled="true" TValue="DateTime?" />
+                        <ValidationMessage For="() =>_pastOpinionForm.EndDate"></ValidationMessage>
+                    </div>
+
+                    <div class="form-group">
+                        <Dropzone @ref="dropzone" EntityId="0" DocumentType="DocumentTypes.OpinionForm"></Dropzone>
+                        @if (!string.IsNullOrEmpty(_documentValidatorMessage))
+                        {
+                            <div class="validation-message">@_documentValidatorMessage</div>
+                        }
+                    </div>
+                </div>
+            </EditForm>
+            <SpinnerButton OnClick="async () => await AddPastOpinionForm()" Disabled="_saving" ButtonClass="btn btn-clean btn-primary form-control" Spinning="_saving">
+                @L["Save"]
+            </SpinnerButton>
+        }
+    </Body>
+</MyModal>

@@ -1,0 +1,55 @@
+﻿@page "/login/ssologin"
+@layout LoginLayout
+@using Shared.RequestModels
+<Spinner></Spinner>
+
+
+@code
+{
+    [Inject] IDispatcher Dispatcher { get; set; }
+    [Inject] NavigationManager NavigationManager { get; set; }
+    [Inject] IAuthenticationService AuthenticationService { get; set; }
+    [Inject] ISweetAlert SweetAlert { get; set; }
+
+    private SsoLoginDTO _SSOModel;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (NavigationManager.TryGetQueryString("code", out string code) && NavigationManager.TryGetQueryString("state", out string state))
+        {
+            await SubmitSSO(code, state);
+        }
+        else                                                                       
+        {
+            SweetAlert.ToastAlert(SweetAlertIcon.error,$"{L["Common Entry Point could not be logged on"]}");
+            NavigationManager.NavigateTo("./login");
+        }
+    }                                      
+
+    private async Task SubmitSSO(string code, string state)
+    {
+        try
+        {
+            _SSOModel = new()
+                {
+                    Code = code,
+                    State = state
+                };
+            var result = await AuthenticationService.SsoLogin(_SSOModel);
+            if (result.Result)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/login");
+                SweetAlert.IconAlert(SweetAlertIcon.error, L["Warning"], L[result.Message]);
+            }
+        }
+        catch (Exception)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

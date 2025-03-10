@@ -1,0 +1,40 @@
+﻿@using Shared.ResponseModels
+<MyModal @ref="_authorizationDetailsModal" ShowFooter="false" ShowHeader="false" Size="MyModal.ModalSize.XLarge">
+    <Body>
+        <Grid IsFilter="false" Items="_authorizationDetails" class="table table-hover table-bordered " RowClass='(row, index) => ""'>
+            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization End Date"]">
+                @context.AuthorizationEndDate?.ToString("dd.MM.yyyy")
+            </GridColumn>
+            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Category"]">
+                <span class="badge text-white" data-toggle="tooltip" data-original-title="@context.AuthorizationCategory?.Description" style="background-color:@context.AuthorizationCategory?.ColorCode?.ToString();">@context.AuthorizationCategory?.Name</span>
+            </GridColumn>
+            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Date of Visit"]">
+                @context.VisitDate?.ToString("dd.MM.yyyy")
+            </GridColumn>
+            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Decision Date"]">
+                @context.AuthorizationDate?.ToString("dd.MM.yyyy")
+            </GridColumn>
+            <GridColumn TRowData="AuthorizationDetailResponseDTO" Title="@L["Authorization Decision No"]">
+                @context.AuthorizationDecisionNo
+            </GridColumn>
+        </Grid>
+    </Body>
+</MyModal>
+
+@code {
+    public List<AuthorizationDetailResponseDTO> _authorizationDetails = new();
+
+    private MyModal _authorizationDetailsModal;
+
+    public void OpenModal(List<AuthorizationDetailResponseDTO> authorizationDetails)
+    {
+        _authorizationDetails = authorizationDetails;
+        StateHasChanged();
+        _authorizationDetailsModal.OpenModal();
+    }
+
+    public void CloseModal()
+    {
+        _authorizationDetailsModal.CloseModal();
+    }
+}

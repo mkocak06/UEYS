@@ -1,0 +1,40 @@
+﻿@page "/management/study/add-study"
+@using Shared.Types
+@using Shared.Extensions;
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@inherits FluxorComponent
+
+<AppContent IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            <div class="card-body">
+                <EditForm EditContext="_ec">
+                    <FluentValidator TValidator="StudyValidator"></FluentValidator>
+                    <div>
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="form-group">
+                                    <label>@L["_name", L["Study"]]</label>
+                                    <InputText class="form-control" @bind-Value="_study.Name" />
+                                    <ValidationMessage For="() => _study.Name"></ValidationMessage>
+
+                                    <label>@L["Description"]</label>
+                                    <InputTextArea @bind-Value="_study.Description" class="form-control">
+                                    </InputTextArea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </Content>
+</AppContent>

@@ -1,0 +1,73 @@
+﻿@using Shared.ResponseModels
+@inherits FluxorComponent
+<div class="card-toolbar position-absolute top-0 right-0 mt-6 mr-10">
+    <div class="d-flex self-align-end">
+        <SpinnerButton ButtonClass="btn-primary font-weight-bold" Spinning="_loading" Disabled="_loading">
+            <i class=@(IsEditing==true?"fas fa-save":"flaticon2-fast-next")></i>@(IsEditing == true ? L["Update"] : L["Save and Next"])
+        </SpinnerButton>
+    </div>
+</div>
+@*@if (Educator?.EducatorPrograms != null && Educator.EducatorPrograms?.Count != 0)
+{
+    @foreach (var item in Educator.EducatorPrograms.OrderBy(x => x.DutyType))
+    {
+        <div class="card card-custom gutter-b shadow-xs border border-2">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-icon">
+                        <i class="flaticon2-pin text-primary"></i>
+                    </span>
+                    <h3 class="card-label">@(item.DutyType == Shared.Types.DutyType.PermanentDuty ? L["_Information", L["Permanent Place of Duty"]] : L["_Information", L["Temporary Place of Duty"]])</h3>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group ">
+                            <label>@L["_name", L["Expertise Branch"]]</label>
+                            <input type="text" class="form-control" value="@item.Program?.ExpertiseBranch?.Name" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label>@L["_name", L["Educational Institution / Faculty"]]</label>
+                            <input type="text" class="form-control" value="@item.Program?.Faculty?.Name" disabled />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["_name", L["Institution of Education"]]</label>
+                            <input type="text" class="form-control" value="@item.Program?.Hospital?.Name" disabled />
+                        </div>
+                        <div class="form-group">
+                            <label>@L["_name", L["Ministry / University"]]</label>
+                            <input type="text" class="form-control" value="@item.Program?.Faculty?.University.Name" disabled />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["Start Date"]</label>
+                            <input type="text" class="form-control" value="@item.DutyStartDate?.ToString("d")" disabled />
+                        </div>
+                        <div class="form-group ">
+                            <label>@L["Is Education Officer?"]</label>
+
+                            <BoolLabel PositiveString="Yes" NegativeString="No" Value="@item.IsProgramManager" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>@L["End Date"]</label>
+                            <input type="text" class="form-control" value="@item.DutyEndDate?.ToString("d")" disabled />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <span>
+        @L["There is no record belong to this field"]
+    </span>
+}*@

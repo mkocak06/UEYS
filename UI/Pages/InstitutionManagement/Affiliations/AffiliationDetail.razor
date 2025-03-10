@@ -1,0 +1,254 @@
+﻿@using Shared.RequestModels
+@using Shared.Types
+@using UI.SharedComponents.Components
+@using Shared.ResponseModels
+@page "/institution-management/affiliations/{id:long?}"
+@inherits FluxorComponent
+
+<AppContent Title="" IsFluid="false" BreadCrumbLinks="_links">
+    <Toolbar>
+        <div class="d-flex">
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AffiliationDocumentUpload}">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" ButtonClass="btn-light-success mr-4" OnClick="() => { dropzone.ResetStatus(); UploaderModal.OpenModal(); }">
+                <i class="fas fa-upload"></i>@L["File Upload"]
+            </SpinnerButton>
+            </PermissionWrapper>
+            <PermissionWrapper Permissions="new List<PermissionEnum>(){PermissionEnum.AffiliationUpdate}">
+            <SpinnerButton Spinning="_saving" Disabled="_saving" OnClick="() => Save()">
+                <i class="fas fa-save"></i>@L["Save"]
+            </SpinnerButton>
+            </PermissionWrapper>
+        </div>
+    </Toolbar>
+    <Content>
+        <div class="card card-custom">
+            @if (_loaded)
+            {
+                if (!_notFound)
+                {
+                    <div class="card-body">
+                        <div class="row">
+
+                            <div class="col-12 col-lg-6">
+                                <EditForm EditContext="_ec">
+                                    <FluentValidator TValidator="AffiliationValidator"></FluentValidator>
+                                    <div class="form-group">
+                                        <label>@L["Protocol No"]</label>
+                                        <InputText class="form-control" @bind-Value="_affiliation.ProtocolNo" />
+                                        <ValidationMessage For="() => _affiliation.ProtocolNo"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Protocol Date"]</label>
+                                        <InputDate class="form-control" @bind-Value="_affiliation.ProtocolDate" TValue="DateTime?" />
+                                        <ValidationMessage For="() => _affiliation.ProtocolDate"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Protocol End Date"]</label>
+                                        <InputDate class="form-control" @bind-Value="_affiliation.ProtocolEndDate" TValue="DateTime?" />
+                                        <ValidationMessage For="() => _affiliation.ProtocolEndDate"></ValidationMessage>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Affiliation Ministry / University"]</label>
+                                        <BlazoredTypeahead SearchMethod="SearchAffiliatingUniversities"
+                                                   TItem="UniversityResponseDTO"
+                                                   TValue="UniversityResponseDTO"
+                                                   Value="_affiliatingUniversity"
+                                                   ValueExpression="() => _affiliatingUniversity"
+                                                   ValueChanged="OnChangeAffiliatingUniversity"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions=99999>
+                                            <SelectedTemplate Context="university">
+                                                @university?.Name
+                                            </SelectedTemplate>
+                                            <HelpTemplate>
+                                                @L["Please enter at least 1 character to search."]
+
+                                            </HelpTemplate>
+                                            <NotFoundTemplate Context="searchText">
+                                                @if (string.IsNullOrEmpty(searchText))
+                                                {
+                                                    @L["Could not find an item"]
+                                                }
+                                                else
+                                                {
+                                                    <div>@searchText @L["Could not find an item named"]</div>
+                                                }
+                                            </NotFoundTemplate>
+                                            <ResultTemplate Context="university">
+                                                @university?.Name
+                                            </ResultTemplate>
+                                        </BlazoredTypeahead>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Affiliation Educational Institution / Faculty"]</label>
+                                        <BlazoredTypeahead SearchMethod="SearchFaculties"
+                                                   TItem="FacultyResponseDTO"
+                                                   TValue="FacultyResponseDTO"
+                                                   Value="_affiliation.Faculty"
+                                                   ValueExpression="() => _affiliation.Faculty"
+                                                   ValueChanged="OnChangeAffiliatingFaculty"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions=99999
+                                                   Disabled="@(_affiliatingUniversity is null)">
+                                            <SelectedTemplate Context="faculty">
+                                                @faculty?.Name
+                                            </SelectedTemplate>
+                                            <HelpTemplate>
+                                                @L["Please enter at least 1 character to search."]
+                                            </HelpTemplate>
+                                            <NotFoundTemplate Context="searchText">
+                                                @if (string.IsNullOrEmpty(searchText))
+                                                {
+                                                    @L["Could not find an item"]
+                                                }
+                                                else
+                                                {
+                                                    <div>@searchText @L["Could not find an item named"]</div>
+                                                }
+                                            </NotFoundTemplate>
+                                            <ResultTemplate Context="faculty">
+                                                @faculty?.Name
+                                            </ResultTemplate>
+                                        </BlazoredTypeahead>
+                                        <ValidationMessage For="()=>_affiliation.FacultyId" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@L["Institution of Education"]</label>
+                                        <BlazoredTypeahead SearchMethod="SearchHospitals"
+                                                   TItem="HospitalResponseDTO"
+                                                   TValue="HospitalResponseDTO"
+                                                   Value="_affiliation.Hospital"
+                                                   ValueExpression="() => _affiliation.Hospital"
+                                                   ValueChanged="OnChangeAffiliatedHospital"
+                                                   EnableDropDown="true"
+                                                   MinimumLength="1"
+                                                   MaximumSuggestions=99999
+                                                   Disabled=@(_affiliation.Faculty is null)>
+                                            <SelectedTemplate Context="faculty">
+                                                @faculty?.Name
+                                            </SelectedTemplate>
+                                            <HelpTemplate>
+                                                @L["Please enter at least 1 character to search."]
+                                            </HelpTemplate>
+                                            <NotFoundTemplate Context="searchText">
+                                                @if (string.IsNullOrEmpty(searchText))
+                                                {
+                                                    @L["Could not find an item"]
+                                                }
+                                                else
+                                                {
+                                                    <div>@searchText @L["Could not find an item named"]</div>
+                                                }
+                                            </NotFoundTemplate>
+                                            <ResultTemplate Context="faculty">
+                                                @faculty?.Name
+                                            </ResultTemplate>
+                                        </BlazoredTypeahead>
+                                        <ValidationMessage For="()=>_affiliation.HospitalId" />
+                                    </div>
+                                </EditForm>
+                            </div>
+
+                            <div class="col-12 col-lg-6">
+                                <div class="timeline timeline-justified timeline-4 position-sticky" style="top:140px;">
+                                    <div class="timeline-bar"></div>
+                                    <div class="timeline-items">
+                                        @if (_affiliation.Faculty is not null && _affiliatingUniversity is not null)
+                                        {
+                                            <div class="timeline-item">
+                                                <div class="timeline-badge">
+                                                    <div class="bg-success"></div>
+                                                </div>
+
+                                                <div class="timeline-label">
+                                                    <span class="text-success font-weight-bold">@L["Affiliation Educational Institution / Faculty"]</span>
+                                                </div>
+
+                                                <div class="timeline-content">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="p-0 w-250px"></th>
+                                                                <th class="p-0"></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Ministry / University"]</td>
+                                                                <td>@_affiliatingUniversity.Name</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bolder">@L["Educational Institution / Faculty"]</td>
+                                                                <td>@_affiliation.Faculty.Name</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            @if (_affiliation.Hospital is not null)
+                                            {
+                                                <div class="timeline-item">
+                                                    <div class="timeline-badge">
+                                                        <div class="bg-success"></div>
+                                                    </div>
+                                                    <div class="timeline-label text-primary">
+                                                        <span class="text-success font-weight-bold">@L["Affiliation Hospital"]</span>
+                                                    </div>
+                                                    <div class="timeline-content">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="p-0 w-250px"></th>
+                                                                    <th class="p-0"></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td class="font-weight-bolder">@L["Province"]</td>
+                                                                    <td>@_affiliation.Hospital?.Province?.Name</td>
+                                                                </tr>
+                                                                 <tr>
+                                                                    <td class="font-weight-bolder">@L["Ministry / University"]</td>
+                                                                    <td>@_affiliation.Hospital?.Faculty?.University?.Name</td>
+                                                                </tr>
+                                                                 <tr>
+                                                                    <td class="font-weight-bolder">@L["Educational Institution / Faculty"]</td>
+                                                                    <td>@_affiliation.Hospital?.Faculty?.Name</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="font-weight-bolder">@L["Institution of Education"]</td>
+                                                                    <td>@_affiliation.Hospital?.Name</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                }
+                else
+                {
+                    <_404Page ReturnLink="/institution-management/affiliations/" ButtonText="Return Back"></_404Page>
+                }
+            }
+        </div>
+        <FileItem Documents="_documents" Loaded="_loaded" CanDownloaded=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.AffiliationDocumentDownload})) IsEditing=@(_authService.IsPermitted(new List<PermissionEnum>(){PermissionEnum.AffiliationDocumentDelete}))></FileItem>
+    </Content>
+
+</AppContent>
+
+<MyModal @ref="UploaderModal" ActionName="@L["Save"]" AsyncFunction="@(async ()=> await CallDropzone())" Size="MyModal.ModalSize.Normal">
+    <Title>@L["File Upload"]</Title>
+    <Body>
+        <Dropzone @ref="dropzone" EntityId="@_affiliation.Id" DocumentType="@Shared.Types.DocumentTypes.Affiliation" />
+    </Body>
+</MyModal>

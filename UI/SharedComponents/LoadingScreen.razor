@@ -1,0 +1,28 @@
+﻿@inherits FluxorComponent
+@if (_isLoaded)
+{
+    @ChildContent
+}
+else
+{
+    <div class="d-flex justify-content-center h-100">
+        <div class="spinner spinner-dark spinner-lg"></div>
+    </div>
+}
+
+@code
+{
+    [Inject] private IDispatcher Dispatcher { get; set; }
+
+    [Inject] private NavigationManager MyNavigationManager { get; set; }
+
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    
+    private bool _isLoaded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoaded = true;
+        await InvokeAsync(StateHasChanged);
+    }
+}
